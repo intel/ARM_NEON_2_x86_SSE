@@ -1,7 +1,5 @@
 # Boilerplate: Copyright (C) 2014-2017 Ruslan Baratov
 # Modification: Copyright (C) 2017 David Hirvonen
-# License: BSD 2 Clause Software License
-# See LICENSE for the full license.
 
 cmake_minimum_required(VERSION 3.0)
 project(NEON_2_SSE VERSION 1.0.0)
