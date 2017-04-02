@@ -2251,7 +2251,7 @@ poly16x8x2_t vuzpq_p16(poly16x8_t a, poly16x8_t b); // VUZP.16 q0,q0
 // the following macros solve the problem of the "immediate parameters requirement" for some x86 intrinsics. 
 // we need it to compile the code unless the "Intrinsic parameter must be an immediate value" error is our goal
 //
-#if ( ((defined(_MSC_VER)|| defined (__INTEL_COMPILER)) && defined DEBUG ) || defined(__GNUC__) )    
+#if ( ((defined(_MSC_VER)|| defined (__INTEL_COMPILER)) && defined DEBUG ) || defined(__GNUC__) && !defined(__llvm__) )    
 
     #define _MM_ALIGNR_EPI8 _mm_alignr_epi8
 
