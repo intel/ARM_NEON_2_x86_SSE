@@ -8752,7 +8752,7 @@ _NEON2SSE_INLINE int16x4_t vrshrn_n_s32(int32x4_t a, __constrange(1,16) int b) /
     int16x4_t res64;
     __m128i r32;
     r32  = vrshrq_n_s32(a,b);
-    r32  =  _mm_shuffle_epi8 (r32, *(__m128i*) mask8_16_even_odd); //narrow, use low 64 bits only. Impossible to use _mm_packs because of negative saturation problems
+    r32  =  _mm_shuffle_epi8 (r32, *(__m128i*) mask8_32_even_odd); //narrow, use low 64 bits only. Impossible to use _mm_packs because of negative saturation problems
     return64(r32);
 }
 
