@@ -33,11 +33,11 @@
 // It makes the correspondence between ARM NEON intrinsics (as defined in "arm_neon.h")
 // and x86 SSE(up to SSE4.2) intrinsic functions as defined in headers files below
 //MMX instruction set is not used due to non availability on x64 systems,
-//performance overhead and the necessity to use the EMMS instruction (_mm_empty())for mmx-x87 floating point  switching
+//performance overhead and the necessity to use the EMMS instruction (_mm_empty())for mmx-x87 floating point  switching.
 //*****************************************************************************************
 
-//!!!!!!!!!!!!!!  To use this file just include it in your project that uses ARM NEON intinsics instead of "arm_neon.h" and complile it as usual
-//!!!!!!!!!!!!!!  but please pay attention at #define USE_SSE4 below - you might need to define it manualy for newest Intel Atom platforms for greater performance.
+//!!!!!!!!!!!!!!  To use this file just include it in your project that uses ARM NEON intrinsics instead of "arm_neon.h" and compile it as usual
+//!!!!!!!!!!!!!!  but please pay attention at #define USE_SSE4 below - you might need to define it manualy for the newest Intel Atom platforms for better performance.
 
 #ifndef NEON2SSE_H
 #define NEON2SSE_H
