@@ -1,6 +1,6 @@
 //created by Victoria Zhislina, the Senior Application Engineer, Intel Corporation,  victoria.zhislina@intel.com
 
-//*** Copyright (C) 2012-2016 Intel Corporation.  All rights reserved.
+//*** Copyright (C) 2012-2017 Intel Corporation.  All rights reserved.
 
 //IMPORTANT: READ BEFORE DOWNLOADING, COPYING, INSTALLING OR USING.
 
@@ -36,21 +36,21 @@
 //performance overhead and the necessity to use the EMMS instruction (_mm_empty())for mmx-x87 floating point  switching
 //*****************************************************************************************
 
-//!!!!!!!!!!!!!!  To use this file just include it in your project that uses ARM NEON intinsics instead of "arm_neon.h" and complile it as usual
-//!!!!!!!!!!!!!!  but please pay attention at #define USE_SSE4 below - you might need to define it manualy for newest Intel Atom platforms for greater performance.
+//!!!!!!!!!!!!!!  To use this file just include it in your project that uses ARM NEON intinsics instead of "arm_neon.h" and compile it as usual
+//!!!!!!!!!!!!!!  but please pay attention at #define USE_SSE4 below - you might need to define it manualy for newest Intel Atom or any Intel Core platforms for greater performance.
 
 #ifndef NEON2SSE_H
 #define NEON2SSE_H
 
 /*********************************************************************************************************************/
 //!!!!!!!!!!!!!! 
+//if USE_SSE4 is defined, some functions use SSE4 instructions instead of earlier SSE versions, when undefined - SIMD up to SSSE3 are used
+//For older devices without SSE4 support it should be undefined,  for newer devices - defined, probably manualy if your compiler doesn't set __SSE4_2__ predefine
 #ifndef USE_SSE4
 #if defined(__SSE4_2__)
     #define USE_SSE4
 #endif
 #endif
-//if USE_SSE4 is defined, some functions use SSE4 instructions instead of earlier SSE versions, when undefined - SIMD up to SSSE3 are used
-//For older devices without SSE4 support it should be undefined,  for newer devices - defined, probably manualy if your compiler doesn't set __SSE4_2__ predefine
 /*********************************************************************************************************************/
 
 #include <xmmintrin.h>     //SSE
@@ -151,10 +151,8 @@ typedef __m128 float32x4_t;
 typedef __m128 float16x4_t; //not supported by IA, for compartibility
 typedef __m128 float16x8_t; //not supported by IA, for compartibility
 
-#ifdef _NEON2SSE_64BIT
 typedef __m64_128 float64x1_t;
 typedef __m128d float64x2_t;
-#endif
 
 typedef __m128i int8x16_t;
 typedef __m128i int16x8_t;
@@ -179,9 +177,9 @@ typedef   float float32_t;
 #if !defined(__clang__)
 typedef   float __fp16;
 #endif
-#ifdef _NEON2SSE_64BIT
+
 typedef   double float64_t;
-#endif
+
 
 typedef  uint8_t poly8_t;
 typedef  uint16_t poly16_t;
@@ -870,9 +868,9 @@ uint8x16_t vmaxq_u8(uint8x16_t a, uint8x16_t b); // VMAX.U8 q0,q0,q0
 uint16x8_t vmaxq_u16(uint16x8_t a, uint16x8_t b); // VMAX.U16 q0,q0,q0
 uint32x4_t vmaxq_u32(uint32x4_t a, uint32x4_t b); // VMAX.U32 q0,q0,q0
 float32x4_t vmaxq_f32(float32x4_t a, float32x4_t b); // VMAX.F32 q0,q0,q0
-#ifdef _NEON2SSE_64BIT
+
 float64x2_t vmaxq_f64(float64x2_t a, float64x2_t b); // VMAX.F64 q0,q0,q0
-#endif
+
 //vmin -> Vr[i] := (Va[i] >= Vb[i]) ? Vb[i] : Va[i]
 int8x8_t vmin_s8(int8x8_t a, int8x8_t b); // VMIN.S8 d0,d0,d0
 int16x4_t vmin_s16(int16x4_t a, int16x4_t b); // VMIN.S16 d0,d0,d0
@@ -888,9 +886,9 @@ uint8x16_t vminq_u8(uint8x16_t a, uint8x16_t b); // VMIN.U8 q0,q0,q0
 uint16x8_t vminq_u16(uint16x8_t a, uint16x8_t b); // VMIN.U16 q0,q0,q0
 uint32x4_t vminq_u32(uint32x4_t a, uint32x4_t b); // VMIN.U32 q0,q0,q0
 float32x4_t vminq_f32(float32x4_t a, float32x4_t b); // VMIN.F32 q0,q0,q0
-#ifdef _NEON2SSE_64BIT
+
 float64x2_t vminq_f64(float64x2_t a, float64x2_t b); // VMIN.F64 q0,q0,q0
-#endif
+
 //Pairwise addition
 //Pairwise add
 int8x8_t vpadd_s8(int8x8_t a, int8x8_t b); // VPADD.I8 d0,d0,d0
@@ -1240,9 +1238,9 @@ float16x4_t vld1_f16(__transfersize(4) __fp16 const * ptr); // VLD1.16 {d0}, [r0
 float32x2_t vld1_f32(__transfersize(2) float32_t const * ptr); // VLD1.32 {d0}, [r0]
 poly8x8_t vld1_p8(__transfersize(8) poly8_t const * ptr); // VLD1.8 {d0}, [r0]
 poly16x4_t vld1_p16(__transfersize(4) poly16_t const * ptr); // VLD1.16 {d0}, [r0]
-#ifdef _NEON2SSE_64BIT
+
 float64x2_t vld1q_f64(__transfersize(4) float64_t const * ptr); // VLD1.64 {d0, d1}, [r0]
-#endif
+
 //Load a single lane from memory
 uint8x16_t vld1q_lane_u8(__transfersize(1) uint8_t const * ptr, uint8x16_t vec, __constrange(0,15) int lane); //VLD1.8 {d0[0]}, [r0]
 uint16x8_t vld1q_lane_u16(__transfersize(1) uint16_t const * ptr, uint16x8_t vec, __constrange(0,7) int lane); // VLD1.16 {d0[0]}, [r0]
@@ -2022,10 +2020,10 @@ int8x16_t vabsq_s8(int8x16_t a); // VABS.S8 q0,q0
 int16x8_t vabsq_s16(int16x8_t a); // VABS.S16 q0,q0
 int32x4_t vabsq_s32(int32x4_t a); // VABS.S32 q0,q0
 float32x4_t vabsq_f32(float32x4_t a); // VABS.F32 q0,q0
-#ifdef _NEON2SSE_64BIT
+
 int64x2_t vabsq_s64(int64x2_t a); // VABS.S64 q0,q0
 float64x2_t vabsq_f64(float64x2_t a); // VABS.F64 q0,q0
-#endif
+
 //Saturating absolute: Vd[i] = sat(|Va[i]|)
 int8x8_t vqabs_s8(int8x8_t a); // VQABS.S8 d0,d0
 int16x4_t vqabs_s16(int16x4_t a); // VQABS.S16 d0,d0
@@ -2268,26 +2266,27 @@ uint32x4x2_t vuzpq_u32(uint32x4_t a, uint32x4_t b); // VUZP.32 q0,q0
 float32x4x2_t vuzpq_f32(float32x4_t a, float32x4_t b); // VUZP.32 q0,q0
 poly8x16x2_t vuzpq_p8(poly8x16_t a, poly8x16_t b); // VUZP.8 q0,q0
 poly16x8x2_t vuzpq_p16(poly16x8_t a, poly16x8_t b); // VUZP.16 q0,q0
-//Sqrt
+
 float32x4_t vrndnq_f32(float32x4_t a); // VRND.F32 q0,q0
-#ifdef _NEON2SSE_64BIT
+
 float64x2_t vrndnq_f64(float64x2_t a); // VRND.F64 q0,q0
-#endif
+
+//Sqrt
 float32x4_t vsqrtq_f32(float32x4_t a); // VSQRT.F32 q0,q0
-#ifdef _NEON2SSE_64BIT
+
 float64x2_t vsqrtq_f64(float64x2_t a); // VSQRT.F64 q0,q0
-#endif
+
 
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 // the following macros solve the problem of the "immediate parameters requirement" for some x86 intrinsics. 
 // we need it to compile the code unless the "Intrinsic parameter must be an immediate value" error is our goal
 //
-#if ( ((defined(_MSC_VER)|| defined (__INTEL_COMPILER)) && defined DEBUG ) || defined(__GNUC__) && !defined(__llvm__) )    
+#if  ( defined (__INTEL_COMPILER)  || defined (__GNUC__) && !defined(__llvm__) )    
 
     #define _MM_ALIGNR_EPI8 _mm_alignr_epi8
 
-    #define _MM_EXTRACT_EPI16  _mm_extract_epi16
+#define _MM_EXTRACT_EPI16  (int16_t) _mm_extract_epi16
     #define _MM_INSERT_EPI16 _mm_insert_epi16
 #ifdef USE_SSE4
         #define _MM_EXTRACT_EPI8  _mm_extract_epi8
@@ -2360,7 +2359,7 @@ float64x2_t vsqrtq_f64(float64x2_t a); // VSQRT.F64 q0,q0
         _NEON2SSE_SWITCH8(_mm_insert_epi16, vec, LANE, _NEON2SSE_COMMA p)
     }
 
-    _NEON2SSE_INLINE int _MM_EXTRACT_EPI16(__m128i vec, const int LANE)
+	_NEON2SSE_INLINE int16_t _MM_EXTRACT_EPI16(__m128i vec, const int LANE)
     {
         _NEON2SSE_SWITCH8(_mm_extract_epi16, vec, LANE,)
     }
@@ -6169,10 +6168,10 @@ uint32x4_t   vmaxq_u32(uint32x4_t a, uint32x4_t b); // VMAX.U32 q0,q0,q0
 float32x4_t vmaxq_f32(float32x4_t a, float32x4_t b); // VMAX.F32 q0,q0,q0
 #define vmaxq_f32 _mm_max_ps
 
-#ifdef _NEON2SSE_64BIT
+
 float64x2_t vmaxq_f64(float64x2_t a, float64x2_t b); // VMAX.F64 q0,q0,q0
 #define vmaxq_f64 _mm_max_pd
-#endif
+
 
 //*************** Minimum: vmin -> Vr[i] := (Va[i] >= Vb[i]) ? Vb[i] : Va[i] ********************************
 //***********************************************************************************************************
@@ -6258,10 +6257,10 @@ uint32x4_t   vminq_u32(uint32x4_t a, uint32x4_t b); // VMIN.U32 q0,q0,q0
 float32x4_t vminq_f32(float32x4_t a, float32x4_t b); // VMIN.F32 q0,q0,q0
 #define vminq_f32 _mm_min_ps
 
-#ifdef _NEON2SSE_64BIT
+
 float64x2_t vminq_f64(float64x2_t a, float64x2_t b); // VMIN.F64 q0,q0,q0
 #define vminq_f64 _mm_min_pd
-#endif
+
 
 //*************  Pairwise addition operations. **************************************
 //************************************************************************************
@@ -9330,13 +9329,16 @@ poly8x8_t vld1_p8(__transfersize(8) poly8_t const * ptr); // VLD1.8 {d0}, [r0]
 poly16x4_t vld1_p16(__transfersize(4) poly16_t const * ptr); // VLD1.16 {d0}, [r0]
 #define vld1_p16 vld1_u16
 
-#ifdef _NEON2SSE_64BIT
+
 float64x2_t vld1q_f64(__transfersize(4) float64_t const * ptr); // VLD1.64 {d0, d1}, [r0]
 _NEON2SSE_INLINE float64x2_t vld1q_f64(__transfersize(4) float64_t const * ptr)
 {
-  return _mm_loadu_pd(ptr);
+	if ((((unsigned long)(ptr)) & 15) == 0) //16 bits aligned
+		return _mm_load_pd(ptr);
+	else
+		return _mm_loadu_pd(ptr);
 }
-#endif
+
 
 //***********************************************************************************************************
 //******* Lane load functions - insert the data at  vector's given position (lane) *************************
@@ -16664,42 +16666,44 @@ uint32x4_t vreinterpretq_u32_p8 (poly8x16_t t);
 
 //*************  Round ******************
 float32x4_t vrndnq_f32(float32x4_t a);
-_NEON2SSE_INLINE float32x4_t vrndnq_f32(float32x4_t a)
-{
 #ifdef USE_SSE4
-  return _mm_round_ps(a, _MM_FROUND_TO_NEAREST_INT | _MM_FROUND_NO_EXC);
+#define vrndnq_f32(a) _mm_round_ps(a, _MM_FROUND_TO_NEAREST_INT | _MM_FROUND_NO_EXC)
 #else
-  return (__m128){nearbyintf(a[0]), nearbyintf(a[1]),
-                  nearbyintf(a[2]), nearbyintf(a[3])};
-#endif
+_NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING( float32x4_t vrndnq_f32(float32x4_t a), _NEON2SSE_REASON_SLOW_SERIAL)
+{
+    int i;
+    _NEON2SSE_ALIGN_16 float32_t res[4];
+    _mm_store_ps(res, a);
+     for(i = 0; i<4; i++) {
+       res[i] = nearbyintf(res[i]);
+     }
+    return _mm_load_ps(res);
 }
+#endif
 
-#ifdef _NEON2SSE_64BIT
+
 float64x2_t vrndnq_f64(float64x2_t a);
-_NEON2SSE_INLINE float64x2_t vrndnq_f64(float64x2_t a)
-{
 #ifdef USE_SSE4
-  return _mm_round_pd(a, _MM_FROUND_TO_NEAREST_INT | _MM_FROUND_NO_EXC);
+#define  vrndnq_f64(a)  _mm_round_pd(a, _MM_FROUND_TO_NEAREST_INT | _MM_FROUND_NO_EXC)
 #else
-  return (__m128d){nearbyint(a[0]), nearbyint(a[1])};
-#endif
+_NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(float64x2_t vrndnq_f64(float64x2_t a), _NEON2SSE_REASON_SLOW_SERIAL)
+{
+     _NEON2SSE_ALIGN_16 float64_t res[2];
+     _mm_store_pd(res, a);
+     res[0] = nearbyintf(res[0]);
+     res[1] = nearbyintf(res[1]);
+     return _mm_load_pd(res);
 }
 #endif
+
+
 
 //************* Sqrt ******************
-
 float32x4_t vsqrtq_f32(float32x4_t a);
-_NEON2SSE_INLINE float32x4_t vsqrtq_f32(float32x4_t a)
-{
-  return _mm_sqrt_ps(a);
-}
+#define vsqrtq_f32 _mm_sqrt_ps
 
-#ifdef _NEON2SSE_64BIT
 float64x2_t vsqrtq_f64(float64x2_t a);
-_NEON2SSE_INLINE float64x2_t vsqrtq_f64(float64x2_t a)
-{
-  return _mm_sqrt_pd(a);
-}
-#endif
+#define vsqrtq_f64 _mm_sqrt_pd
+
 
 #endif /* NEON2SSE_H */
