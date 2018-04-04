@@ -3148,7 +3148,7 @@ _NEON2SSE_INLINE int8x16_t  vrhaddq_s8(int8x16_t a, int8x16_t b) // VRHADD.S8 q0
 {
     //no signed average in x86 SIMD, go to unsigned
     __m128i c128, au, bu, sum;
-    c128 = _mm_set1_epi8(0x80); //-128
+    c128 = _mm_set1_epi8((int8_t)0x80); //-128
     au = _mm_sub_epi8(a, c128); //add 128
     bu = _mm_sub_epi8(b, c128); //add 128
     sum = _mm_avg_epu8(au, bu);
@@ -3160,7 +3160,7 @@ _NEON2SSE_INLINE int16x8_t  vrhaddq_s16(int16x8_t a, int16x8_t b) // VRHADD.S16 
 {
     //no signed average in x86 SIMD, go to unsigned
     __m128i cx8000, au, bu, sum;
-    cx8000 = _mm_set1_epi16(0x8000); // - 32768
+    cx8000 = _mm_set1_epi16((int16_t)0x8000); // - 32768
     au = _mm_sub_epi16(a, cx8000); //add 32768
     bu = _mm_sub_epi16(b, cx8000); //add 32768
     sum = _mm_avg_epu16(au, bu);
@@ -4778,7 +4778,7 @@ _NEON2SSE_INLINE int8x16_t vhsubq_s8(int8x16_t a, int8x16_t b) // VHSUB.S8 q0,q0
 {
     // //need to deal with the possibility of internal overflow
     __m128i c128, au,bu;
-    c128 = _mm_set1_epi8 (128);
+    c128 = _mm_set1_epi8((int8_t)128);
     au = _mm_add_epi8( a, c128);
     bu = _mm_add_epi8( b, c128);
     return vhsubq_u8(au,bu);
@@ -4789,7 +4789,7 @@ _NEON2SSE_INLINE int16x8_t vhsubq_s16(int16x8_t a, int16x8_t b) // VHSUB.S16 q0,
 {
     //need to deal with the possibility of internal overflow
     __m128i c8000, au,bu;
-    c8000 = _mm_set1_epi16(0x8000);
+    c8000 = _mm_set1_epi16((int16_t)0x8000);
     au = _mm_add_epi16( a, c8000);
     bu = _mm_add_epi16( b, c8000);
     return vhsubq_u16(au,bu);
@@ -5223,7 +5223,7 @@ _NEON2SSE_INLINE uint16x8_t vcgeq_u16(uint16x8_t a, uint16x8_t b) // VCGE.s16 q0
         return _mm_cmpeq_epi16(cmp, a); //a>=b
     #else
         __m128i c8000, as, bs, m1, m2;
-        c8000 = _mm_set1_epi16 (0x8000);
+        c8000 = _mm_set1_epi16 ((int16_t)0x8000);
         as = _mm_sub_epi16(a,c8000);
         bs = _mm_sub_epi16(b,c8000);
         m1 = _mm_cmpgt_epi16(as, bs);
@@ -5459,7 +5459,7 @@ _NEON2SSE_INLINE uint8x16_t vcgtq_u8(uint8x16_t a, uint8x16_t b) // VCGT.U8 q0, 
 {
     //no unsigned chars comparison, only signed available,so need the trick
     __m128i c128, as, bs;
-    c128 = _mm_set1_epi8 (128);
+    c128 = _mm_set1_epi8 ((int8_t)128);
     as = _mm_sub_epi8(a,c128);
     bs = _mm_sub_epi8(b,c128);
     return _mm_cmpgt_epi8 (as, bs);
@@ -5470,7 +5470,7 @@ _NEON2SSE_INLINE uint16x8_t vcgtq_u16(uint16x8_t a, uint16x8_t b) // VCGT.s16 q0
 {
     //no unsigned short comparison, only signed available,so need the trick
     __m128i c8000, as, bs;
-    c8000 = _mm_set1_epi16 (0x8000);
+    c8000 = _mm_set1_epi16 ((int16_t)0x8000);
     as = _mm_sub_epi16(a,c8000);
     bs = _mm_sub_epi16(b,c8000);
     return _mm_cmpgt_epi16 ( as, bs);
@@ -6324,7 +6324,7 @@ _NEON2SSE_INLINE uint16x4_t vpadd_u16(uint16x4_t a, uint16x4_t b) // VPADD.I16 d
     uint16x4_t res64;
     __m128i c32767,  cfffe, as, bs, res;
     c32767 = _mm_set1_epi16 (32767);
-    cfffe = _mm_set1_epi16 (0xfffe);
+    cfffe = _mm_set1_epi16 ((int16_t)0xfffe);
     as = _mm_sub_epi16 (_pM128i(a), c32767);
     bs = _mm_sub_epi16 (_pM128i(b), c32767);
     res = _mm_hadd_epi16 (as, bs);
@@ -8396,7 +8396,7 @@ _NEON2SSE_INLINE uint16x8_t vqshlq_n_u16(uint16x8_t a, __constrange(0,15) int b)
     // manual saturation solution looks more optimal than 32 bits conversion one
     __m128i cb, c8000, a_signed, saturation_mask,  shift_res;
     cb = _mm_set1_epi16((1 << (16 - b)) - 1 - 0x8000 );
-    c8000 = _mm_set1_epi16 (0x8000);
+    c8000 = _mm_set1_epi16 ((int16_t)0x8000);
 //no unsigned shorts comparison in SSE, only signed available, so need the trick
     a_signed = _mm_sub_epi16(a, c8000); //go to signed
     saturation_mask = _mm_cmpgt_epi16 (a_signed, cb);
@@ -9691,22 +9691,22 @@ void vst1_p16(__transfersize(4) poly16_t * ptr, poly16x4_t val); // VST1.16 {d0}
 //***********Store a lane of a vector into memory (extract given lane) *********************
 //******************************************************************************************
 void vst1q_lane_u8(__transfersize(1) uint8_t * ptr, uint8x16_t val, __constrange(0,15) int lane); // VST1.8 {d0[0]}, [r0]
-#define vst1q_lane_u8(ptr, val, lane) *(ptr) = _MM_EXTRACT_EPI8 (val, lane)
+#define vst1q_lane_u8(ptr, val, lane) *(ptr) = (uint8_t) _MM_EXTRACT_EPI8 (val, lane)
 
 void vst1q_lane_u16(__transfersize(1) uint16_t * ptr, uint16x8_t val, __constrange(0,7) int lane); // VST1.16 {d0[0]}, [r0]
-#define vst1q_lane_u16(ptr, val, lane) *(ptr) = _MM_EXTRACT_EPI16 (val, lane)
+#define vst1q_lane_u16(ptr, val, lane) *(ptr) = (uint16_t) _MM_EXTRACT_EPI16 (val, lane)
 
 void vst1q_lane_u32(__transfersize(1) uint32_t * ptr, uint32x4_t val, __constrange(0,3) int lane); // VST1.32 {d0[0]}, [r0]
-#define vst1q_lane_u32(ptr, val, lane) *(ptr) = _MM_EXTRACT_EPI32 (val, lane)
+#define vst1q_lane_u32(ptr, val, lane) *(ptr) = (uint32_t) _MM_EXTRACT_EPI32 (val, lane)
 
 void vst1q_lane_u64(__transfersize(1) uint64_t * ptr, uint64x2_t val, __constrange(0,1) int lane); // VST1.64 {d0}, [r0]
-#define vst1q_lane_u64(ptr, val, lane) *(ptr) = _MM_EXTRACT_EPI64 (val, lane)
+#define vst1q_lane_u64(ptr, val, lane) *(ptr) = (uint64_t) _MM_EXTRACT_EPI64 (val, lane)
 
 void vst1q_lane_s8(__transfersize(1) int8_t * ptr, int8x16_t val, __constrange(0,15) int lane); // VST1.8 {d0[0]}, [r0]
-#define vst1q_lane_s8(ptr, val, lane) *(ptr) = _MM_EXTRACT_EPI8 (val, lane)
+#define vst1q_lane_s8(ptr, val, lane) *(ptr) = (int8_t) _MM_EXTRACT_EPI8 (val, lane)
 
 void vst1q_lane_s16(__transfersize(1) int16_t * ptr, int16x8_t val, __constrange(0,7) int lane); // VST1.16 {d0[0]}, [r0]
-#define vst1q_lane_s16(ptr, val, lane) *(ptr) = _MM_EXTRACT_EPI16 (val, lane)
+#define vst1q_lane_s16(ptr, val, lane) *(ptr) = (int16_t) _MM_EXTRACT_EPI16 (val, lane)
 
 void vst1q_lane_s32(__transfersize(1) int32_t * ptr, int32x4_t val, __constrange(0,3) int lane); // VST1.32 {d0[0]}, [r0]
 #define vst1q_lane_s32(ptr, val, lane) *(ptr) = _MM_EXTRACT_EPI32 (val, lane)
@@ -11933,22 +11933,22 @@ float32_t vget_lane_f32(float32x2_t vec, __constrange(0,1) int lane); // VMOV.32
 #define vget_lane_f32(vec, lane) vec.m64_f32[lane]
 
 uint8_t vgetq_lane_u8(uint8x16_t vec, __constrange(0,15) int lane); // VMOV.U8 r0, d0[0]
-#define vgetq_lane_u8 _MM_EXTRACT_EPI8
+#define vgetq_lane_u8 (uint8_t) _MM_EXTRACT_EPI8
 
 uint16_t vgetq_lane_u16(uint16x8_t vec, __constrange(0,7) int lane); // VMOV.s16 r0, d0[0]
-#define  vgetq_lane_u16 _MM_EXTRACT_EPI16
+#define  vgetq_lane_u16 (uint16_t) _MM_EXTRACT_EPI16
 
 uint32_t vgetq_lane_u32(uint32x4_t vec, __constrange(0,3) int lane); // VMOV.32 r0, d0[0]
-#define vgetq_lane_u32 _MM_EXTRACT_EPI32
+#define vgetq_lane_u32 (uint32_t) _MM_EXTRACT_EPI32
 
 int8_t vgetq_lane_s8(int8x16_t vec, __constrange(0,15) int lane); // VMOV.S8 r0, d0[0]
-#define vgetq_lane_s8 vgetq_lane_u8
+#define vgetq_lane_s8 _MM_EXTRACT_EPI8
 
 int16_t vgetq_lane_s16(int16x8_t vec, __constrange(0,7) int lane); // VMOV.S16 r0, d0[0]
-#define vgetq_lane_s16 vgetq_lane_u16
+#define vgetq_lane_s16 _MM_EXTRACT_EPI16
 
 int32_t vgetq_lane_s32(int32x4_t vec, __constrange(0,3) int lane); // VMOV.32 r0, d0[0]
-#define vgetq_lane_s32 vgetq_lane_u32
+#define vgetq_lane_s32 _MM_EXTRACT_EPI32
 
 poly8_t vgetq_lane_p8(poly8x16_t vec, __constrange(0,15) int lane); // VMOV.U8 r0, d0[0]
 #define vgetq_lane_p8 vgetq_lane_u8
@@ -11972,10 +11972,10 @@ uint64_t vget_lane_u64(uint64x1_t vec, __constrange(0,0) int lane); // VMOV r0,r
 
 
 int64_t vgetq_lane_s64(int64x2_t vec, __constrange(0,1) int lane); // VMOV r0,r0,d0
-#define vgetq_lane_s64 (int64_t) vgetq_lane_u64
+#define vgetq_lane_s64 _MM_EXTRACT_EPI64
 
 uint64_t vgetq_lane_u64(uint64x2_t vec, __constrange(0,1) int lane); // VMOV r0,r0,d0
-#define vgetq_lane_u64 _MM_EXTRACT_EPI64
+#define vgetq_lane_u64 (uint64_t) _MM_EXTRACT_EPI64
 
 // ***************** Set lanes within a vector ********************************************
 // **************************************************************************************
@@ -14671,7 +14671,7 @@ int8x16_t vqabsq_s8(int8x16_t a); // VQABS.S8 q0,q0
 _NEON2SSE_INLINE int8x16_t vqabsq_s8(int8x16_t a) // VQABS.S8 q0,q0
 {
     __m128i c_128, abs, abs_cmp;
-    c_128 = _mm_set1_epi8 (0x80); //-128
+    c_128 = _mm_set1_epi8 ((int8_t)0x80); //-128
     abs = _mm_abs_epi8 (a);
     abs_cmp = _mm_cmpeq_epi8 (abs, c_128);
     return _mm_xor_si128 (abs,  abs_cmp);
@@ -14681,7 +14681,7 @@ int16x8_t vqabsq_s16(int16x8_t a); // VQABS.S16 q0,q0
 _NEON2SSE_INLINE int16x8_t vqabsq_s16(int16x8_t a) // VQABS.S16 q0,q0
 {
     __m128i c_32768, abs, abs_cmp;
-    c_32768 = _mm_set1_epi16 (0x8000); //-32768
+    c_32768 = _mm_set1_epi16 ((int16_t)0x8000); //-32768
     abs = _mm_abs_epi16 (a);
     abs_cmp = _mm_cmpeq_epi16 (abs, c_32768);
     return _mm_xor_si128 (abs,  abs_cmp);
@@ -14994,7 +14994,7 @@ _NEON2SSE_INLINE int8x16_t vclsq_s8(int8x16_t a)
 {
     __m128i cff, c80, c1, a_mask, a_neg, a_pos, a_comb;
     cff = _mm_cmpeq_epi8 (a,a); //0xff
-    c80 = _mm_set1_epi8(0x80);
+    c80 = _mm_set1_epi8((int8_t)0x80);
     c1 = _mm_set1_epi8(1);
     a_mask = _mm_and_si128(a, c80);
     a_mask = _mm_cmpeq_epi8(a_mask, c80); //0xff if negative input and 0 if positive
