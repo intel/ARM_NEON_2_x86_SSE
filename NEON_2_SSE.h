@@ -12723,7 +12723,7 @@ _NEON2SSE_INLINE uint32x4_t vcvtq_u32_f32(float32x4_t a) // VCVT.U32.F32 q0, q0
     //No single instruction SSE solution  but we could implement it as following:
     __m128i resi;
     __m128 zero,  mask, a_pos, mask_f_max_si, res;
-    _NEON2SSE_ALIGN_16 int32_t c7fffffff[4] = {0x7fffffff, 0x7fffffff, 0x7fffffff, 0x7fffffff};
+	_NEON2SSE_ALIGN_16 float c7fffffff[4] = { 2.14748352e+009, 2.14748352e+009, 2.14748352e+009, 2.14748352e+009 };
     zero = _mm_setzero_ps();
     mask = _mm_cmpgt_ps(a, zero);
     a_pos = _mm_and_ps(a, mask);
