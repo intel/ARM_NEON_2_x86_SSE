@@ -1,6 +1,6 @@
 //created by Victoria Zhislina, the Senior Application Engineer, Intel Corporation,  victoria.zhislina@intel.com
 
-//*** Copyright (C) 2012-2017 Intel Corporation.  All rights reserved.
+//*** Copyright (C) 2012-2018 Intel Corporation.  All rights reserved.
 
 //IMPORTANT: READ BEFORE DOWNLOADING, COPYING, INSTALLING OR USING.
 
@@ -2359,7 +2359,7 @@ float64x2_t vsqrtq_f64(float64x2_t a); // VSQRT.F64 q0,q0
         _NEON2SSE_SWITCH8(_mm_insert_epi16, vec, LANE, _NEON2SSE_COMMA p)
     }
 
-	_NEON2SSE_INLINE int16_t _MM_EXTRACT_EPI16(__m128i vec, const int LANE)
+    _NEON2SSE_INLINE int16_t _MM_EXTRACT_EPI16(__m128i vec, const int LANE)
     {
         _NEON2SSE_SWITCH8(_mm_extract_epi16, vec, LANE,)
     }
@@ -3567,7 +3567,6 @@ _NEON2SSE_INLINE uint16x4_t vmul_u16(uint16x4_t a, uint16x4_t b)
     uint16x4_t res64;
     return64(_mm_mullo_epi16(_pM128i(a),_pM128i(b)));
 }
-
 
 uint32x2_t   vmul_u32(uint32x2_t a, uint32x2_t b); // VMUL.I32 d0,d0,d0
 _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING( uint32x2_t   vmul_u32(uint32x2_t a, uint32x2_t b), _NEON2SSE_REASON_SLOW_SERIAL)
@@ -9333,10 +9332,10 @@ poly16x4_t vld1_p16(__transfersize(4) poly16_t const * ptr); // VLD1.16 {d0}, [r
 float64x2_t vld1q_f64(__transfersize(4) float64_t const * ptr); // VLD1.64 {d0, d1}, [r0]
 _NEON2SSE_INLINE float64x2_t vld1q_f64(__transfersize(4) float64_t const * ptr)
 {
-	if ((((uintptr_t)(ptr)) & 15) == 0) //16 bits aligned
-		return _mm_load_pd(ptr);
-	else
-		return _mm_loadu_pd(ptr);
+    if ((((uintptr_t)(ptr)) & 15) == 0) //16 bits aligned
+        return _mm_load_pd(ptr);
+    else
+        return _mm_loadu_pd(ptr);
 }
 
 
@@ -12697,40 +12696,54 @@ poly16x4_t vget_low_p16(poly16x8_t a); // VMOV d0,d0
 // need to set _MM_SET_ROUNDING_MODE ( x) accordingly
 int32x2_t   vcvt_s32_f32(float32x2_t a); // VCVT.S32.F32 d0, d0
 _NEON2SSE_INLINE int32x2_t   vcvt_s32_f32(float32x2_t a)
-{
-    int32x2_t res64;
-    __m128i res;
-    res =  _mm_cvtps_epi32(_pM128(a)); //use low 64 bits of result only
-    return64(res);
+{ 
+    int32x2_t res;
+    res.m64_i32[0] = (a.m64_f32[0] >= 2.14748364e+009) ? SINT_MAX : (int32_t)a.m64_f32[0];
+    res.m64_i32[1] = (a.m64_f32[1] >= 2.14748364e+009) ? SINT_MAX : (int32_t)a.m64_f32[1];
+    return res;
 }
 
 uint32x2_t vcvt_u32_f32(float32x2_t a); // VCVT.U32.F32 d0, d0
-_NEON2SSE_INLINE uint32x2_t vcvt_u32_f32(float32x2_t a)
+_NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(uint32x2_t vcvt_u32_f32(float32x2_t a), _NEON2SSE_REASON_SLOW_SERIAL)
 {
-    //may be not effective compared with a serial SIMD solution
-    uint32x2_t res64;
-    __m128i res;
-    res = vcvtq_u32_f32(_pM128(a));
-    return64(res);
+    uint32x2_t res;
+    res.m64_u32[0] = (a.m64_f32[0] > 0.f) ? (a.m64_f32[0] >= 4.29496729e+009)? UINT_MAX : (uint32_t)a.m64_f32[0] : 0;
+    res.m64_u32[1] = (a.m64_f32[1] > 0.f) ? (a.m64_f32[1] >= 4.29496729e+009)? UINT_MAX : (uint32_t)a.m64_f32[1] : 0;
+    return res;
 }
 
-int32x4_t   vcvtq_s32_f32(float32x4_t a); // VCVT.S32.F32 q0, q0
-#define vcvtq_s32_f32 _mm_cvttps_epi32
+int32x4_t  vcvtq_s32_f32(float32x4_t a); // VCVT.S32.F32 q0, q0
+_NEON2SSE_INLINE int32x4_t  vcvtq_s32_f32(float32x4_t a)
+{
+    __m128 dif;
+    __m128i res;
+    //_mm_cvttps_epi32 incorrectly treats the case a > =2.14748364e+009, therefore the special processing is necessary
+    _NEON2SSE_ALIGN_16 float32_t fmax[] = { 2.14748364e+009, 2.14748364e+009, 2.14748364e+009, 2.14748364e+009 };
+    dif = _mm_cmpge_ps(a, *(__m128*)fmax);
+    res = _mm_cvttps_epi32(a);
+    return _mm_xor_si128(res, _M128i(dif));
+}
 
 uint32x4_t vcvtq_u32_f32(float32x4_t a); // VCVT.U32.F32 q0, q0
 _NEON2SSE_INLINE uint32x4_t vcvtq_u32_f32(float32x4_t a) // VCVT.U32.F32 q0, q0
 {
     //No single instruction SSE solution  but we could implement it as following:
-    __m128i resi;
-    __m128 zero,  mask, a_pos, mask_f_max_si, res;
-	_NEON2SSE_ALIGN_16 float c7fffffff[4] = { 2.14748352e+009, 2.14748352e+009, 2.14748352e+009, 2.14748352e+009 };
-    zero = _mm_setzero_ps();
-    mask = _mm_cmpgt_ps(a, zero);
-    a_pos = _mm_and_ps(a, mask);
-    mask_f_max_si = _mm_cmpgt_ps(a_pos,*(__m128*)c7fffffff);
-    res =  _mm_sub_ps(a_pos, mask_f_max_si); //if the input fits to signed we don't subtract anything
-    resi = _mm_cvttps_epi32(res);
-    return _mm_add_epi32(resi, *(__m128i*)&mask_f_max_si);
+    __m128i res1, res2, zero, mask;
+    __m128  max, min, dif;
+    _NEON2SSE_ALIGN_16 float32_t fmax[] = { 2.14748364e+009, 2.14748364e+009, 2.14748364e+009, 2.14748364e+009 };
+    _NEON2SSE_ALIGN_16 float32_t fmax_unsigned[] = { 4.29496729e+009, 4.29496729e+009, 4.29496729e+009, 4.29496729e+009 };
+    zero = _mm_setzero_si128();
+    mask = _mm_cmpgt_epi32(_M128i(a), zero);
+    min = _mm_and_ps(_M128(mask), a);
+    max = _mm_min_ps(min, *(__m128*)fmax_unsigned); //clamped in 0 - 4.29496729+009 
+
+    dif = _mm_sub_ps(max, *(__m128*)fmax);
+	mask = _mm_cmpgt_epi32(_M128i(dif),zero);
+	dif = _mm_and_ps(_M128(mask), dif);
+
+    res1 = _mm_cvttps_epi32(dif);
+    res2 = vcvtq_s32_f32(max);
+    return _mm_add_epi32(res1, res2);
 }
 
 // ***** Convert to the fixed point  with   the number of fraction bits specified by b ***********
