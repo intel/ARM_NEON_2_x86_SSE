@@ -12697,19 +12697,19 @@ poly16x4_t vget_low_p16(poly16x8_t a); // VMOV d0,d0
 int32x2_t   vcvt_s32_f32(float32x2_t a); // VCVT.S32.F32 d0, d0
 _NEON2SSE_INLINE int32x2_t   vcvt_s32_f32(float32x2_t a)
 { 
-    int32x2_t res;
-    res.m64_i32[0] = (a.m64_f32[0] >= 2.14748364e+009) ? SINT_MAX : (int32_t)a.m64_f32[0];
-    res.m64_i32[1] = (a.m64_f32[1] >= 2.14748364e+009) ? SINT_MAX : (int32_t)a.m64_f32[1];
-    return res;
+    int32x2_t res64;
+    __m128i res;
+    res =  _mm_cvtps_epi32(_pM128(a)); //use low 64 bits of result only
+    return64(res);
 }
 
 uint32x2_t vcvt_u32_f32(float32x2_t a); // VCVT.U32.F32 d0, d0
-_NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(uint32x2_t vcvt_u32_f32(float32x2_t a), _NEON2SSE_REASON_SLOW_SERIAL)
+_NEON2SSE_INLINE uint32x2_t vcvt_u32_f32(float32x2_t a)
 {
-    uint32x2_t res;
-    res.m64_u32[0] = (a.m64_f32[0] > 0.f) ? (a.m64_f32[0] >= 4.29496729e+009)? UINT_MAX : (uint32_t)a.m64_f32[0] : 0;
-    res.m64_u32[1] = (a.m64_f32[1] > 0.f) ? (a.m64_f32[1] >= 4.29496729e+009)? UINT_MAX : (uint32_t)a.m64_f32[1] : 0;
-    return res;
+    uint32x2_t res64;
+    __m128i res;
+    res = vcvtq_u32_f32(_pM128(a));
+    return64(res);
 }
 
 int32x4_t  vcvtq_s32_f32(float32x4_t a); // VCVT.S32.F32 q0, q0
