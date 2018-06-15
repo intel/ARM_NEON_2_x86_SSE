@@ -5826,24 +5826,18 @@ _NEON2SSE_INLINE int32x4_t vabdq_s32(int32x4_t a, int32x4_t b) // VABD.S32 q0,q0
 uint8x16_t vabdq_u8(uint8x16_t a, uint8x16_t b); // VABD.U8 q0,q0,q0
 _NEON2SSE_INLINE uint8x16_t vabdq_u8(uint8x16_t a, uint8x16_t b) //no abs for unsigned
 {
-    __m128i cmp, difab, difba;
-    cmp = vcgtq_u8(a,b);
-    difab = _mm_sub_epi8(a,b);
-    difba = _mm_sub_epi8 (b,a);
-    difab = _mm_and_si128(cmp, difab);
-    difba = _mm_andnot_si128(cmp, difba);
+    __m128i  difab, difba;
+    difab = _mm_subs_epu8(a,b);
+    difba = _mm_subs_epu8 (b,a);
     return _mm_or_si128(difab, difba);
 }
 
 uint16x8_t vabdq_u16(uint16x8_t a, uint16x8_t b); // VABD.s16 q0,q0,q0
 _NEON2SSE_INLINE uint16x8_t vabdq_u16(uint16x8_t a, uint16x8_t b)
 {
-    __m128i cmp, difab, difba;
-    cmp = vcgtq_u16(a,b);
-    difab = _mm_sub_epi16(a,b);
-    difba = _mm_sub_epi16 (b,a);
-    difab = _mm_and_si128(cmp, difab);
-    difba = _mm_andnot_si128(cmp, difba);
+    __m128i difab, difba;
+    difab = _mm_subs_epu16(a,b);
+    difba = _mm_subs_epu16 (b,a);
     return _mm_or_si128(difab, difba);
 }
 
