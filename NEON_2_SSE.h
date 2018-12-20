@@ -7082,7 +7082,7 @@ _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING( uint64x2_t vshlq_u64(uint64x2_t 
         int lanesize_1 = (sizeof(TYPE) << 3) - 1; \
         _mm_store_si128((__m128i*)atmp, a); _mm_store_si128((__m128i*)btmp, b); \
         for (i = 0; i<LEN; i++) { \
-        if (atmp[i] ==0) res[i] = 0; \
+        if ((atmp[i] ==0)||(btmp[i] ==0)) res[i] = atmp[i]; \
         else{ \
             if(btmp[i] <0) res[i] = atmp[i] >> (-btmp[i]); \
             else{ \
@@ -7100,7 +7100,7 @@ _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING( uint64x2_t vshlq_u64(uint64x2_t 
         TYPE lanesize = (sizeof(TYPE) << 3); \
         _mm_store_si128((__m128i*)atmp, a); _mm_store_si128((__m128i*)btmp, b); \
         for (i = 0; i<LEN; i++) { \
-        if (atmp[i] ==0) {res[i] = 0; \
+        if ((atmp[i] ==0)||(btmp[i] ==0)) { res[i] = atmp[i]; \
         }else{ \
             if(btmp[i] < 0) res[i] = atmp[i] >> (-btmp[i]); \
             else{ \
@@ -7114,7 +7114,7 @@ _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING( uint64x2_t vshlq_u64(uint64x2_t 
         int ## TYPE ## x ## LEN ## _t res; int ## TYPE ## _t limit; int i; \
         int lanesize_1 = (sizeof( int ## TYPE ## _t) << 3) - 1; \
         for (i = 0; i<LEN; i++) { \
-        if (a.m64_i ## TYPE[i] ==0) res.m64_i ## TYPE[i] = 0; \
+        if ((a.m64_i ## TYPE[i] == 0) ||(b.m64_i ## TYPE[i] == 0)) res.m64_i ## TYPE[i] = a.m64_i ## TYPE[i]; \
         else{ \
             if(b.m64_i ## TYPE[i] <0) res.m64_i ## TYPE[i] = a.m64_i ## TYPE[i] >> (-(b.m64_i ## TYPE[i])); \
             else{ \
@@ -7131,7 +7131,7 @@ _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING( uint64x2_t vshlq_u64(uint64x2_t 
         int ## TYPE ## x ## LEN ## _t res;  _UNSIGNED_T(int ## TYPE ## _t) limit; int i; \
         int ## TYPE ## _t lanesize = (sizeof(int ## TYPE ## _t) << 3); \
         for (i = 0; i<LEN; i++) { \
-        if (a.m64_u ## TYPE[i] ==0) {res.m64_u ## TYPE[i] = 0; \
+        if ((a.m64_u ## TYPE[i] == 0) ||(b.m64_u ## TYPE[i] == 0)) {res.m64_u ## TYPE[i] = a.m64_u ## TYPE[i]; \
         }else{ \
             if(b.m64_i ## TYPE[i] < 0) res.m64_u ## TYPE[i] = a.m64_u ## TYPE[i] >> (-(b.m64_i ## TYPE[i])); \
             else{ \
