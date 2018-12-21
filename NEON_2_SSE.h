@@ -5223,12 +5223,9 @@ _NEON2SSE_INLINE uint16x8_t vcgeq_u16(uint16x8_t a, uint16x8_t b) // VCGE.s16 q0
     cmp = _mm_max_epu16(a, b);
     return _mm_cmpeq_epi16(cmp, a); //a>=b
 #else
-    __m128i as, mask;
-    __m128i zero = _mm_setzero_si128();
-    __m128i cffff = _mm_set1_epi16(0xffff);
-    as = _mm_subs_epu16(b,a);
-    mask = _mm_cmpgt_epi16(as, zero);
-    return _mm_xor_si128 ( mask, cffff);
+   __m128i zero = _mm_setzero_si128();
+   __m128i  as = _mm_subs_epu16(b, a);
+   return _mm_cmpeq_epi16(as, zero);  
 #endif
 }
 
@@ -5457,21 +5454,23 @@ _NEON2SSE_INLINE uint32x4_t vcgtq_f32(float32x4_t a, float32x4_t b)
 _NEON2SSESTORAGE uint8x16_t vcgtq_u8(uint8x16_t a, uint8x16_t b); // VCGT.U8 q0, q0, q0
 _NEON2SSE_INLINE uint8x16_t vcgtq_u8(uint8x16_t a, uint8x16_t b) // VCGT.U8 q0, q0, q0
 {
-    //no unsigned chars comparison, only signed available,so need the trick
-    __m128i as;
-    __m128i zero = _mm_setzero_si128();
-    as = _mm_subs_epu8(a, b);
-    return _mm_cmpgt_epi8(as, zero);
+      //no unsigned chars comparison, only signed available,so need the trick
+		__m128i c128, as, bs;
+		c128 = _mm_set1_epi8(128);
+		as = _mm_sub_epi8(a, c128);
+		bs = _mm_sub_epi8(b, c128);
+		return _mm_cmpgt_epi8(as, bs);
 }
 
 _NEON2SSESTORAGE uint16x8_t vcgtq_u16(uint16x8_t a, uint16x8_t b); // VCGT.s16 q0, q0, q0
 _NEON2SSE_INLINE uint16x8_t vcgtq_u16(uint16x8_t a, uint16x8_t b) // VCGT.s16 q0, q0, q0
-{
-    //no unsigned short comparison, only signed available,so need the trick
-    __m128i as;
-    __m128i zero = _mm_setzero_si128();
-    as = _mm_subs_epu16(a, b);
-    return _mm_cmpgt_epi16(as, zero);
+{   
+	//no unsigned short comparison, only signed available,so need the trick
+	__m128i c8000, as, bs;
+	c8000 = _mm_set1_epi16(0x8000);
+	as = _mm_sub_epi16(a, c8000);
+	bs = _mm_sub_epi16(b, c8000);
+	return _mm_cmpgt_epi16(as, bs);
 }
 
 _NEON2SSESTORAGE uint32x4_t vcgtq_u32(uint32x4_t a, uint32x4_t b); // VCGT.U32 q0, q0, q0
@@ -7083,7 +7082,7 @@ _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING( uint64x2_t vshlq_u64(uint64x2_t 
         int lanesize_1 = (sizeof(TYPE) << 3) - 1; \
         _mm_store_si128((__m128i*)atmp, a); _mm_store_si128((__m128i*)btmp, b); \
         for (i = 0; i<LEN; i++) { \
-        if (atmp[i] ==0) res[i] = 0; \
+        if ((atmp[i] ==0)||(btmp[i] ==0)) res[i] = atmp[i]; \
         else{ \
             if(btmp[i] <0) res[i] = atmp[i] >> (-btmp[i]); \
             else{ \
@@ -7101,7 +7100,7 @@ _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING( uint64x2_t vshlq_u64(uint64x2_t 
         TYPE lanesize = (sizeof(TYPE) << 3); \
         _mm_store_si128((__m128i*)atmp, a); _mm_store_si128((__m128i*)btmp, b); \
         for (i = 0; i<LEN; i++) { \
-        if (atmp[i] ==0) {res[i] = 0; \
+        if ((atmp[i] ==0)||(btmp[i] ==0)) { res[i] = atmp[i]; \
         }else{ \
             if(btmp[i] < 0) res[i] = atmp[i] >> (-btmp[i]); \
             else{ \
@@ -7115,7 +7114,7 @@ _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING( uint64x2_t vshlq_u64(uint64x2_t 
         int ## TYPE ## x ## LEN ## _t res; int ## TYPE ## _t limit; int i; \
         int lanesize_1 = (sizeof( int ## TYPE ## _t) << 3) - 1; \
         for (i = 0; i<LEN; i++) { \
-        if (a.m64_i ## TYPE[i] ==0) res.m64_i ## TYPE[i] = 0; \
+        if ((a.m64_i ## TYPE[i] == 0) ||(b.m64_i ## TYPE[i] == 0)) res.m64_i ## TYPE[i] = a.m64_i ## TYPE[i]; \
         else{ \
             if(b.m64_i ## TYPE[i] <0) res.m64_i ## TYPE[i] = a.m64_i ## TYPE[i] >> (-(b.m64_i ## TYPE[i])); \
             else{ \
@@ -7132,7 +7131,7 @@ _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING( uint64x2_t vshlq_u64(uint64x2_t 
         int ## TYPE ## x ## LEN ## _t res;  _UNSIGNED_T(int ## TYPE ## _t) limit; int i; \
         int ## TYPE ## _t lanesize = (sizeof(int ## TYPE ## _t) << 3); \
         for (i = 0; i<LEN; i++) { \
-        if (a.m64_u ## TYPE[i] ==0) {res.m64_u ## TYPE[i] = 0; \
+        if ((a.m64_u ## TYPE[i] == 0) ||(b.m64_u ## TYPE[i] == 0)) {res.m64_u ## TYPE[i] = a.m64_u ## TYPE[i]; \
         }else{ \
             if(b.m64_i ## TYPE[i] < 0) res.m64_u ## TYPE[i] = a.m64_u ## TYPE[i] >> (-(b.m64_i ## TYPE[i])); \
             else{ \
