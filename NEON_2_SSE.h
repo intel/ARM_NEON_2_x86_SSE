@@ -6436,7 +6436,7 @@ _NEON2SSE_INLINE int32x4_t vpaddlq_s16(int16x8_t a) // VPADDL.S16 q0,q0
 }
 
 _NEON2SSESTORAGE int64x2_t vpaddlq_s32(int32x4_t a); // VPADDL.S32 q0,q0
-_NEON2SSESTORAGE int64x2_t vpaddlq_s32(int32x4_t a)
+_NEON2SSE_INLINE int64x2_t vpaddlq_s32(int32x4_t a)
 {
     __m128i top, bot;
     bot = _mm_shuffle_epi32(a, _MM_SHUFFLE(0, 0, 2, 0));
