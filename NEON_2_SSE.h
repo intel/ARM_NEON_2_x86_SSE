@@ -6455,6 +6455,25 @@ _NEON2SSE_INLINE uint16x8_t vpaddlq_u8(uint8x16_t a) // VPADDL.U8 q0,q0
     return _mm_add_epi16(low, high);
 }
 
+#ifdef USE_SSE4
+_NEON2SSESTORAGE uint32x4_t vpaddlq_u16(uint16x8_t a); // VPADDL.s16 q0,q0
+_NEON2SSE_INLINE uint32x4_t vpaddlq_u16(uint16x8_t a)
+{
+    const __m128i zero = _mm_setzero_si128();
+    __m128i low = _mm_blend_epi16(zero, a, 0x55); // 0b1010101
+    __m128i high = _mm_srli_epi32(a, 16);
+    return _mm_add_epi32(low, high);
+}
+
+_NEON2SSESTORAGE uint64x2_t vpaddlq_u32(uint32x4_t a); // VPADDL.U32 q0,q0
+_NEON2SSE_INLINE uint64x2_t vpaddlq_u32(uint32x4_t a)
+{
+    const __m128i zero = _mm_setzero_si128();
+    __m128i low = _mm_blend_epi16(zero, a, 0x33); // 0b00110011
+    __m128i high = _mm_srli_epi64(a, 32);
+    return _mm_add_epi64(low, high);
+}
+#else
 _NEON2SSESTORAGE uint32x4_t vpaddlq_u16(uint16x8_t a); // VPADDL.s16 q0,q0
 _NEON2SSE_INLINE uint32x4_t vpaddlq_u16(uint16x8_t a)
 {
@@ -6467,11 +6486,12 @@ _NEON2SSE_INLINE uint32x4_t vpaddlq_u16(uint16x8_t a)
 _NEON2SSESTORAGE uint64x2_t vpaddlq_u32(uint32x4_t a); // VPADDL.U32 q0,q0
 _NEON2SSE_INLINE uint64x2_t vpaddlq_u32(uint32x4_t a)
 {
-    const __m128i ff = _mm_set1_epi64x(0xFFFFFFFF);
+    const __m128i ff = _mm_set_epi32(0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF);
     __m128i low = _mm_and_si128(a, ff);
     __m128i high = _mm_srli_epi64(a, 32);
     return _mm_add_epi64(low, high);
 }
+#endif
 
 //************************  Long pairwise add and accumulate **************************
 //****************************************************************************************
