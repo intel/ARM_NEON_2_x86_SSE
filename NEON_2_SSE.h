@@ -1,6 +1,6 @@
 //created by Victoria Zhislina, the Senior Application Engineer, Intel Corporation,  victoria.zhislina@intel.com
 
-//*** Copyright (C) 2012-2019 Intel Corporation.  All rights reserved.
+//*** Copyright (C) 2012-2018 Intel Corporation.  All rights reserved.
 
 //IMPORTANT: READ BEFORE DOWNLOADING, COPYING, INSTALLING OR USING.
 
@@ -5455,22 +5455,22 @@ _NEON2SSESTORAGE uint8x16_t vcgtq_u8(uint8x16_t a, uint8x16_t b); // VCGT.U8 q0,
 _NEON2SSE_INLINE uint8x16_t vcgtq_u8(uint8x16_t a, uint8x16_t b) // VCGT.U8 q0, q0, q0
 {
       //no unsigned chars comparison, only signed available,so need the trick
-		__m128i c128, as, bs;
-		c128 = _mm_set1_epi8(128);
-		as = _mm_sub_epi8(a, c128);
-		bs = _mm_sub_epi8(b, c128);
-		return _mm_cmpgt_epi8(as, bs);
+        __m128i c128, as, bs;
+        c128 = _mm_set1_epi8(128);
+        as = _mm_sub_epi8(a, c128);
+        bs = _mm_sub_epi8(b, c128);
+        return _mm_cmpgt_epi8(as, bs);
 }
 
 _NEON2SSESTORAGE uint16x8_t vcgtq_u16(uint16x8_t a, uint16x8_t b); // VCGT.s16 q0, q0, q0
 _NEON2SSE_INLINE uint16x8_t vcgtq_u16(uint16x8_t a, uint16x8_t b) // VCGT.s16 q0, q0, q0
 {   
-	//no unsigned short comparison, only signed available,so need the trick
-	__m128i c8000, as, bs;
-	c8000 = _mm_set1_epi16(0x8000);
-	as = _mm_sub_epi16(a, c8000);
-	bs = _mm_sub_epi16(b, c8000);
-	return _mm_cmpgt_epi16(as, bs);
+    //no unsigned short comparison, only signed available,so need the trick
+    __m128i c8000, as, bs;
+    c8000 = _mm_set1_epi16(0x8000);
+    as = _mm_sub_epi16(a, c8000);
+    bs = _mm_sub_epi16(b, c8000);
+    return _mm_cmpgt_epi16(as, bs);
 }
 
 _NEON2SSESTORAGE uint32x4_t vcgtq_u32(uint32x4_t a, uint32x4_t b); // VCGT.U32 q0, q0, q0
@@ -13092,7 +13092,9 @@ _NEON2SSE_INLINE uint32x2_t vqmovun_s64(int64x2_t a)
 // ********************************************************
 //VTBL (Vector Table Lookup) uses byte indexes in a control vector to look up byte values
 //in a table and generate a new vector. Indexes out of range return 0.
+
 //for Intel SIMD we need to set the MSB to 1 for zero return
+//if b is unsigned ( > max signed)  or negative it has MSB 1 set and doesn't need any special processing
 _NEON2SSESTORAGE uint8x8_t vtbl1_u8(uint8x8_t a, uint8x8_t b); // VTBL.8 d0, {d0}, d0
 _NEON2SSE_INLINE uint8x8_t vtbl1_u8(uint8x8_t a, uint8x8_t b)
 {
@@ -13192,14 +13194,16 @@ _NEON2SSESTORAGE uint8x8_t vtbx1_u8(uint8x8_t a, uint8x8_t b, uint8x8_t c); // V
 _NEON2SSE_INLINE uint8x8_t vtbx1_u8(uint8x8_t a, uint8x8_t b, uint8x8_t c)
 {
     uint8x8_t res64;
-    __m128i c7, maskgt, sh, c128;
-    c7 = _mm_set1_epi8 (7);
+    __m128i c8, maskgt, sh, c128;
+    c8 = _mm_set1_epi8(8);
     c128 = _pM128i(c);
-    maskgt = _mm_cmpgt_epi8(c128,c7);
-    c7 = _mm_and_si128(maskgt,_pM128i(a));
+    //need to pre-clamp c values to avoid unsigned comparison
+    c128 = _mm_min_epu8(c128, c8);
+    maskgt = _mm_cmpgt_epi8(c8,c128);
     sh = _mm_shuffle_epi8(_pM128i(b),c128);
-    sh = _mm_andnot_si128(maskgt,sh);
-    sh =  _mm_or_si128(sh,c7);
+    sh = _mm_and_si128(maskgt,sh);
+    c8 = _mm_andnot_si128(maskgt,_pM128i(a));
+    sh =  _mm_or_si128(sh,c8);
     return64(sh);
 }
 
@@ -13213,15 +13217,17 @@ _NEON2SSESTORAGE uint8x8_t vtbx2_u8(uint8x8_t a, uint8x8x2_t b, uint8x8_t c); //
 _NEON2SSE_INLINE uint8x8_t vtbx2_u8(uint8x8_t a, uint8x8x2_t b, uint8x8_t c)
 {
     uint8x8_t res64;
-    __m128i c15, b01, maskgt15, sh, c128;
-    c15 = _mm_set1_epi8 (15);
+    __m128i c16, b01, maskgt15, sh, c128;
+    c16 = _mm_set1_epi8(16);
     c128 = _pM128i(c);
-    maskgt15 = _mm_cmpgt_epi8(c128, c15);
-    c15 = _mm_and_si128(maskgt15, _pM128i(a));
+    //need to pre-clamp c values to avoid unsigned comparison
+    c128 = _mm_min_epu8(c128, c16);
+    maskgt15 = _mm_cmpgt_epi8(c16,c128);
     b01 = _mm_unpacklo_epi64(_pM128i(b.val[0]), _pM128i(b.val[1]));
     sh =  _mm_shuffle_epi8(b01, c128);
-    sh = _mm_andnot_si128(maskgt15, sh);
-    sh =  _mm_or_si128(sh,c15);
+    sh = _mm_and_si128(maskgt15, sh);
+    c16 = _mm_andnot_si128(maskgt15, _pM128i(a));
+    sh =  _mm_or_si128(sh,c16);
     return64(sh);
 }
 
@@ -13236,19 +13242,21 @@ _NEON2SSE_INLINE uint8x8_t vtbx3_u8(uint8x8_t a, uint8x8x3_t b, uint8x8_t c)
 {
     //solution may be not optimal
     uint8x8_t res64;
-    __m128i c15, c23, maskgt15, maskgt23, sh0, sh1, b01, c128;
+    __m128i c15, c24, maskgt15, maskgt23, sh0, sh1, b01, c128;
     c15 = _mm_set1_epi8 (15);
-    c23 = _mm_set1_epi8 (23);
+    c24 = _mm_set1_epi8 (24);
     c128 = _pM128i(c);
+    //need to pre-clamp c values to avoid unsigned comparison
+    c128 = _mm_min_epu8(c128, c24);
+    maskgt23 = _mm_cmpgt_epi8(c24,c128);
     maskgt15 = _mm_cmpgt_epi8(c128,c15);
-    maskgt23 = _mm_cmpgt_epi8(c128,c23);
-    c23 = _mm_and_si128(maskgt23, _pM128i(a));
+    c24 = _mm_andnot_si128(maskgt23, _pM128i(a));
     b01 = _mm_unpacklo_epi64(_pM128i(b.val[0]),_pM128i(b.val[1]));
     sh0 =  _mm_shuffle_epi8(b01, c128);
     sh1 =  _mm_shuffle_epi8(_pM128i(b.val[2]), c128); //for bi>15 bi is wrapped (bi-=15)
     sh0 = _MM_BLENDV_EPI8(sh0, sh1, maskgt15);
-    sh0 = _mm_andnot_si128(maskgt23,sh0);
-    sh0 = _mm_or_si128(sh0,c23);
+    sh0 = _mm_and_si128(maskgt23,sh0);
+    sh0 = _mm_or_si128(sh0,c24);
     return64(sh0);
 }
 
@@ -13263,21 +13271,23 @@ _NEON2SSE_INLINE uint8x8_t vtbx4_u8(uint8x8_t a, uint8x8x4_t b, uint8x8_t c)
 {
     //solution may be not optimal
     uint8x8_t res64;
-    __m128i c15, c31, maskgt15, maskgt31, sh0, sh1, b01, b23, c128;
+    __m128i c15, c32, maskgt15, maskgt31, sh0, sh1, b01, b23, c128;
     c15 = _mm_set1_epi8 (15);
-    c31 = _mm_set1_epi8 (31);
+    c32 = _mm_set1_epi8 (32);
     c128 = _pM128i(c);
+    //need to pre-clamp c values to avoid unsigned comparison
+    c128 = _mm_min_epu8(c128, c32);
     maskgt15 = _mm_cmpgt_epi8(c128,c15);
-    maskgt31 = _mm_cmpgt_epi8(c128,c31);
-    c31 = _mm_and_si128(maskgt31, _pM128i(a));
+    maskgt31 = _mm_cmpgt_epi8(c32,c128);
+    c32 = _mm_andnot_si128(maskgt31, _pM128i(a));
 
     b01 = _mm_unpacklo_epi64(_pM128i(b.val[0]),_pM128i(b.val[1]));
     b23 = _mm_unpacklo_epi64(_pM128i(b.val[2]),_pM128i(b.val[3]));
     sh0 =  _mm_shuffle_epi8(b01, c128);
     sh1 =  _mm_shuffle_epi8(b23, c128); //for bi>15 bi is wrapped (bi-=15)
     sh0 = _MM_BLENDV_EPI8(sh0, sh1, maskgt15);
-    sh0 = _mm_andnot_si128(maskgt31,sh0);
-    sh0 =  _mm_or_si128(sh0,c31);
+    sh0 = _mm_and_si128(maskgt31,sh0);
+    sh0 =  _mm_or_si128(sh0,c32);
     return64(sh0);
 }
 
