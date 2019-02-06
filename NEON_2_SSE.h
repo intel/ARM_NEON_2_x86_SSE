@@ -2671,19 +2671,16 @@ _NEON2SSESTORAGE float64x2_t vsqrtq_f64(float64x2_t a); // VSQRT.F64 q0,q0
         return _mm_or_si128(res, cmp); //if cmp positive we are out of 16bits need to saturaate to 0xffff
     }
 
-
-    _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(__m128i _MM_MULLO_EPI32(__m128i a, __m128i b), _NEON2SSE_REASON_SLOW_SERIAL)
+    // method used by GCC with generic vector extensions
+    _NEON2SSE_INLINE __m128i _MM_MULLO_EPI32(__m128i a, __m128i b)
     {
-        _NEON2SSE_ALIGN_16 int32_t atmp[4], btmp[4], res[4];
-        int64_t res64;
-        int i;
-        _mm_store_si128((__m128i*)atmp, a);
-        _mm_store_si128((__m128i*)btmp, b);
-        for (i = 0; i<4; i++) {
-            res64 = atmp[i] * btmp[i];
-            res[i] = (int)(res64 & 0xffffffff);
-        }
-        return _mm_load_si128((__m128i*)res);
+        __m128i a_high = _mm_srli_epi64(a, 32);
+        __m128i low = _mm_mul_epu32(a, b);
+        __m128i b_high = _mm_srli_epi64(b, 32);
+        __m128i high = _mm_mul_epu32(a_high, b_high);
+        low = _mm_shuffle_epi32(low, _MM_SHUFFLE(0, 0, 2, 0));
+        high = _mm_shuffle_epi32(high, _MM_SHUFFLE(0, 0, 2, 0));
+        return _mm_unpacklo_epi32(low, high);
     }
 
     _NEON2SSE_INLINE __m128i _MM_MUL_EPI32(__m128i a, __m128i b)
@@ -6439,52 +6436,62 @@ _NEON2SSE_INLINE int32x4_t vpaddlq_s16(int16x8_t a) // VPADDL.S16 q0,q0
 }
 
 _NEON2SSESTORAGE int64x2_t vpaddlq_s32(int32x4_t a); // VPADDL.S32 q0,q0
-_NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(int64x2_t vpaddlq_s32(int32x4_t a), _NEON2SSE_REASON_SLOW_SERIAL) // VPADDL.S32 q0,q0
+_NEON2SSE_INLINE int64x2_t vpaddlq_s32(int32x4_t a)
 {
-    _NEON2SSE_ALIGN_16 int32_t atmp[4];
-    _NEON2SSE_ALIGN_16 int64_t res[2];
-    _mm_store_si128((__m128i*)atmp, a);
-    res[0] = (int64_t)atmp[0] + (int64_t)atmp[1];
-    res[1] = (int64_t)atmp[2] + (int64_t)atmp[3];
-    return _mm_load_si128((__m128i*)res);
+    __m128i top, bot;
+    bot = _mm_shuffle_epi32(a, _MM_SHUFFLE(0, 0, 2, 0));
+    bot = _MM_CVTEPI32_EPI64(bot);
+    top = _mm_shuffle_epi32(a, _MM_SHUFFLE(0, 0, 3, 1));
+    top = _MM_CVTEPI32_EPI64(top);
+    return _mm_add_epi64(top, bot);
 }
 
 _NEON2SSESTORAGE uint16x8_t vpaddlq_u8(uint8x16_t a); // VPADDL.U8 q0,q0
 _NEON2SSE_INLINE uint16x8_t vpaddlq_u8(uint8x16_t a) // VPADDL.U8 q0,q0
 {
-    //no 8 bit hadd in IA32, need to go to 16 bit
-    __m128i r16_1, r16_2;
-    r16_1 = _MM_CVTEPU8_EPI16(a);
-    //swap hi and low part of r to process the remaining data
-    r16_2 = _mm_shuffle_epi32 (a, _SWAP_HI_LOW32);
-    r16_2 = _MM_CVTEPU8_EPI16 (r16_2);
-    return _mm_hadd_epi16 (r16_1, r16_2);
+    const __m128i ff = _mm_set1_epi16(0xFF);
+    __m128i low = _mm_and_si128(a, ff);
+    __m128i high = _mm_srli_epi16(a, 8);
+    return _mm_add_epi16(low, high);
 }
 
+#ifdef USE_SSE4
 _NEON2SSESTORAGE uint32x4_t vpaddlq_u16(uint16x8_t a); // VPADDL.s16 q0,q0
-_NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(uint32x4_t vpaddlq_u16(uint16x8_t a),  _NEON2SSE_REASON_SLOW_SERIAL)
+_NEON2SSE_INLINE uint32x4_t vpaddlq_u16(uint16x8_t a)
 {
-    //serial solution looks faster than a SIMD one
-    _NEON2SSE_ALIGN_16 uint16_t atmp[8];
-    _NEON2SSE_ALIGN_16 uint32_t res[4];
-    _mm_store_si128((__m128i*)atmp, a);
-    res[0] = (uint32_t)atmp[0] + (uint32_t)atmp[1];
-    res[1] = (uint32_t)atmp[2] + (uint32_t)atmp[3];
-    res[2] = (uint32_t)atmp[4] + (uint32_t)atmp[5];
-    res[3] = (uint32_t)atmp[6] + (uint32_t)atmp[7];
-    return _mm_load_si128((__m128i*)res);
+    const __m128i zero = _mm_setzero_si128();
+    __m128i low = _mm_blend_epi16(zero, a, 0x55); // 0b1010101
+    __m128i high = _mm_srli_epi32(a, 16);
+    return _mm_add_epi32(low, high);
 }
 
 _NEON2SSESTORAGE uint64x2_t vpaddlq_u32(uint32x4_t a); // VPADDL.U32 q0,q0
-_NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(uint64x2_t vpaddlq_u32(uint32x4_t a), _NEON2SSE_REASON_SLOW_SERIAL)
+_NEON2SSE_INLINE uint64x2_t vpaddlq_u32(uint32x4_t a)
 {
-    _NEON2SSE_ALIGN_16 uint32_t atmp[4];
-    _NEON2SSE_ALIGN_16 uint64_t res[2];
-    _mm_store_si128((__m128i*)atmp, a);
-    res[0] = (uint64_t)atmp[0] + (uint64_t)atmp[1];
-    res[1] = (uint64_t)atmp[2] + (uint64_t)atmp[3];
-    return _mm_load_si128((__m128i*)res);
+    const __m128i zero = _mm_setzero_si128();
+    __m128i low = _mm_blend_epi16(zero, a, 0x33); // 0b00110011
+    __m128i high = _mm_srli_epi64(a, 32);
+    return _mm_add_epi64(low, high);
 }
+#else
+_NEON2SSESTORAGE uint32x4_t vpaddlq_u16(uint16x8_t a); // VPADDL.s16 q0,q0
+_NEON2SSE_INLINE uint32x4_t vpaddlq_u16(uint16x8_t a)
+{
+    const __m128i ff = _mm_set1_epi32(0xFFFF);
+    __m128i low = _mm_and_si128(a, ff);
+    __m128i high = _mm_srli_epi32(a, 16);
+    return _mm_add_epi32(low, high);
+}
+
+_NEON2SSESTORAGE uint64x2_t vpaddlq_u32(uint32x4_t a); // VPADDL.U32 q0,q0
+_NEON2SSE_INLINE uint64x2_t vpaddlq_u32(uint32x4_t a)
+{
+    const __m128i ff = _mm_set_epi32(0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF);
+    __m128i low = _mm_and_si128(a, ff);
+    __m128i high = _mm_srli_epi64(a, 32);
+    return _mm_add_epi64(low, high);
+}
+#endif
 
 //************************  Long pairwise add and accumulate **************************
 //****************************************************************************************
@@ -6569,7 +6576,7 @@ _NEON2SSE_INLINE uint16x8_t vpadalq_u8(uint16x8_t a, uint8x16_t b) // VPADAL.U8 
 }
 
 _NEON2SSESTORAGE uint32x4_t vpadalq_u16(uint32x4_t a, uint16x8_t b); // VPADAL.s16 q0,q0
-_NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(uint32x4_t vpadalq_u16(uint32x4_t a, uint16x8_t b), _NEON2SSE_REASON_SLOW_SERIAL)
+_NEON2SSE_INLINE uint32x4_t vpadalq_u16(uint32x4_t a, uint16x8_t b)
 {
     uint32x4_t pad;
     pad = vpaddlq_u16(b);
@@ -6577,13 +6584,12 @@ _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(uint32x4_t vpadalq_u16(uint32x4_t
 } //no optimal SIMD solution, serial is faster
 
 _NEON2SSESTORAGE uint64x2_t vpadalq_u32(uint64x2_t a, uint32x4_t b); // VPADAL.U32 q0,q0
-_NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(uint64x2_t vpadalq_u32(uint64x2_t a, uint32x4_t b), _NEON2SSE_REASON_SLOW_SERIAL)
+_NEON2SSE_INLINE uint64x2_t vpadalq_u32(uint64x2_t a, uint32x4_t b)
 {
-    //no optimal SIMD solution, serial is faster
     uint64x2_t pad;
     pad = vpaddlq_u32(b);
     return _mm_add_epi64(a, pad);
-} //no optimal SIMD solution, serial is faster
+}
 
 //**********  Folding maximum   *************************************
 //*******************************************************************
