@@ -3147,7 +3147,7 @@ _NEON2SSE_INLINE int8x16_t  vrhaddq_s8(int8x16_t a, int8x16_t b) // VRHADD.S8 q0
 {
     //no signed average in x86 SIMD, go to unsigned
     __m128i c128, au, bu, sum;
-    c128 = _mm_set1_epi8((int8_t)0x80); //-128
+    c128 = _mm_set1_epi8(-128);
     au = _mm_sub_epi8(a, c128); //add 128
     bu = _mm_sub_epi8(b, c128); //add 128
     sum = _mm_avg_epu8(au, bu);
@@ -3159,7 +3159,7 @@ _NEON2SSE_INLINE int16x8_t  vrhaddq_s16(int16x8_t a, int16x8_t b) // VRHADD.S16 
 {
     //no signed average in x86 SIMD, go to unsigned
     __m128i cx8000, au, bu, sum;
-    cx8000 = _mm_set1_epi16((int16_t)0x8000); // - 32768
+    cx8000 = _mm_set1_epi16(-32768);
     au = _mm_sub_epi16(a, cx8000); //add 32768
     bu = _mm_sub_epi16(b, cx8000); //add 32768
     sum = _mm_avg_epu16(au, bu);
@@ -4774,9 +4774,9 @@ _NEON2SSE_INLINE uint32x2_t vhsub_u32(uint32x2_t a,  uint32x2_t b)
 _NEON2SSESTORAGE int8x16_t vhsubq_s8(int8x16_t a, int8x16_t b); // VHSUB.S8 q0,q0,q0
 _NEON2SSE_INLINE int8x16_t vhsubq_s8(int8x16_t a, int8x16_t b) // VHSUB.S8 q0,q0,q0
 {
-    // //need to deal with the possibility of internal overflow
+    //need to deal with the possibility of internal overflow
     __m128i c128, au,bu;
-    c128 = _mm_set1_epi8((int8_t)128);
+    c128 = _mm_set1_epi8(-128);
     au = _mm_add_epi8( a, c128);
     bu = _mm_add_epi8( b, c128);
     return vhsubq_u8(au,bu);
@@ -4787,7 +4787,7 @@ _NEON2SSE_INLINE int16x8_t vhsubq_s16(int16x8_t a, int16x8_t b) // VHSUB.S16 q0,
 {
     //need to deal with the possibility of internal overflow
     __m128i c8000, au,bu;
-    c8000 = _mm_set1_epi16((int16_t)0x8000);
+    c8000 = _mm_set1_epi16(-32768);
     au = _mm_add_epi16( a, c8000);
     bu = _mm_add_epi16( b, c8000);
     return vhsubq_u16(au,bu);
@@ -6312,7 +6312,7 @@ _NEON2SSE_INLINE uint16x4_t vpadd_u16(uint16x4_t a, uint16x4_t b) // VPADD.I16 d
     uint16x4_t res64;
     __m128i c32767,  cfffe, as, bs, res;
     c32767 = _mm_set1_epi16 (32767);
-    cfffe = _mm_set1_epi16 ((int16_t)0xfffe);
+    cfffe = _mm_set1_epi16 (-2);
     as = _mm_sub_epi16 (_pM128i(a), c32767);
     bs = _mm_sub_epi16 (_pM128i(b), c32767);
     res = _mm_hadd_epi16 (as, bs);
@@ -8393,7 +8393,7 @@ _NEON2SSE_INLINE uint16x8_t vqshlq_n_u16(uint16x8_t a, __constrange(0,15) int b)
     // manual saturation solution looks more optimal than 32 bits conversion one
     __m128i cb, c8000, a_signed, saturation_mask,  shift_res;
     cb = _mm_set1_epi16((1 << (16 - b)) - 1 - 0x8000 );
-    c8000 = _mm_set1_epi16 ((int16_t)0x8000);
+    c8000 = _mm_set1_epi16 (-32768);
 //no unsigned shorts comparison in SSE, only signed available, so need the trick
     a_signed = _mm_sub_epi16(a, c8000); //go to signed
     saturation_mask = _mm_cmpgt_epi16 (a_signed, cb);
@@ -14692,7 +14692,7 @@ _NEON2SSESTORAGE int8x16_t vqabsq_s8(int8x16_t a); // VQABS.S8 q0,q0
 _NEON2SSE_INLINE int8x16_t vqabsq_s8(int8x16_t a) // VQABS.S8 q0,q0
 {
     __m128i c_128, abs, abs_cmp;
-    c_128 = _mm_set1_epi8 ((int8_t)0x80); //-128
+    c_128 = _mm_set1_epi8 (-128);
     abs = _mm_abs_epi8 (a);
     abs_cmp = _mm_cmpeq_epi8 (abs, c_128);
     return _mm_xor_si128 (abs,  abs_cmp);
@@ -14702,7 +14702,7 @@ _NEON2SSESTORAGE int16x8_t vqabsq_s16(int16x8_t a); // VQABS.S16 q0,q0
 _NEON2SSE_INLINE int16x8_t vqabsq_s16(int16x8_t a) // VQABS.S16 q0,q0
 {
     __m128i c_32768, abs, abs_cmp;
-    c_32768 = _mm_set1_epi16 ((int16_t)0x8000); //-32768
+    c_32768 = _mm_set1_epi16 (-32768);
     abs = _mm_abs_epi16 (a);
     abs_cmp = _mm_cmpeq_epi16 (abs, c_32768);
     return _mm_xor_si128 (abs,  abs_cmp);
@@ -15015,7 +15015,7 @@ _NEON2SSE_INLINE int8x16_t vclsq_s8(int8x16_t a)
 {
     __m128i cff, c80, c1, a_mask, a_neg, a_pos, a_comb;
     cff = _mm_cmpeq_epi8 (a,a); //0xff
-    c80 = _mm_set1_epi8((int8_t)0x80);
+    c80 = _mm_set1_epi8(-128);
     c1 = _mm_set1_epi8(1);
     a_mask = _mm_and_si128(a, c80);
     a_mask = _mm_cmpeq_epi8(a_mask, c80); //0xff if negative input and 0 if positive
