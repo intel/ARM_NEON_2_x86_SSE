@@ -1482,16 +1482,16 @@ _NEON2SSESTORAGE float32x2x4_t vld4_lane_f32(__transfersize(4) float32_t const *
 _NEON2SSESTORAGE poly8x8x4_t vld4_lane_p8(__transfersize(4) poly8_t const * ptr, poly8x8x4_t src, __constrange(0,7) int lane); //VLD4.8 {d0[0], d1[0], d2[0], d3[0]}, [r0]
 _NEON2SSESTORAGE poly16x4x4_t vld4_lane_p16(__transfersize(4) poly16_t const * ptr, poly16x4x4_t src, __constrange(0,3) int lane); // VLD4.16 {d0[0], d1[0], d2[0], d3[0]}, [r0]
 //Store N-element structure to memory
-_NEON2SSESTORAGE void vst2q_u8_ptr(__transfersize(32) uint8_t * ptr, uint8x16x2_t * val); // VST2.8 {d0, d2}, [r0]
-_NEON2SSESTORAGE void vst2q_u16_ptr(__transfersize(16) uint16_t * ptr, uint16x8x2_t * val); // VST2.16 {d0, d2}, [r0]
-_NEON2SSESTORAGE void vst2q_u32_ptr(__transfersize(8) uint32_t * ptr, uint32x4x2_t * val); // VST2.32 {d0, d2}, [r0]
-_NEON2SSESTORAGE void vst2q_s8_ptr(__transfersize(32) int8_t * ptr, int8x16x2_t * val); // VST2.8 {d0, d2}, [r0]
-_NEON2SSESTORAGE void vst2q_s16_ptr(__transfersize(16) int16_t * ptr, int16x8x2_t * val); // VST2.16 {d0, d2}, [r0]
-_NEON2SSESTORAGE void vst2q_s32_ptr(__transfersize(8) int32_t * ptr, int32x4x2_t * val); // VST2.32 {d0, d2}, [r0]
-_NEON2SSESTORAGE void vst2q_f16_ptr(__transfersize(16) __fp16 * ptr, float16x8x2_t * val); // VST2.16 {d0, d2}, [r0]
-_NEON2SSESTORAGE void vst2q_f32_ptr(__transfersize(8) float32_t * ptr, float32x4x2_t * val); // VST2.32 {d0, d2}, [r0]
-_NEON2SSESTORAGE void vst2q_p8_ptr(__transfersize(32) poly8_t * ptr, poly8x16x2_t * val); // VST2.8 {d0, d2}, [r0]
-_NEON2SSESTORAGE void vst2q_p16_ptr(__transfersize(16) poly16_t * ptr, poly16x8x2_t * val); // VST2.16 {d0, d2}, [r0]
+_NEON2SSESTORAGE void vst2q_u8_ptr(__transfersize(32) uint8_t * ptr, uint8x16x2_t const * val); // VST2.8 {d0, d2}, [r0]
+_NEON2SSESTORAGE void vst2q_u16_ptr(__transfersize(16) uint16_t * ptr, uint16x8x2_t const * val); // VST2.16 {d0, d2}, [r0]
+_NEON2SSESTORAGE void vst2q_u32_ptr(__transfersize(8) uint32_t * ptr, uint32x4x2_t const * val); // VST2.32 {d0, d2}, [r0]
+_NEON2SSESTORAGE void vst2q_s8_ptr(__transfersize(32) int8_t * ptr, int8x16x2_t const * val); // VST2.8 {d0, d2}, [r0]
+_NEON2SSESTORAGE void vst2q_s16_ptr(__transfersize(16) int16_t * ptr, int16x8x2_t const * val); // VST2.16 {d0, d2}, [r0]
+_NEON2SSESTORAGE void vst2q_s32_ptr(__transfersize(8) int32_t * ptr, int32x4x2_t const * val); // VST2.32 {d0, d2}, [r0]
+_NEON2SSESTORAGE void vst2q_f16_ptr(__transfersize(16) __fp16 * ptr, float16x8x2_t const * val); // VST2.16 {d0, d2}, [r0]
+_NEON2SSESTORAGE void vst2q_f32_ptr(__transfersize(8) float32_t * ptr, float32x4x2_t const * val); // VST2.32 {d0, d2}, [r0]
+_NEON2SSESTORAGE void vst2q_p8_ptr(__transfersize(32) poly8_t * ptr, poly8x16x2_t const * val); // VST2.8 {d0, d2}, [r0]
+_NEON2SSESTORAGE void vst2q_p16_ptr(__transfersize(16) poly16_t * ptr, poly16x8x2_t const * val); // VST2.16 {d0, d2}, [r0]
 _NEON2SSESTORAGE void vst2_u8(__transfersize(16) uint8_t * ptr, uint8x8x2_t val); // VST2.8 {d0, d1}, [r0]
 _NEON2SSESTORAGE void vst2_u16(__transfersize(8) uint16_t * ptr, uint16x4x2_t val); // VST2.16 {d0, d1}, [r0]
 _NEON2SSESTORAGE void vst2_u32(__transfersize(4) uint32_t * ptr, uint32x2x2_t val); // VST2.32 {d0, d1}, [r0]
@@ -1500,20 +1500,20 @@ _NEON2SSESTORAGE void vst2_s8(__transfersize(16) int8_t * ptr, int8x8x2_t val); 
 _NEON2SSESTORAGE void vst2_s16(__transfersize(8) int16_t * ptr, int16x4x2_t val); // VST2.16 {d0, d1}, [r0]
 _NEON2SSESTORAGE void vst2_s32(__transfersize(4) int32_t * ptr, int32x2x2_t val); // VST2.32 {d0, d1}, [r0]
 _NEON2SSESTORAGE void vst2_s64(__transfersize(2) int64_t * ptr, int64x1x2_t val); // VST1.64 {d0, d1}, [r0]
-//void vst2_f16_ptr(__transfersize(8) __fp16 * ptr, float16x4x2_t * val); // VST2.16 {d0, d1}, [r0]
-_NEON2SSESTORAGE void vst2_f32_ptr(__transfersize(4) float32_t * ptr, float32x2x2_t * val); // VST2.32 {d0, d1}, [r0]
+//void vst2_f16_ptr(__transfersize(8) __fp16 * ptr, float16x4x2_t const * val); // VST2.16 {d0, d1}, [r0]
+_NEON2SSESTORAGE void vst2_f32_ptr(__transfersize(4) float32_t * ptr, float32x2x2_t const * val); // VST2.32 {d0, d1}, [r0]
 _NEON2SSESTORAGE void vst2_p8(__transfersize(16) poly8_t * ptr, poly8x8x2_t val); // VST2.8 {d0, d1}, [r0]
 _NEON2SSESTORAGE void vst2_p16(__transfersize(8) poly16_t * ptr, poly16x4x2_t val); // VST2.16 {d0, d1}, [r0]
-_NEON2SSESTORAGE void vst3q_u8_ptr(__transfersize(48) uint8_t * ptr, uint8x16x3_t * val); // VST3.8 {d0, d2, d4}, [r0]
-_NEON2SSESTORAGE void vst3q_u16_ptr(__transfersize(24) uint16_t * ptr, uint16x8x3_t * val); // VST3.16 {d0, d2, d4}, [r0]
-_NEON2SSESTORAGE void vst3q_u32_ptr(__transfersize(12) uint32_t * ptr, uint32x4x3_t * val); // VST3.32 {d0, d2, d4}, [r0]
-_NEON2SSESTORAGE void vst3q_s8_ptr(__transfersize(48) int8_t * ptr, int8x16x3_t * val); // VST3.8 {d0, d2, d4}, [r0]
-_NEON2SSESTORAGE void vst3q_s16_ptr(__transfersize(24) int16_t * ptr, int16x8x3_t * val); // VST3.16 {d0, d2, d4}, [r0]
-_NEON2SSESTORAGE void vst3q_s32_ptr(__transfersize(12) int32_t * ptr, int32x4x3_t * val); // VST3.32 {d0, d2, d4}, [r0]
-_NEON2SSESTORAGE void vst3q_f16_ptr(__transfersize(24) __fp16 * ptr, float16x8x3_t * val); // VST3.16 {d0, d2, d4}, [r0]
-_NEON2SSESTORAGE void vst3q_f32_ptr(__transfersize(12) float32_t * ptr, float32x4x3_t * val); // VST3.32 {d0, d2, d4}, [r0]
-_NEON2SSESTORAGE void vst3q_p8_ptr(__transfersize(48) poly8_t * ptr, poly8x16x3_t * val); // VST3.8 {d0, d2, d4}, [r0]
-_NEON2SSESTORAGE void vst3q_p16_ptr(__transfersize(24) poly16_t * ptr, poly16x8x3_t * val); // VST3.16 {d0, d2, d4}, [r0]
+_NEON2SSESTORAGE void vst3q_u8_ptr(__transfersize(48) uint8_t * ptr, uint8x16x3_t const * val); // VST3.8 {d0, d2, d4}, [r0]
+_NEON2SSESTORAGE void vst3q_u16_ptr(__transfersize(24) uint16_t * ptr, uint16x8x3_t const * val); // VST3.16 {d0, d2, d4}, [r0]
+_NEON2SSESTORAGE void vst3q_u32_ptr(__transfersize(12) uint32_t * ptr, uint32x4x3_t const * val); // VST3.32 {d0, d2, d4}, [r0]
+_NEON2SSESTORAGE void vst3q_s8_ptr(__transfersize(48) int8_t * ptr, int8x16x3_t const * val); // VST3.8 {d0, d2, d4}, [r0]
+_NEON2SSESTORAGE void vst3q_s16_ptr(__transfersize(24) int16_t * ptr, int16x8x3_t const * val); // VST3.16 {d0, d2, d4}, [r0]
+_NEON2SSESTORAGE void vst3q_s32_ptr(__transfersize(12) int32_t * ptr, int32x4x3_t const * val); // VST3.32 {d0, d2, d4}, [r0]
+_NEON2SSESTORAGE void vst3q_f16_ptr(__transfersize(24) __fp16 * ptr, float16x8x3_t const * val); // VST3.16 {d0, d2, d4}, [r0]
+_NEON2SSESTORAGE void vst3q_f32_ptr(__transfersize(12) float32_t * ptr, float32x4x3_t const * val); // VST3.32 {d0, d2, d4}, [r0]
+_NEON2SSESTORAGE void vst3q_p8_ptr(__transfersize(48) poly8_t * ptr, poly8x16x3_t const * val); // VST3.8 {d0, d2, d4}, [r0]
+_NEON2SSESTORAGE void vst3q_p16_ptr(__transfersize(24) poly16_t * ptr, poly16x8x3_t const * val); // VST3.16 {d0, d2, d4}, [r0]
 _NEON2SSESTORAGE void vst3_u8(__transfersize(24) uint8_t * ptr, uint8x8x3_t val); // VST3.8 {d0, d1, d2}, [r0]
 _NEON2SSESTORAGE void vst3_u16(__transfersize(12) uint16_t * ptr, uint16x4x3_t val); // VST3.16 {d0, d1, d2}, [r0]
 _NEON2SSESTORAGE void vst3_u32(__transfersize(6) uint32_t * ptr, uint32x2x3_t val); // VST3.32 {d0, d1, d2}, [r0]
@@ -1522,20 +1522,20 @@ _NEON2SSESTORAGE void vst3_s8(__transfersize(24) int8_t * ptr, int8x8x3_t val); 
 _NEON2SSESTORAGE void vst3_s16(__transfersize(12) int16_t * ptr, int16x4x3_t val); // VST3.16 {d0, d1, d2}, [r0]
 _NEON2SSESTORAGE void vst3_s32(__transfersize(6) int32_t * ptr, int32x2x3_t val); // VST3.32 {d0, d1, d2}, [r0]
 _NEON2SSESTORAGE void vst3_s64(__transfersize(3) int64_t * ptr, int64x1x3_t val); // VST1.64 {d0, d1, d2}, [r0]
-_NEON2SSESTORAGE void vst3_f16_ptr(__transfersize(12) __fp16 * ptr, float16x4x3_t * val); // VST3.16 {d0, d1, d2}, [r0]
+_NEON2SSESTORAGE void vst3_f16_ptr(__transfersize(12) __fp16 * ptr, float16x4x3_t const * val); // VST3.16 {d0, d1, d2}, [r0]
 _NEON2SSESTORAGE void vst3_f32(__transfersize(6) float32_t * ptr, float32x2x3_t val); // VST3.32 {d0, d1, d2}, [r0]
 _NEON2SSESTORAGE void vst3_p8(__transfersize(24) poly8_t * ptr, poly8x8x3_t val); // VST3.8 {d0, d1, d2}, [r0]
 _NEON2SSESTORAGE void vst3_p16(__transfersize(12) poly16_t * ptr, poly16x4x3_t val); // VST3.16 {d0, d1, d2}, [r0]
-_NEON2SSESTORAGE void vst4q_u8_ptr(__transfersize(64) uint8_t * ptr, uint8x16x4_t * val); // VST4.8 {d0, d2, d4, d6}, [r0]
-_NEON2SSESTORAGE void vst4q_u16_ptr(__transfersize(32) uint16_t * ptr, uint16x8x4_t * val); // VST4.16 {d0, d2, d4, d6}, [r0]
-_NEON2SSESTORAGE void vst4q_u32_ptr(__transfersize(16) uint32_t * ptr, uint32x4x4_t * val); // VST4.32 {d0, d2, d4, d6}, [r0]
-_NEON2SSESTORAGE void vst4q_s8_ptr(__transfersize(64) int8_t * ptr, int8x16x4_t * val); // VST4.8 {d0, d2, d4, d6}, [r0]
-_NEON2SSESTORAGE void vst4q_s16_ptr(__transfersize(32) int16_t * ptr, int16x8x4_t * val); // VST4.16 {d0, d2, d4, d6}, [r0]
-_NEON2SSESTORAGE void vst4q_s32_ptr(__transfersize(16) int32_t * ptr, int32x4x4_t * val); // VST4.32 {d0, d2, d4, d6}, [r0]
-_NEON2SSESTORAGE void vst4q_f16_ptr(__transfersize(32) __fp16 * ptr, float16x8x4_t * val); // VST4.16 {d0, d2, d4, d6}, [r0]
-_NEON2SSESTORAGE void vst4q_f32_ptr(__transfersize(16) float32_t * ptr, float32x4x4_t * val); // VST4.32 {d0, d2, d4, d6}, [r0]
-_NEON2SSESTORAGE void vst4q_p8_ptr(__transfersize(64) poly8_t * ptr, poly8x16x4_t * val); // VST4.8 {d0, d2, d4, d6}, [r0]
-_NEON2SSESTORAGE void vst4q_p16_ptr(__transfersize(32) poly16_t * ptr, poly16x8x4_t * val); // VST4.16 {d0, d2, d4, d6}, [r0]
+_NEON2SSESTORAGE void vst4q_u8_ptr(__transfersize(64) uint8_t * ptr, uint8x16x4_t const * val); // VST4.8 {d0, d2, d4, d6}, [r0]
+_NEON2SSESTORAGE void vst4q_u16_ptr(__transfersize(32) uint16_t * ptr, uint16x8x4_t const * val); // VST4.16 {d0, d2, d4, d6}, [r0]
+_NEON2SSESTORAGE void vst4q_u32_ptr(__transfersize(16) uint32_t * ptr, uint32x4x4_t const * val); // VST4.32 {d0, d2, d4, d6}, [r0]
+_NEON2SSESTORAGE void vst4q_s8_ptr(__transfersize(64) int8_t * ptr, int8x16x4_t const * val); // VST4.8 {d0, d2, d4, d6}, [r0]
+_NEON2SSESTORAGE void vst4q_s16_ptr(__transfersize(32) int16_t * ptr, int16x8x4_t const * val); // VST4.16 {d0, d2, d4, d6}, [r0]
+_NEON2SSESTORAGE void vst4q_s32_ptr(__transfersize(16) int32_t * ptr, int32x4x4_t const * val); // VST4.32 {d0, d2, d4, d6}, [r0]
+_NEON2SSESTORAGE void vst4q_f16_ptr(__transfersize(32) __fp16 * ptr, float16x8x4_t const * val); // VST4.16 {d0, d2, d4, d6}, [r0]
+_NEON2SSESTORAGE void vst4q_f32_ptr(__transfersize(16) float32_t * ptr, float32x4x4_t const * val); // VST4.32 {d0, d2, d4, d6}, [r0]
+_NEON2SSESTORAGE void vst4q_p8_ptr(__transfersize(64) poly8_t * ptr, poly8x16x4_t const * val); // VST4.8 {d0, d2, d4, d6}, [r0]
+_NEON2SSESTORAGE void vst4q_p16_ptr(__transfersize(32) poly16_t * ptr, poly16x8x4_t const * val); // VST4.16 {d0, d2, d4, d6}, [r0]
 _NEON2SSESTORAGE void vst4_u8(__transfersize(32) uint8_t * ptr, uint8x8x4_t val); // VST4.8 {d0, d1, d2, d3}, [r0]
 _NEON2SSESTORAGE void vst4_u16(__transfersize(16) uint16_t * ptr, uint16x4x4_t val); // VST4.16 {d0, d1, d2, d3}, [r0]
 _NEON2SSESTORAGE void vst4_u32(__transfersize(8) uint32_t * ptr, uint32x2x4_t val); // VST4.32 {d0, d1, d2, d3}, [r0]
@@ -1544,59 +1544,59 @@ _NEON2SSESTORAGE void vst4_s8(__transfersize(32) int8_t * ptr, int8x8x4_t val); 
 _NEON2SSESTORAGE void vst4_s16(__transfersize(16) int16_t * ptr, int16x4x4_t val); // VST4.16 {d0, d1, d2, d3}, [r0]
 _NEON2SSESTORAGE void vst4_s32(__transfersize(8) int32_t * ptr, int32x2x4_t val); // VST4.32 {d0, d1, d2, d3}, [r0]
 _NEON2SSESTORAGE void vst4_s64(__transfersize(4) int64_t * ptr, int64x1x4_t val); // VST1.64 {d0, d1, d2, d3}, [r0]
-_NEON2SSESTORAGE void vst4_f16_ptr(__transfersize(16) __fp16 * ptr, float16x4x4_t * val); // VST4.16 {d0, d1, d2, d3}, [r0]
+_NEON2SSESTORAGE void vst4_f16_ptr(__transfersize(16) __fp16 * ptr, float16x4x4_t const * val); // VST4.16 {d0, d1, d2, d3}, [r0]
 _NEON2SSESTORAGE void vst4_f32(__transfersize(8) float32_t * ptr, float32x2x4_t val); // VST4.32 {d0, d1, d2, d3}, [r0]
 _NEON2SSESTORAGE void vst4_p8(__transfersize(32) poly8_t * ptr, poly8x8x4_t val); // VST4.8 {d0, d1, d2, d3}, [r0]
 _NEON2SSESTORAGE void vst4_p16(__transfersize(16) poly16_t * ptr, poly16x4x4_t val); // VST4.16 {d0, d1, d2, d3}, [r0]
 //Store a single lane of N-element structure to memory
-_NEON2SSESTORAGE void vst2q_lane_u16_ptr(__transfersize(2) uint16_t * ptr, uint16x8x2_t * val, __constrange(0,7) int lane); // VST2.16{d0[0], d2[0]}, [r0]
-_NEON2SSESTORAGE void vst2q_lane_u32_ptr(__transfersize(2) uint32_t * ptr, uint32x4x2_t * val, __constrange(0,3) int lane); // VST2.32{d0[0], d2[0]}, [r0]
-_NEON2SSESTORAGE void vst2q_lane_s16_ptr(__transfersize(2) int16_t * ptr, int16x8x2_t * val, __constrange(0,7) int lane); // VST2.16{d0[0], d2[0]}, [r0]
-_NEON2SSESTORAGE void vst2q_lane_s32_ptr(__transfersize(2) int32_t * ptr, int32x4x2_t * val, __constrange(0,3) int lane); // VST2.32{d0[0], d2[0]}, [r0]
-_NEON2SSESTORAGE void vst2q_lane_f16_ptr(__transfersize(2) __fp16 * ptr, float16x8x2_t * val, __constrange(0,7) int lane); // VST2.16{d0[0], d2[0]}, [r0]
-_NEON2SSESTORAGE void vst2q_lane_f32_ptr(__transfersize(2) float32_t * ptr, float32x4x2_t * val, __constrange(0,3) int lane); //VST2.32 {d0[0], d2[0]}, [r0]
-_NEON2SSESTORAGE void vst2q_lane_p16_ptr(__transfersize(2) poly16_t * ptr, poly16x8x2_t * val, __constrange(0,7) int lane); // VST2.16{d0[0], d2[0]}, [r0]
+_NEON2SSESTORAGE void vst2q_lane_u16_ptr(__transfersize(2) uint16_t * ptr, uint16x8x2_t const * val, __constrange(0,7) int lane); // VST2.16{d0[0], d2[0]}, [r0]
+_NEON2SSESTORAGE void vst2q_lane_u32_ptr(__transfersize(2) uint32_t * ptr, uint32x4x2_t const * val, __constrange(0,3) int lane); // VST2.32{d0[0], d2[0]}, [r0]
+_NEON2SSESTORAGE void vst2q_lane_s16_ptr(__transfersize(2) int16_t * ptr, int16x8x2_t const * val, __constrange(0,7) int lane); // VST2.16{d0[0], d2[0]}, [r0]
+_NEON2SSESTORAGE void vst2q_lane_s32_ptr(__transfersize(2) int32_t * ptr, int32x4x2_t const * val, __constrange(0,3) int lane); // VST2.32{d0[0], d2[0]}, [r0]
+_NEON2SSESTORAGE void vst2q_lane_f16_ptr(__transfersize(2) __fp16 * ptr, float16x8x2_t const * val, __constrange(0,7) int lane); // VST2.16{d0[0], d2[0]}, [r0]
+_NEON2SSESTORAGE void vst2q_lane_f32_ptr(__transfersize(2) float32_t * ptr, float32x4x2_t const * val, __constrange(0,3) int lane); //VST2.32 {d0[0], d2[0]}, [r0]
+_NEON2SSESTORAGE void vst2q_lane_p16_ptr(__transfersize(2) poly16_t * ptr, poly16x8x2_t const * val, __constrange(0,7) int lane); // VST2.16{d0[0], d2[0]}, [r0]
 _NEON2SSESTORAGE void vst2_lane_u8(__transfersize(2) uint8_t * ptr, uint8x8x2_t val, __constrange(0,7) int lane); // VST2.8{d0[0], d1[0]}, [r0]
 _NEON2SSESTORAGE void vst2_lane_u16(__transfersize(2) uint16_t * ptr, uint16x4x2_t val, __constrange(0,3) int lane); // VST2.16{d0[0], d1[0]}, [r0]
 _NEON2SSESTORAGE void vst2_lane_u32(__transfersize(2) uint32_t * ptr, uint32x2x2_t val, __constrange(0,1) int lane); // VST2.32{d0[0], d1[0]}, [r0]
 _NEON2SSESTORAGE void vst2_lane_s8(__transfersize(2) int8_t * ptr, int8x8x2_t val, __constrange(0,7) int lane); // VST2.8 {d0[0],d1[0]}, [r0]
 _NEON2SSESTORAGE void vst2_lane_s16(__transfersize(2) int16_t * ptr, int16x4x2_t val, __constrange(0,3) int lane); // VST2.16{d0[0], d1[0]}, [r0]
 _NEON2SSESTORAGE void vst2_lane_s32(__transfersize(2) int32_t * ptr, int32x2x2_t val, __constrange(0,1) int lane); // VST2.32{d0[0], d1[0]}, [r0]
-_NEON2SSESTORAGE void vst2_lane_f16_ptr(__transfersize(2) __fp16 * ptr, float16x4x2_t * val, __constrange(0,3) int lane); // VST2.16{d0[0], d1[0]}, [r0]
+_NEON2SSESTORAGE void vst2_lane_f16_ptr(__transfersize(2) __fp16 * ptr, float16x4x2_t const * val, __constrange(0,3) int lane); // VST2.16{d0[0], d1[0]}, [r0]
 _NEON2SSESTORAGE void vst2_lane_f32(__transfersize(2) float32_t * ptr, float32x2x2_t val, __constrange(0,1) int lane); // VST2.32{d0[0], d1[0]}, [r0]
 _NEON2SSESTORAGE void vst2_lane_p8(__transfersize(2) poly8_t * ptr, poly8x8x2_t val, __constrange(0,7) int lane); // VST2.8{d0[0], d1[0]}, [r0]
 _NEON2SSESTORAGE void vst2_lane_p16(__transfersize(2) poly16_t * ptr, poly16x4x2_t val, __constrange(0,3) int lane); // VST2.16{d0[0], d1[0]}, [r0]
-_NEON2SSESTORAGE void vst3q_lane_u16_ptr(__transfersize(3) uint16_t * ptr, uint16x8x3_t * val, __constrange(0,7) int lane); // VST3.16{d0[0], d2[0], d4[0]}, [r0]
-_NEON2SSESTORAGE void vst3q_lane_u32_ptr(__transfersize(3) uint32_t * ptr, uint32x4x3_t * val, __constrange(0,3) int lane); // VST3.32{d0[0], d2[0], d4[0]}, [r0]
-_NEON2SSESTORAGE void vst3q_lane_s16_ptr(__transfersize(3) int16_t * ptr, int16x8x3_t * val, __constrange(0,7) int lane); // VST3.16{d0[0], d2[0], d4[0]}, [r0]
-_NEON2SSESTORAGE void vst3q_lane_s32_ptr(__transfersize(3) int32_t * ptr, int32x4x3_t * val, __constrange(0,3) int lane); // VST3.32{d0[0], d2[0], d4[0]}, [r0]
-_NEON2SSESTORAGE void vst3q_lane_f16_ptr(__transfersize(3) __fp16 * ptr, float16x8x3_t * val, __constrange(0,7) int lane); // VST3.16{d0[0], d2[0], d4[0]}, [r0]
-_NEON2SSESTORAGE void vst3q_lane_f32_ptr(__transfersize(3) float32_t * ptr, float32x4x3_t * val, __constrange(0,3) int lane); //VST3.32 {d0[0], d2[0], d4[0]}, [r0]
-_NEON2SSESTORAGE void vst3q_lane_p16_ptr(__transfersize(3) poly16_t * ptr, poly16x8x3_t * val, __constrange(0,7) int lane); // VST3.16{d0[0], d2[0], d4[0]}, [r0]
+_NEON2SSESTORAGE void vst3q_lane_u16_ptr(__transfersize(3) uint16_t * ptr, uint16x8x3_t const * val, __constrange(0,7) int lane); // VST3.16{d0[0], d2[0], d4[0]}, [r0]
+_NEON2SSESTORAGE void vst3q_lane_u32_ptr(__transfersize(3) uint32_t * ptr, uint32x4x3_t const * val, __constrange(0,3) int lane); // VST3.32{d0[0], d2[0], d4[0]}, [r0]
+_NEON2SSESTORAGE void vst3q_lane_s16_ptr(__transfersize(3) int16_t * ptr, int16x8x3_t const * val, __constrange(0,7) int lane); // VST3.16{d0[0], d2[0], d4[0]}, [r0]
+_NEON2SSESTORAGE void vst3q_lane_s32_ptr(__transfersize(3) int32_t * ptr, int32x4x3_t const * val, __constrange(0,3) int lane); // VST3.32{d0[0], d2[0], d4[0]}, [r0]
+_NEON2SSESTORAGE void vst3q_lane_f16_ptr(__transfersize(3) __fp16 * ptr, float16x8x3_t const * val, __constrange(0,7) int lane); // VST3.16{d0[0], d2[0], d4[0]}, [r0]
+_NEON2SSESTORAGE void vst3q_lane_f32_ptr(__transfersize(3) float32_t * ptr, float32x4x3_t const * val, __constrange(0,3) int lane); //VST3.32 {d0[0], d2[0], d4[0]}, [r0]
+_NEON2SSESTORAGE void vst3q_lane_p16_ptr(__transfersize(3) poly16_t * ptr, poly16x8x3_t const * val, __constrange(0,7) int lane); // VST3.16{d0[0], d2[0], d4[0]}, [r0]
 _NEON2SSESTORAGE void vst3_lane_u8(__transfersize(3) uint8_t * ptr, uint8x8x3_t val, __constrange(0,7) int lane); // VST3.8{d0[0], d1[0], d2[0]}, [r0]
 _NEON2SSESTORAGE void vst3_lane_u16(__transfersize(3) uint16_t * ptr, uint16x4x3_t val, __constrange(0,3) int lane); // VST3.16{d0[0], d1[0], d2[0]}, [r0]
 _NEON2SSESTORAGE void vst3_lane_u32(__transfersize(3) uint32_t * ptr, uint32x2x3_t val, __constrange(0,1) int lane); // VST3.32{d0[0], d1[0], d2[0]}, [r0]
 _NEON2SSESTORAGE void vst3_lane_s8(__transfersize(3) int8_t * ptr, int8x8x3_t val, __constrange(0,7) int lane); // VST3.8 {d0[0],d1[0], d2[0]}, [r0]
 _NEON2SSESTORAGE void vst3_lane_s16(__transfersize(3) int16_t * ptr, int16x4x3_t val, __constrange(0,3) int lane); // VST3.16{d0[0], d1[0], d2[0]}, [r0]
 _NEON2SSESTORAGE void vst3_lane_s32(__transfersize(3) int32_t * ptr, int32x2x3_t val, __constrange(0,1) int lane); // VST3.32{d0[0], d1[0], d2[0]}, [r0]
-_NEON2SSESTORAGE void vst3_lane_f16_ptr(__transfersize(3) __fp16 * ptr, float16x4x3_t * val, __constrange(0,3) int lane); // VST3.16{d0[0], d1[0], d2[0]}, [r0]
+_NEON2SSESTORAGE void vst3_lane_f16_ptr(__transfersize(3) __fp16 * ptr, float16x4x3_t const * val, __constrange(0,3) int lane); // VST3.16{d0[0], d1[0], d2[0]}, [r0]
 _NEON2SSESTORAGE void vst3_lane_f32(__transfersize(3) float32_t * ptr, float32x2x3_t val, __constrange(0,1) int lane); // VST3.32{d0[0], d1[0], d2[0]}, [r0]
 _NEON2SSESTORAGE void vst3_lane_p8(__transfersize(3) poly8_t * ptr, poly8x8x3_t val, __constrange(0,7) int lane); // VST3.8{d0[0], d1[0], d2[0]}, [r0]
 _NEON2SSESTORAGE void vst3_lane_p16(__transfersize(3) poly16_t * ptr, poly16x4x3_t val, __constrange(0,3) int lane); // VST3.16{d0[0], d1[0], d2[0]}, [r0]
-_NEON2SSESTORAGE void vst4q_lane_u16_ptr(__transfersize(4) uint16_t * ptr, uint16x8x4_t * val, __constrange(0,7) int lane); // VST4.16{d0[0], d2[0], d4[0], d6[0]}, [r0]
-_NEON2SSESTORAGE void vst4q_lane_u32_ptr(__transfersize(4) uint32_t * ptr, uint32x4x4_t * val, __constrange(0,3) int lane); // VST4.32{d0[0], d2[0], d4[0], d6[0]}, [r0]
-_NEON2SSESTORAGE void vst4q_lane_s16_ptr(__transfersize(4) int16_t * ptr, int16x8x4_t * val, __constrange(0,7) int lane); // VST4.16{d0[0], d2[0], d4[0], d6[0]}, [r0]
-_NEON2SSESTORAGE void vst4q_lane_s32_ptr(__transfersize(4) int32_t * ptr, int32x4x4_t * val, __constrange(0,3) int lane); // VST4.32{d0[0], d2[0], d4[0], d6[0]}, [r0]
-_NEON2SSESTORAGE void vst4q_lane_f16_ptr(__transfersize(4) __fp16 * ptr, float16x8x4_t * val, __constrange(0,7) int lane); // VST4.16{d0[0], d2[0], d4[0], d6[0]}, [r0]
-_NEON2SSESTORAGE void vst4q_lane_f32_ptr(__transfersize(4) float32_t * ptr, float32x4x4_t * val, __constrange(0,3) int lane); //VST4.32 {d0[0], d2[0], d4[0], d6[0]}, [r0]
-_NEON2SSESTORAGE void vst4q_lane_p16_ptr(__transfersize(4) poly16_t * ptr, poly16x8x4_t * val, __constrange(0,7) int lane); // VST4.16{d0[0], d2[0], d4[0], d6[0]}, [r0]
+_NEON2SSESTORAGE void vst4q_lane_u16_ptr(__transfersize(4) uint16_t * ptr, uint16x8x4_t const * val, __constrange(0,7) int lane); // VST4.16{d0[0], d2[0], d4[0], d6[0]}, [r0]
+_NEON2SSESTORAGE void vst4q_lane_u32_ptr(__transfersize(4) uint32_t * ptr, uint32x4x4_t const * val, __constrange(0,3) int lane); // VST4.32{d0[0], d2[0], d4[0], d6[0]}, [r0]
+_NEON2SSESTORAGE void vst4q_lane_s16_ptr(__transfersize(4) int16_t * ptr, int16x8x4_t const * val, __constrange(0,7) int lane); // VST4.16{d0[0], d2[0], d4[0], d6[0]}, [r0]
+_NEON2SSESTORAGE void vst4q_lane_s32_ptr(__transfersize(4) int32_t * ptr, int32x4x4_t const * val, __constrange(0,3) int lane); // VST4.32{d0[0], d2[0], d4[0], d6[0]}, [r0]
+_NEON2SSESTORAGE void vst4q_lane_f16_ptr(__transfersize(4) __fp16 * ptr, float16x8x4_t const * val, __constrange(0,7) int lane); // VST4.16{d0[0], d2[0], d4[0], d6[0]}, [r0]
+_NEON2SSESTORAGE void vst4q_lane_f32_ptr(__transfersize(4) float32_t * ptr, float32x4x4_t const * val, __constrange(0,3) int lane); //VST4.32 {d0[0], d2[0], d4[0], d6[0]}, [r0]
+_NEON2SSESTORAGE void vst4q_lane_p16_ptr(__transfersize(4) poly16_t * ptr, poly16x8x4_t const * val, __constrange(0,7) int lane); // VST4.16{d0[0], d2[0], d4[0], d6[0]}, [r0]
 _NEON2SSESTORAGE void vst4_lane_u8(__transfersize(4) uint8_t * ptr, uint8x8x4_t val, __constrange(0,7) int lane); // VST4.8{d0[0], d1[0], d2[0], d3[0]}, [r0]
 _NEON2SSESTORAGE void vst4_lane_u16(__transfersize(4) uint16_t * ptr, uint16x4x4_t val, __constrange(0,3) int lane); // VST4.16{d0[0], d1[0], d2[0], d3[0]}, [r0]
 _NEON2SSESTORAGE void vst4_lane_u32(__transfersize(4) uint32_t * ptr, uint32x2x4_t val, __constrange(0,1) int lane); // VST4.32{d0[0], d1[0], d2[0], d3[0]}, [r0]
 _NEON2SSESTORAGE void vst4_lane_s8(__transfersize(4) int8_t * ptr, int8x8x4_t val, __constrange(0,7) int lane); // VST4.8 {d0[0],d1[0], d2[0], d3[0]}, [r0]
 _NEON2SSESTORAGE void vst4_lane_s16(__transfersize(4) int16_t * ptr, int16x4x4_t val, __constrange(0,3) int lane); // VST4.16{d0[0], d1[0], d2[0], d3[0]}, [r0]
 _NEON2SSESTORAGE void vst4_lane_s32(__transfersize(4) int32_t * ptr, int32x2x4_t val, __constrange(0,1) int lane); // VST4.32{d0[0], d1[0], d2[0], d3[0]}, [r0]
-_NEON2SSESTORAGE void vst4_lane_f16_ptr(__transfersize(4) __fp16 * ptr, float16x4x4_t * val, __constrange(0,3) int lane); // VST4.16{d0[0], d1[0], d2[0], d3[0]}, [r0]
+_NEON2SSESTORAGE void vst4_lane_f16_ptr(__transfersize(4) __fp16 * ptr, float16x4x4_t const * val, __constrange(0,3) int lane); // VST4.16{d0[0], d1[0], d2[0], d3[0]}, [r0]
 _NEON2SSESTORAGE void vst4_lane_f32(__transfersize(4) float32_t * ptr, float32x2x4_t val, __constrange(0,1) int lane); // VST4.32{d0[0], d1[0], d2[0], d3[0]}, [r0]
 _NEON2SSESTORAGE void vst4_lane_p8(__transfersize(4) poly8_t * ptr, poly8x8x4_t val, __constrange(0,7) int lane); // VST4.8{d0[0], d1[0], d2[0], d3[0]}, [r0]
 _NEON2SSESTORAGE void vst4_lane_p16(__transfersize(4) poly16_t * ptr, poly16x4x4_t val, __constrange(0,3) int lane); // VST4.16{d0[0], d1[0], d2[0], d3[0]}, [r0]
@@ -2671,19 +2671,16 @@ _NEON2SSESTORAGE float64x2_t vsqrtq_f64(float64x2_t a); // VSQRT.F64 q0,q0
         return _mm_or_si128(res, cmp); //if cmp positive we are out of 16bits need to saturaate to 0xffff
     }
 
-
-    _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(__m128i _MM_MULLO_EPI32(__m128i a, __m128i b), _NEON2SSE_REASON_SLOW_SERIAL)
+    // method used by GCC with generic vector extensions
+    _NEON2SSE_INLINE __m128i _MM_MULLO_EPI32(__m128i a, __m128i b)
     {
-        _NEON2SSE_ALIGN_16 int32_t atmp[4], btmp[4], res[4];
-        int64_t res64;
-        int i;
-        _mm_store_si128((__m128i*)atmp, a);
-        _mm_store_si128((__m128i*)btmp, b);
-        for (i = 0; i<4; i++) {
-            res64 = atmp[i] * btmp[i];
-            res[i] = (int)(res64 & 0xffffffff);
-        }
-        return _mm_load_si128((__m128i*)res);
+        __m128i a_high = _mm_srli_epi64(a, 32);
+        __m128i low = _mm_mul_epu32(a, b);
+        __m128i b_high = _mm_srli_epi64(b, 32);
+        __m128i high = _mm_mul_epu32(a_high, b_high);
+        low = _mm_shuffle_epi32(low, _MM_SHUFFLE(0, 0, 2, 0));
+        high = _mm_shuffle_epi32(high, _MM_SHUFFLE(0, 0, 2, 0));
+        return _mm_unpacklo_epi32(low, high);
     }
 
     _NEON2SSE_INLINE __m128i _MM_MUL_EPI32(__m128i a, __m128i b)
@@ -5223,12 +5220,9 @@ _NEON2SSE_INLINE uint16x8_t vcgeq_u16(uint16x8_t a, uint16x8_t b) // VCGE.s16 q0
     cmp = _mm_max_epu16(a, b);
     return _mm_cmpeq_epi16(cmp, a); //a>=b
 #else
-    __m128i as, mask;
-    __m128i zero = _mm_setzero_si128();
-    __m128i cffff = _mm_set1_epi16(0xffff);
-    as = _mm_subs_epu16(b,a);
-    mask = _mm_cmpgt_epi16(as, zero);
-    return _mm_xor_si128 ( mask, cffff);
+   __m128i zero = _mm_setzero_si128();
+   __m128i  as = _mm_subs_epu16(b, a);
+   return _mm_cmpeq_epi16(as, zero);  
 #endif
 }
 
@@ -5457,21 +5451,23 @@ _NEON2SSE_INLINE uint32x4_t vcgtq_f32(float32x4_t a, float32x4_t b)
 _NEON2SSESTORAGE uint8x16_t vcgtq_u8(uint8x16_t a, uint8x16_t b); // VCGT.U8 q0, q0, q0
 _NEON2SSE_INLINE uint8x16_t vcgtq_u8(uint8x16_t a, uint8x16_t b) // VCGT.U8 q0, q0, q0
 {
-    //no unsigned chars comparison, only signed available,so need the trick
-    __m128i as;
-    __m128i zero = _mm_setzero_si128();
-    as = _mm_subs_epu8(a, b);
-    return _mm_cmpgt_epi8(as, zero);
+      //no unsigned chars comparison, only signed available,so need the trick
+        __m128i c128, as, bs;
+        c128 = _mm_set1_epi8(128);
+        as = _mm_sub_epi8(a, c128);
+        bs = _mm_sub_epi8(b, c128);
+        return _mm_cmpgt_epi8(as, bs);
 }
 
 _NEON2SSESTORAGE uint16x8_t vcgtq_u16(uint16x8_t a, uint16x8_t b); // VCGT.s16 q0, q0, q0
 _NEON2SSE_INLINE uint16x8_t vcgtq_u16(uint16x8_t a, uint16x8_t b) // VCGT.s16 q0, q0, q0
-{
+{   
     //no unsigned short comparison, only signed available,so need the trick
-    __m128i as;
-    __m128i zero = _mm_setzero_si128();
-    as = _mm_subs_epu16(a, b);
-    return _mm_cmpgt_epi16(as, zero);
+    __m128i c8000, as, bs;
+    c8000 = _mm_set1_epi16(0x8000);
+    as = _mm_sub_epi16(a, c8000);
+    bs = _mm_sub_epi16(b, c8000);
+    return _mm_cmpgt_epi16(as, bs);
 }
 
 _NEON2SSESTORAGE uint32x4_t vcgtq_u32(uint32x4_t a, uint32x4_t b); // VCGT.U32 q0, q0, q0
@@ -6440,52 +6436,62 @@ _NEON2SSE_INLINE int32x4_t vpaddlq_s16(int16x8_t a) // VPADDL.S16 q0,q0
 }
 
 _NEON2SSESTORAGE int64x2_t vpaddlq_s32(int32x4_t a); // VPADDL.S32 q0,q0
-_NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(int64x2_t vpaddlq_s32(int32x4_t a), _NEON2SSE_REASON_SLOW_SERIAL) // VPADDL.S32 q0,q0
+_NEON2SSE_INLINE int64x2_t vpaddlq_s32(int32x4_t a)
 {
-    _NEON2SSE_ALIGN_16 int32_t atmp[4];
-    _NEON2SSE_ALIGN_16 int64_t res[2];
-    _mm_store_si128((__m128i*)atmp, a);
-    res[0] = (int64_t)atmp[0] + (int64_t)atmp[1];
-    res[1] = (int64_t)atmp[2] + (int64_t)atmp[3];
-    return _mm_load_si128((__m128i*)res);
+    __m128i top, bot;
+    bot = _mm_shuffle_epi32(a, _MM_SHUFFLE(0, 0, 2, 0));
+    bot = _MM_CVTEPI32_EPI64(bot);
+    top = _mm_shuffle_epi32(a, _MM_SHUFFLE(0, 0, 3, 1));
+    top = _MM_CVTEPI32_EPI64(top);
+    return _mm_add_epi64(top, bot);
 }
 
 _NEON2SSESTORAGE uint16x8_t vpaddlq_u8(uint8x16_t a); // VPADDL.U8 q0,q0
 _NEON2SSE_INLINE uint16x8_t vpaddlq_u8(uint8x16_t a) // VPADDL.U8 q0,q0
 {
-    //no 8 bit hadd in IA32, need to go to 16 bit
-    __m128i r16_1, r16_2;
-    r16_1 = _MM_CVTEPU8_EPI16(a);
-    //swap hi and low part of r to process the remaining data
-    r16_2 = _mm_shuffle_epi32 (a, _SWAP_HI_LOW32);
-    r16_2 = _MM_CVTEPU8_EPI16 (r16_2);
-    return _mm_hadd_epi16 (r16_1, r16_2);
+    const __m128i ff = _mm_set1_epi16(0xFF);
+    __m128i low = _mm_and_si128(a, ff);
+    __m128i high = _mm_srli_epi16(a, 8);
+    return _mm_add_epi16(low, high);
 }
 
+#ifdef USE_SSE4
 _NEON2SSESTORAGE uint32x4_t vpaddlq_u16(uint16x8_t a); // VPADDL.s16 q0,q0
-_NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(uint32x4_t vpaddlq_u16(uint16x8_t a),  _NEON2SSE_REASON_SLOW_SERIAL)
+_NEON2SSE_INLINE uint32x4_t vpaddlq_u16(uint16x8_t a)
 {
-    //serial solution looks faster than a SIMD one
-    _NEON2SSE_ALIGN_16 uint16_t atmp[8];
-    _NEON2SSE_ALIGN_16 uint32_t res[4];
-    _mm_store_si128((__m128i*)atmp, a);
-    res[0] = (uint32_t)atmp[0] + (uint32_t)atmp[1];
-    res[1] = (uint32_t)atmp[2] + (uint32_t)atmp[3];
-    res[2] = (uint32_t)atmp[4] + (uint32_t)atmp[5];
-    res[3] = (uint32_t)atmp[6] + (uint32_t)atmp[7];
-    return _mm_load_si128((__m128i*)res);
+    const __m128i zero = _mm_setzero_si128();
+    __m128i low = _mm_blend_epi16(zero, a, 0x55); // 0b1010101
+    __m128i high = _mm_srli_epi32(a, 16);
+    return _mm_add_epi32(low, high);
 }
 
 _NEON2SSESTORAGE uint64x2_t vpaddlq_u32(uint32x4_t a); // VPADDL.U32 q0,q0
-_NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(uint64x2_t vpaddlq_u32(uint32x4_t a), _NEON2SSE_REASON_SLOW_SERIAL)
+_NEON2SSE_INLINE uint64x2_t vpaddlq_u32(uint32x4_t a)
 {
-    _NEON2SSE_ALIGN_16 uint32_t atmp[4];
-    _NEON2SSE_ALIGN_16 uint64_t res[2];
-    _mm_store_si128((__m128i*)atmp, a);
-    res[0] = (uint64_t)atmp[0] + (uint64_t)atmp[1];
-    res[1] = (uint64_t)atmp[2] + (uint64_t)atmp[3];
-    return _mm_load_si128((__m128i*)res);
+    const __m128i zero = _mm_setzero_si128();
+    __m128i low = _mm_blend_epi16(zero, a, 0x33); // 0b00110011
+    __m128i high = _mm_srli_epi64(a, 32);
+    return _mm_add_epi64(low, high);
 }
+#else
+_NEON2SSESTORAGE uint32x4_t vpaddlq_u16(uint16x8_t a); // VPADDL.s16 q0,q0
+_NEON2SSE_INLINE uint32x4_t vpaddlq_u16(uint16x8_t a)
+{
+    const __m128i ff = _mm_set1_epi32(0xFFFF);
+    __m128i low = _mm_and_si128(a, ff);
+    __m128i high = _mm_srli_epi32(a, 16);
+    return _mm_add_epi32(low, high);
+}
+
+_NEON2SSESTORAGE uint64x2_t vpaddlq_u32(uint32x4_t a); // VPADDL.U32 q0,q0
+_NEON2SSE_INLINE uint64x2_t vpaddlq_u32(uint32x4_t a)
+{
+    const __m128i ff = _mm_set_epi32(0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF);
+    __m128i low = _mm_and_si128(a, ff);
+    __m128i high = _mm_srli_epi64(a, 32);
+    return _mm_add_epi64(low, high);
+}
+#endif
 
 //************************  Long pairwise add and accumulate **************************
 //****************************************************************************************
@@ -6570,7 +6576,7 @@ _NEON2SSE_INLINE uint16x8_t vpadalq_u8(uint16x8_t a, uint8x16_t b) // VPADAL.U8 
 }
 
 _NEON2SSESTORAGE uint32x4_t vpadalq_u16(uint32x4_t a, uint16x8_t b); // VPADAL.s16 q0,q0
-_NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(uint32x4_t vpadalq_u16(uint32x4_t a, uint16x8_t b), _NEON2SSE_REASON_SLOW_SERIAL)
+_NEON2SSE_INLINE uint32x4_t vpadalq_u16(uint32x4_t a, uint16x8_t b)
 {
     uint32x4_t pad;
     pad = vpaddlq_u16(b);
@@ -6578,13 +6584,12 @@ _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(uint32x4_t vpadalq_u16(uint32x4_t
 } //no optimal SIMD solution, serial is faster
 
 _NEON2SSESTORAGE uint64x2_t vpadalq_u32(uint64x2_t a, uint32x4_t b); // VPADAL.U32 q0,q0
-_NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(uint64x2_t vpadalq_u32(uint64x2_t a, uint32x4_t b), _NEON2SSE_REASON_SLOW_SERIAL)
+_NEON2SSE_INLINE uint64x2_t vpadalq_u32(uint64x2_t a, uint32x4_t b)
 {
-    //no optimal SIMD solution, serial is faster
     uint64x2_t pad;
     pad = vpaddlq_u32(b);
     return _mm_add_epi64(a, pad);
-} //no optimal SIMD solution, serial is faster
+}
 
 //**********  Folding maximum   *************************************
 //*******************************************************************
@@ -7083,7 +7088,7 @@ _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING( uint64x2_t vshlq_u64(uint64x2_t 
         int lanesize_1 = (sizeof(TYPE) << 3) - 1; \
         _mm_store_si128((__m128i*)atmp, a); _mm_store_si128((__m128i*)btmp, b); \
         for (i = 0; i<LEN; i++) { \
-        if (atmp[i] ==0) res[i] = 0; \
+        if ((atmp[i] ==0)||(btmp[i] ==0)) res[i] = atmp[i]; \
         else{ \
             if(btmp[i] <0) res[i] = atmp[i] >> (-btmp[i]); \
             else{ \
@@ -7101,7 +7106,7 @@ _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING( uint64x2_t vshlq_u64(uint64x2_t 
         TYPE lanesize = (sizeof(TYPE) << 3); \
         _mm_store_si128((__m128i*)atmp, a); _mm_store_si128((__m128i*)btmp, b); \
         for (i = 0; i<LEN; i++) { \
-        if (atmp[i] ==0) {res[i] = 0; \
+        if ((atmp[i] ==0)||(btmp[i] ==0)) { res[i] = atmp[i]; \
         }else{ \
             if(btmp[i] < 0) res[i] = atmp[i] >> (-btmp[i]); \
             else{ \
@@ -7115,7 +7120,7 @@ _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING( uint64x2_t vshlq_u64(uint64x2_t 
         int ## TYPE ## x ## LEN ## _t res; int ## TYPE ## _t limit; int i; \
         int lanesize_1 = (sizeof( int ## TYPE ## _t) << 3) - 1; \
         for (i = 0; i<LEN; i++) { \
-        if (a.m64_i ## TYPE[i] ==0) res.m64_i ## TYPE[i] = 0; \
+        if ((a.m64_i ## TYPE[i] == 0) ||(b.m64_i ## TYPE[i] == 0)) res.m64_i ## TYPE[i] = a.m64_i ## TYPE[i]; \
         else{ \
             if(b.m64_i ## TYPE[i] <0) res.m64_i ## TYPE[i] = a.m64_i ## TYPE[i] >> (-(b.m64_i ## TYPE[i])); \
             else{ \
@@ -7132,7 +7137,7 @@ _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING( uint64x2_t vshlq_u64(uint64x2_t 
         int ## TYPE ## x ## LEN ## _t res;  _UNSIGNED_T(int ## TYPE ## _t) limit; int i; \
         int ## TYPE ## _t lanesize = (sizeof(int ## TYPE ## _t) << 3); \
         for (i = 0; i<LEN; i++) { \
-        if (a.m64_u ## TYPE[i] ==0) {res.m64_u ## TYPE[i] = 0; \
+        if ((a.m64_u ## TYPE[i] == 0) ||(b.m64_u ## TYPE[i] == 0)) {res.m64_u ## TYPE[i] = a.m64_u ## TYPE[i]; \
         }else{ \
             if(b.m64_i ## TYPE[i] < 0) res.m64_u ## TYPE[i] = a.m64_u ## TYPE[i] >> (-(b.m64_i ## TYPE[i])); \
             else{ \
@@ -11064,7 +11069,7 @@ _NEON2SSESTORAGE poly16x4x4_t vld4_lane_p16(__transfersize(4) poly16_t const * p
 //******************* Store duplets *********************************************
 //********************************************************************************
 //void vst2q_u8(__transfersize(32) uint8_t * ptr, uint8x16x2_t val)// VST2.8 {d0, d2}, [r0]
-_NEON2SSE_INLINE void vst2q_u8_ptr(__transfersize(32) uint8_t * ptr, uint8x16x2_t* val)
+_NEON2SSE_INLINE void vst2q_u8_ptr(__transfersize(32) uint8_t * ptr, uint8x16x2_t const * val)
 {
     uint8x16x2_t v;
     v.val[0] = _mm_unpacklo_epi8(val->val[0], val->val[1]);
@@ -11075,7 +11080,7 @@ _NEON2SSE_INLINE void vst2q_u8_ptr(__transfersize(32) uint8_t * ptr, uint8x16x2_
 #define vst2q_u8(ptr, val) vst2q_u8_ptr(ptr, &val)
 
 //void vst2q_u16(__transfersize(16) uint16_t * ptr, uint16x8x2_t val)// VST2.16 {d0, d2}, [r0]
-_NEON2SSE_INLINE void vst2q_u16_ptr(__transfersize(16) uint16_t * ptr, uint16x8x2_t* val)
+_NEON2SSE_INLINE void vst2q_u16_ptr(__transfersize(16) uint16_t * ptr, uint16x8x2_t const * val)
 {
     uint16x8x2_t v;
     v.val[0] = _mm_unpacklo_epi16(val->val[0], val->val[1]);
@@ -11086,7 +11091,7 @@ _NEON2SSE_INLINE void vst2q_u16_ptr(__transfersize(16) uint16_t * ptr, uint16x8x
 #define vst2q_u16(ptr, val) vst2q_u16_ptr(ptr, &val)
 
 //void vst2q_u32(__transfersize(8) uint32_t * ptr, uint32x4x2_t val)// VST2.32 {d0, d2}, [r0]
-_NEON2SSE_INLINE void vst2q_u32_ptr(__transfersize(8) uint32_t* ptr, uint32x4x2_t* val)
+_NEON2SSE_INLINE void vst2q_u32_ptr(__transfersize(8) uint32_t* ptr, uint32x4x2_t const * val)
 {
     uint32x4x2_t v;
     v.val[0] = _mm_unpacklo_epi32(val->val[0], val->val[1]);
@@ -11097,23 +11102,23 @@ _NEON2SSE_INLINE void vst2q_u32_ptr(__transfersize(8) uint32_t* ptr, uint32x4x2_
 #define vst2q_u32(ptr, val) vst2q_u32_ptr(ptr, &val)
 
 //void vst2q_s8(__transfersize(32) int8_t * ptr, int8x16x2_t val); // VST2.8 {d0, d2}, [r0]
-_NEON2SSESTORAGE void vst2q_s8_ptr(__transfersize(32) int8_t * ptr, int8x16x2_t * val);
+_NEON2SSESTORAGE void vst2q_s8_ptr(__transfersize(32) int8_t * ptr, int8x16x2_t const * val);
 #define vst2q_s8(ptr, val) vst2q_u8((uint8_t*)(ptr), val)
 
 //void vst2q_s16(__transfersize(16) int16_t * ptr, int16x8x2_t val);// VST2.16 {d0, d2}, [r0]
-_NEON2SSESTORAGE void vst2q_s16_ptr(__transfersize(16) int16_t * ptr, int16x8x2_t * val);
+_NEON2SSESTORAGE void vst2q_s16_ptr(__transfersize(16) int16_t * ptr, int16x8x2_t const * val);
 #define vst2q_s16(ptr, val) vst2q_u16((uint16_t*)(ptr), val)
 
 //void vst2q_s32(__transfersize(8) int32_t * ptr, int32x4x2_t val);// VST2.32 {d0, d2}, [r0]
-_NEON2SSESTORAGE void vst2q_s32_ptr(__transfersize(8) int32_t * ptr, int32x4x2_t * val);
+_NEON2SSESTORAGE void vst2q_s32_ptr(__transfersize(8) int32_t * ptr, int32x4x2_t const * val);
 #define vst2q_s32(ptr, val)  vst2q_u32((uint32_t*)(ptr), val)
 
 //void vst2q_f16(__transfersize(16) __fp16 * ptr, float16x8x2_t val);// VST2.16 {d0, d2}, [r0]
-_NEON2SSESTORAGE void vst2q_f16_ptr(__transfersize(16) __fp16 * ptr, float16x8x2_t * val);
+_NEON2SSESTORAGE void vst2q_f16_ptr(__transfersize(16) __fp16 * ptr, float16x8x2_t const * val);
 // IA32 SIMD doesn't work with 16bit floats currently
 
 //void vst2q_f32(__transfersize(8) float32_t * ptr, float32x4x2_t val)// VST2.32 {d0, d2}, [r0]
-_NEON2SSE_INLINE void vst2q_f32_ptr(__transfersize(8) float32_t* ptr, float32x4x2_t* val)
+_NEON2SSE_INLINE void vst2q_f32_ptr(__transfersize(8) float32_t* ptr, float32x4x2_t const * val)
 {
     float32x4x2_t v;
     v.val[0] = _mm_unpacklo_ps(val->val[0], val->val[1]);
@@ -11124,11 +11129,11 @@ _NEON2SSE_INLINE void vst2q_f32_ptr(__transfersize(8) float32_t* ptr, float32x4x
 #define vst2q_f32(ptr, val) vst2q_f32_ptr(ptr, &val)
 
 //void vst2q_p8(__transfersize(32) poly8_t * ptr, poly8x16x2_t val);// VST2.8 {d0, d2}, [r0]
-_NEON2SSESTORAGE void vst2q_p8_ptr(__transfersize(32) poly8_t * ptr, poly8x16x2_t * val);
+_NEON2SSESTORAGE void vst2q_p8_ptr(__transfersize(32) poly8_t * ptr, poly8x16x2_t const * val);
 #define vst2q_p8 vst2q_u8
 
 //void vst2q_p16(__transfersize(16) poly16_t * ptr, poly16x8x2_t val);// VST2.16 {d0, d2}, [r0]
-_NEON2SSESTORAGE void vst2q_p16_ptr(__transfersize(16) poly16_t * ptr, poly16x8x2_t * val);
+_NEON2SSESTORAGE void vst2q_p16_ptr(__transfersize(16) poly16_t * ptr, poly16x8x2_t const * val);
 #define vst2q_p16 vst2q_u16
 
 _NEON2SSESTORAGE void vst2_u8(__transfersize(16) uint8_t * ptr, uint8x8x2_t val);// VST2.8 {d0, d1}, [r0]
@@ -11195,7 +11200,7 @@ _NEON2SSESTORAGE void vst2_p16(__transfersize(8) poly16_t * ptr, poly16x4x2_t  v
 //******************** Triplets store  *****************************************
 //******************************************************************************
 //void vst3q_u8(__transfersize(48) uint8_t * ptr, uint8x16x3_t val)// VST3.8 {d0, d2, d4}, [r0]
-_NEON2SSE_INLINE void vst3q_u8_ptr(__transfersize(48) uint8_t * ptr, uint8x16x3_t* val)
+_NEON2SSE_INLINE void vst3q_u8_ptr(__transfersize(48) uint8_t * ptr, uint8x16x3_t const * val)
 {
     uint8x16x3_t v;
     __m128i v0,v1,v2, cff, bldmask;
@@ -11229,7 +11234,7 @@ _NEON2SSE_INLINE void vst3q_u8_ptr(__transfersize(48) uint8_t * ptr, uint8x16x3_
 #define vst3q_u8(ptr, val) vst3q_u8_ptr(ptr, &val)
 
 //void vst3q_u16(__transfersize(24) uint16_t * ptr, uint16x8x3_t val)// VST3.16 {d0, d2, d4}, [r0]
-_NEON2SSE_INLINE void vst3q_u16_ptr(__transfersize(24) uint16_t * ptr, uint16x8x3_t* val)
+_NEON2SSE_INLINE void vst3q_u16_ptr(__transfersize(24) uint16_t * ptr, uint16x8x3_t const * val)
 {
     uint16x8x3_t v;
     __m128i v0,v1,v2, cff, bldmask;
@@ -11263,7 +11268,7 @@ _NEON2SSE_INLINE void vst3q_u16_ptr(__transfersize(24) uint16_t * ptr, uint16x8x
 #define vst3q_u16(ptr, val) vst3q_u16_ptr(ptr, &val)
 
 //void vst3q_u32(__transfersize(12) uint32_t * ptr, uint32x4x3_t val)// VST3.32 {d0, d2, d4}, [r0]
-_NEON2SSE_INLINE void vst3q_u32_ptr(__transfersize(12) uint32_t * ptr, uint32x4x3_t* val)
+_NEON2SSE_INLINE void vst3q_u32_ptr(__transfersize(12) uint32_t * ptr, uint32x4x3_t const * val)
 {
     //a0,a1,a2,a3,  b0,b1,b2,b3, c0,c1,c2,c3 -> a0,b0,c0,a1, b1,c1,a2,b2, c2,a3,b3,c3
     uint32x4x3_t v;
@@ -11284,23 +11289,23 @@ _NEON2SSE_INLINE void vst3q_u32_ptr(__transfersize(12) uint32_t * ptr, uint32x4x
 #define vst3q_u32(ptr, val) vst3q_u32_ptr(ptr, &val)
 
 //void vst3q_s8(__transfersize(48) int8_t * ptr, int8x16x3_t val);
-_NEON2SSESTORAGE void vst3q_s8_ptr(__transfersize(48) int8_t * ptr, int8x16x3_t * val);
+_NEON2SSESTORAGE void vst3q_s8_ptr(__transfersize(48) int8_t * ptr, int8x16x3_t const * val);
 #define vst3q_s8(ptr, val) vst3q_u8((uint8_t*)(ptr), val)
 
 //void vst3q_s16(__transfersize(24) int16_t * ptr, int16x8x3_t val);
-_NEON2SSESTORAGE void vst3q_s16_ptr(__transfersize(24) int16_t * ptr, int16x8x3_t * val);
+_NEON2SSESTORAGE void vst3q_s16_ptr(__transfersize(24) int16_t * ptr, int16x8x3_t const * val);
 #define vst3q_s16(ptr, val) vst3q_u16((uint16_t*)(ptr), val)
 
 //void vst3q_s32(__transfersize(12) int32_t * ptr, int32x4x3_t val);
-_NEON2SSESTORAGE void vst3q_s32_ptr(__transfersize(12) int32_t * ptr, int32x4x3_t * val);
+_NEON2SSESTORAGE void vst3q_s32_ptr(__transfersize(12) int32_t * ptr, int32x4x3_t const * val);
 #define vst3q_s32(ptr, val)  vst3q_u32((uint32_t*)(ptr), val)
 
 //void vst3q_f16(__transfersize(24) __fp16 * ptr, float16x8x3_t val);// VST3.16 {d0, d2, d4}, [r0]
-_NEON2SSESTORAGE void vst3q_f16_ptr(__transfersize(24) __fp16 * ptr, float16x8x3_t * val);
+_NEON2SSESTORAGE void vst3q_f16_ptr(__transfersize(24) __fp16 * ptr, float16x8x3_t const * val);
 // IA32 SIMD doesn't work with 16bit floats currently
 
 //void vst3q_f32(__transfersize(12) float32_t * ptr, float32x4x3_t val)// VST3.32 {d0, d2, d4}, [r0]
-_NEON2SSE_INLINE void vst3q_f32_ptr(__transfersize(12) float32_t * ptr, float32x4x3_t* val)
+_NEON2SSE_INLINE void vst3q_f32_ptr(__transfersize(12) float32_t * ptr, float32x4x3_t const * val)
 {
     float32x4x3_t v;
     __m128 tmp0, tmp1,tmp2;
@@ -11320,11 +11325,11 @@ _NEON2SSE_INLINE void vst3q_f32_ptr(__transfersize(12) float32_t * ptr, float32x
 #define vst3q_f32(ptr, val) vst3q_f32_ptr(ptr, &val)
 
 //void vst3q_p8(__transfersize(48) poly8_t * ptr, poly8x16x3_t val);// VST3.8 {d0, d2, d4}, [r0]
-_NEON2SSESTORAGE void vst3q_p8_ptr(__transfersize(48) poly8_t * ptr, poly8x16x3_t * val);
+_NEON2SSESTORAGE void vst3q_p8_ptr(__transfersize(48) poly8_t * ptr, poly8x16x3_t const * val);
 #define vst3q_p8 vst3q_u8
 
 //void vst3q_p16(__transfersize(24) poly16_t * ptr, poly16x8x3_t val);// VST3.16 {d0, d2, d4}, [r0]
-_NEON2SSESTORAGE void vst3q_p16_ptr(__transfersize(24) poly16_t * ptr, poly16x8x3_t * val);
+_NEON2SSESTORAGE void vst3q_p16_ptr(__transfersize(24) poly16_t * ptr, poly16x8x3_t const * val);
 #define vst3q_p16 vst3q_u16
 
 _NEON2SSESTORAGE void vst3_u8(__transfersize(24) uint8_t * ptr, uint8x8x3_t val);// VST3.8 {d0, d1, d2}, [r0]
@@ -11402,7 +11407,7 @@ _NEON2SSESTORAGE void vst3_s64(__transfersize(3) int64_t * ptr, int64x1x3_t val)
 #define vst3_s64(ptr, val) vst3_u64((uint64_t*)ptr, val)
 
 //void vst3_f16(__transfersize(12) __fp16 * ptr, float16x4x3_t val);// VST3.16 {d0, d1, d2}, [r0]
-_NEON2SSESTORAGE void vst3_f16_ptr(__transfersize(12) __fp16 * ptr, float16x4x3_t * val); // VST3.16 {d0, d1, d2}, [r0]
+_NEON2SSESTORAGE void vst3_f16_ptr(__transfersize(12) __fp16 * ptr, float16x4x3_t const * val); // VST3.16 {d0, d1, d2}, [r0]
 // IA32 SIMD doesn't work with 16bit floats currently, so need to go to 32 bit and then work with two 128bit registers. See vld1q_f16 for example
 
 _NEON2SSESTORAGE void vst3_f32(__transfersize(6) float32_t * ptr, float32x2x3_t val);// VST3.32 {d0, d1, d2}, [r0]
@@ -11426,7 +11431,7 @@ _NEON2SSESTORAGE void vst3_p16(__transfersize(12) poly16_t * ptr, poly16x4x3_t v
 //***************  Quadruples store ********************************
 //*********************************************************************
 //void vst4q_u8(__transfersize(64) uint8_t * ptr, uint8x16x4_t val)// VST4.8 {d0, d2, d4, d6}, [r0]
-_NEON2SSE_INLINE void vst4q_u8_ptr(__transfersize(64) uint8_t * ptr, uint8x16x4_t* val)
+_NEON2SSE_INLINE void vst4q_u8_ptr(__transfersize(64) uint8_t * ptr, uint8x16x4_t const * val)
 {
     __m128i tmp1, tmp2, res;
     tmp1 = _mm_unpacklo_epi8(val->val[0], val->val[1]); //  0,1, 4,5, 8,9, 12,13, 16,17, 20,21, 24,25, 28,29
@@ -11445,7 +11450,7 @@ _NEON2SSE_INLINE void vst4q_u8_ptr(__transfersize(64) uint8_t * ptr, uint8x16x4_
 #define vst4q_u8(ptr, val) vst4q_u8_ptr(ptr, &val)
 
 //void vst4q_u16(__transfersize(32) uint16_t * ptr, uint16x8x4_t val)// VST4.16 {d0, d2, d4, d6}, [r0]
-_NEON2SSE_INLINE void vst4q_u16_ptr(__transfersize(32) uint16_t * ptr, uint16x8x4_t* val)
+_NEON2SSE_INLINE void vst4q_u16_ptr(__transfersize(32) uint16_t * ptr, uint16x8x4_t const * val)
 {
     uint16x8x4_t v;
     __m128i tmp1, tmp2;
@@ -11465,7 +11470,7 @@ _NEON2SSE_INLINE void vst4q_u16_ptr(__transfersize(32) uint16_t * ptr, uint16x8x
 #define vst4q_u16(ptr, val) vst4q_u16_ptr(ptr, &val)
 
 //void vst4q_u32(__transfersize(16) uint32_t * ptr, uint32x4x4_t val)// VST4.32 {d0, d2, d4, d6}, [r0]
-_NEON2SSE_INLINE void vst4q_u32_ptr(__transfersize(16) uint32_t * ptr, uint32x4x4_t* val)
+_NEON2SSE_INLINE void vst4q_u32_ptr(__transfersize(16) uint32_t * ptr, uint32x4x4_t const * val)
 {
     uint16x8x4_t v;
     __m128i tmp1, tmp2;
@@ -11485,23 +11490,23 @@ _NEON2SSE_INLINE void vst4q_u32_ptr(__transfersize(16) uint32_t * ptr, uint32x4x
 #define vst4q_u32(ptr, val) vst4q_u32_ptr(ptr, &val)
 
 //void vst4q_s8(__transfersize(64) int8_t * ptr, int8x16x4_t val);
-_NEON2SSESTORAGE void vst4q_s8_ptr(__transfersize(64) int8_t * ptr, int8x16x4_t * val);
+_NEON2SSESTORAGE void vst4q_s8_ptr(__transfersize(64) int8_t * ptr, int8x16x4_t const * val);
 #define vst4q_s8(ptr, val) vst4q_u8((uint8_t*)(ptr), val)
 
 //void vst4q_s16(__transfersize(32) int16_t * ptr, int16x8x4_t val);
-_NEON2SSESTORAGE void vst4q_s16_ptr(__transfersize(32) int16_t * ptr, int16x8x4_t * val);
+_NEON2SSESTORAGE void vst4q_s16_ptr(__transfersize(32) int16_t * ptr, int16x8x4_t const * val);
 #define vst4q_s16(ptr, val) vst4q_u16((uint16_t*)(ptr), val)
 
 //void vst4q_s32(__transfersize(16) int32_t * ptr, int32x4x4_t val);
-_NEON2SSESTORAGE void vst4q_s32_ptr(__transfersize(16) int32_t * ptr, int32x4x4_t * val);
+_NEON2SSESTORAGE void vst4q_s32_ptr(__transfersize(16) int32_t * ptr, int32x4x4_t const * val);
 #define vst4q_s32(ptr, val) vst4q_u32((uint32_t*)(ptr), val)
 
 //void vst4q_f16(__transfersize(32) __fp16 * ptr, float16x8x4_t val);// VST4.16 {d0, d2, d4, d6}, [r0]
-_NEON2SSESTORAGE void vst4q_f16_ptr(__transfersize(32) __fp16 * ptr, float16x8x4_t * val);
+_NEON2SSESTORAGE void vst4q_f16_ptr(__transfersize(32) __fp16 * ptr, float16x8x4_t const * val);
 // IA32 SIMD doesn't work with 16bit floats currently
 
 //void vst4q_f32(__transfersize(16) float32_t * ptr, float32x4x4_t val)// VST4.32 {d0, d2, d4, d6}, [r0]
-_NEON2SSE_INLINE void vst4q_f32_ptr(__transfersize(16) float32_t * ptr, float32x4x4_t* val)
+_NEON2SSE_INLINE void vst4q_f32_ptr(__transfersize(16) float32_t * ptr, float32x4x4_t const * val)
 {
     __m128 tmp3, tmp2, tmp1, tmp0;
     float32x4x4_t v;
@@ -11521,11 +11526,11 @@ _NEON2SSE_INLINE void vst4q_f32_ptr(__transfersize(16) float32_t * ptr, float32x
 #define vst4q_f32(ptr, val) vst4q_f32_ptr(ptr, &val)
 
 //void vst4q_p8(__transfersize(64) poly8_t * ptr, poly8x16x4_t val);// VST4.8 {d0, d2, d4, d6}, [r0]
-_NEON2SSESTORAGE void vst4q_p8_ptr(__transfersize(64) poly8_t * ptr, poly8x16x4_t * val);
+_NEON2SSESTORAGE void vst4q_p8_ptr(__transfersize(64) poly8_t * ptr, poly8x16x4_t const * val);
 #define vst4q_p8 vst4q_u8
 
 //void vst4q_p16(__transfersize(32) poly16_t * ptr, poly16x8x4_t val);// VST4.16 {d0, d2, d4, d6}, [r0]
-_NEON2SSESTORAGE void vst4q_p16_ptr(__transfersize(32) poly16_t * ptr, poly16x8x4_t * val);
+_NEON2SSESTORAGE void vst4q_p16_ptr(__transfersize(32) poly16_t * ptr, poly16x8x4_t const * val);
 #define vst4q_p16 vst4q_s16
 
 _NEON2SSESTORAGE void vst4_u8(__transfersize(32) uint8_t * ptr, uint8x8x4_t val);// VST4.8 {d0, d1, d2, d3}, [r0]
@@ -11584,11 +11589,11 @@ _NEON2SSE_INLINE void vst4_u64(__transfersize(4) uint64_t * ptr, uint64x1x4_t va
 #define vst4_s32(ptr, val) vst4_u32((uint32_t*)ptr, val)
 
 //void vst4_s64(__transfersize(4) int64_t * ptr, int64x1x4_t val); // VST1.64 {d0, d1, d2, d3}, [r0]
-_NEON2SSESTORAGE void vst4_s64_ptr(__transfersize(4) int64_t * ptr, int64x1x4_t * val);
+_NEON2SSESTORAGE void vst4_s64_ptr(__transfersize(4) int64_t * ptr, int64x1x4_t const * val);
 #define vst4_s64(ptr, val) vst4_u64((uint64_t*)ptr, val)
 
 //void vst4_f16(__transfersize(16) __fp16 * ptr, float16x4x4_t val);// VST4.16 {d0, d1, d2, d3}, [r0]
-_NEON2SSESTORAGE void vst4_f16_ptr(__transfersize(16) __fp16 * ptr, float16x4x4_t * val);
+_NEON2SSESTORAGE void vst4_f16_ptr(__transfersize(16) __fp16 * ptr, float16x4x4_t const * val);
 // IA32 SIMD doesn't work with 16bit floats currently, so need to go to 32 bit and then work with two 128bit registers. See vld1q_f16 for example
 
 _NEON2SSESTORAGE void vst4_f32(__transfersize(8) float32_t * ptr, float32x2x4_t val);// VST4.32 {d0, d1, d2, d3}, [r0]
@@ -11614,7 +11619,7 @@ _NEON2SSESTORAGE void vst4_p16(__transfersize(16) poly16_t * ptr, poly16x4x4_t v
 //*********** Store a lane of a vector into memory (extract given lane) for a couple of vectors  *********************
 //********************************************************************************************************************
 //void vst2q_lane_u16(__transfersize(2) uint16_t * ptr, uint16x8x2_t val, __constrange(0,7) int lane)// VST2.16 {d0[0], d2[0]}, [r0]
-_NEON2SSE_INLINE void vst2q_lane_u16_ptr(__transfersize(2) uint16_t * ptr, uint16x8x2_t* val, __constrange(0,7) int lane)
+_NEON2SSE_INLINE void vst2q_lane_u16_ptr(__transfersize(2) uint16_t * ptr, uint16x8x2_t const * val, __constrange(0,7) int lane)
 {
     vst1q_lane_s16(ptr, val->val[0], lane);
     vst1q_lane_s16((ptr + 1), val->val[1], lane);
@@ -11622,7 +11627,7 @@ _NEON2SSE_INLINE void vst2q_lane_u16_ptr(__transfersize(2) uint16_t * ptr, uint1
 #define vst2q_lane_u16(ptr, val, lane) vst2q_lane_u16_ptr(ptr, &val, lane)
 
 //void vst2q_lane_u32(__transfersize(2) uint32_t * ptr, uint32x4x2_t val, __constrange(0,3) int lane)// VST2.32 {d0[0], d2[0]}, [r0]
-_NEON2SSE_INLINE void vst2q_lane_u32_ptr(__transfersize(2) uint32_t* ptr, uint32x4x2_t* val, __constrange(0,3) int lane)
+_NEON2SSE_INLINE void vst2q_lane_u32_ptr(__transfersize(2) uint32_t* ptr, uint32x4x2_t const * val, __constrange(0,3) int lane)
 {
     vst1q_lane_u32(ptr, val->val[0], lane);
     vst1q_lane_u32((ptr + 1), val->val[1], lane);
@@ -11630,19 +11635,19 @@ _NEON2SSE_INLINE void vst2q_lane_u32_ptr(__transfersize(2) uint32_t* ptr, uint32
 #define vst2q_lane_u32(ptr, val, lane) vst2q_lane_u32_ptr(ptr, &val, lane)
 
 //void vst2q_lane_s16(__transfersize(2) int16_t * ptr, int16x8x2_t val, __constrange(0,7) int lane);// VST2.16 {d0[0], d2[0]}, [r0]
-_NEON2SSESTORAGE void vst2q_lane_s16_ptr(__transfersize(2) int16_t * ptr, int16x8x2_t * val, __constrange(0,7) int lane);
+_NEON2SSESTORAGE void vst2q_lane_s16_ptr(__transfersize(2) int16_t * ptr, int16x8x2_t const * val, __constrange(0,7) int lane);
 #define vst2q_lane_s16(ptr, val, lane) vst2q_lane_u16((uint16_t*)ptr, val, lane)
 
 //void vst2q_lane_s32(__transfersize(2) int32_t * ptr, int32x4x2_t val, __constrange(0,3) int lane);// VST2.32 {d0[0], d2[0]}, [r0]
-_NEON2SSESTORAGE void vst2q_lane_s32_ptr(__transfersize(2) int32_t * ptr, int32x4x2_t * val, __constrange(0,3) int lane);
+_NEON2SSESTORAGE void vst2q_lane_s32_ptr(__transfersize(2) int32_t * ptr, int32x4x2_t const * val, __constrange(0,3) int lane);
 #define vst2q_lane_s32(ptr, val, lane)  vst2q_lane_u32((uint32_t*)ptr, val, lane)
 
 //void vst2q_lane_f16(__transfersize(2) __fp16 * ptr, float16x8x2_t val, __constrange(0,7) int lane);// VST2.16 {d0[0], d2[0]}, [r0]
-_NEON2SSESTORAGE void vst2q_lane_f16_ptr(__transfersize(2) __fp16 * ptr, float16x8x2_t * val, __constrange(0,7) int lane);
+_NEON2SSESTORAGE void vst2q_lane_f16_ptr(__transfersize(2) __fp16 * ptr, float16x8x2_t const * val, __constrange(0,7) int lane);
 //current IA SIMD doesn't support float16
 
 //void vst2q_lane_f32(__transfersize(2) float32_t * ptr, float32x4x2_t val, __constrange(0,3) int lane)// VST2.32 {d0[0], d2[0]}, [r0]
-_NEON2SSE_INLINE void vst2q_lane_f32_ptr(__transfersize(2) float32_t* ptr, float32x4x2_t* val, __constrange(0,3) int lane)
+_NEON2SSE_INLINE void vst2q_lane_f32_ptr(__transfersize(2) float32_t* ptr, float32x4x2_t const * val, __constrange(0,3) int lane)
 {
     vst1q_lane_f32(ptr, val->val[0], lane);
     vst1q_lane_f32((ptr + 1), val->val[1], lane);
@@ -11650,7 +11655,7 @@ _NEON2SSE_INLINE void vst2q_lane_f32_ptr(__transfersize(2) float32_t* ptr, float
 #define vst2q_lane_f32(ptr,src,lane) vst2q_lane_f32_ptr(ptr,&src,lane)
 
 //void vst2q_lane_p16(__transfersize(2) poly16_t * ptr, poly16x8x2_t val, __constrange(0,7) int lane);// VST2.16 {d0[0], d2[0]}, [r0]
-_NEON2SSESTORAGE void vst2q_lane_p16_ptr(__transfersize(2) poly16_t * ptr, poly16x8x2_t * val, __constrange(0,7) int lane);
+_NEON2SSESTORAGE void vst2q_lane_p16_ptr(__transfersize(2) poly16_t * ptr, poly16x8x2_t const * val, __constrange(0,7) int lane);
 #define vst2q_lane_p16 vst2q_lane_s16
 
 _NEON2SSESTORAGE void vst2_lane_u8(__transfersize(2) uint8_t * ptr, uint8x8x2_t val, __constrange(0,7) int lane);// VST2.8 {d0[0], d1[0]}, [r0]
@@ -11702,7 +11707,7 @@ _NEON2SSESTORAGE void vst2_lane_p16(__transfersize(2) poly16_t * ptr, poly16x4x2
 //************************* Triple lanes  stores *******************************************************
 //*******************************************************************************************************
 //void vst3q_lane_u16(__transfersize(3) uint16_t * ptr, uint16x8x3_t val, __constrange(0,7) int lane)// VST3.16 {d0[0], d2[0], d4[0]}, [r0]
-_NEON2SSE_INLINE void vst3q_lane_u16_ptr(__transfersize(3) uint16_t * ptr, uint16x8x3_t* val, __constrange(0,7) int lane)
+_NEON2SSE_INLINE void vst3q_lane_u16_ptr(__transfersize(3) uint16_t * ptr, uint16x8x3_t const * val, __constrange(0,7) int lane)
 {
     vst2q_lane_u16_ptr(ptr, (uint16x8x2_t*)val, lane);
     vst1q_lane_u16((ptr + 2), val->val[2], lane);
@@ -11710,7 +11715,7 @@ _NEON2SSE_INLINE void vst3q_lane_u16_ptr(__transfersize(3) uint16_t * ptr, uint1
 #define vst3q_lane_u16(ptr, val, lane) vst3q_lane_u16_ptr(ptr, &val, lane)
 
 //void vst3q_lane_u32(__transfersize(3) uint32_t * ptr, uint32x4x3_t val, __constrange(0,3) int lane)// VST3.32 {d0[0], d2[0], d4[0]}, [r0]
-_NEON2SSE_INLINE void vst3q_lane_u32_ptr(__transfersize(3) uint32_t * ptr, uint32x4x3_t* val, __constrange(0,3) int lane)
+_NEON2SSE_INLINE void vst3q_lane_u32_ptr(__transfersize(3) uint32_t * ptr, uint32x4x3_t const * val, __constrange(0,3) int lane)
 {
     vst2q_lane_u32_ptr(ptr, (uint32x4x2_t*)val, lane);
     vst1q_lane_u32((ptr + 2), val->val[2], lane);
@@ -11718,19 +11723,19 @@ _NEON2SSE_INLINE void vst3q_lane_u32_ptr(__transfersize(3) uint32_t * ptr, uint3
 #define vst3q_lane_u32(ptr, val, lane) vst3q_lane_u32_ptr(ptr, &val, lane)
 
 //void vst3q_lane_s16(__transfersize(3) int16_t * ptr, int16x8x3_t val, __constrange(0,7) int lane);// VST3.16 {d0[0], d2[0], d4[0]}, [r0]
-_NEON2SSESTORAGE void vst3q_lane_s16_ptr(__transfersize(3) int16_t * ptr, int16x8x3_t * val, __constrange(0,7) int lane);
+_NEON2SSESTORAGE void vst3q_lane_s16_ptr(__transfersize(3) int16_t * ptr, int16x8x3_t const * val, __constrange(0,7) int lane);
 #define vst3q_lane_s16(ptr, val, lane) vst3q_lane_u16((uint16_t *)ptr, val, lane)
 
 //void vst3q_lane_s32(__transfersize(3) int32_t * ptr, int32x4x3_t val, __constrange(0,3) int lane);// VST3.32 {d0[0], d2[0], d4[0]}, [r0]
-_NEON2SSESTORAGE void vst3q_lane_s32_ptr(__transfersize(3) int32_t * ptr, int32x4x3_t * val, __constrange(0,3) int lane);
+_NEON2SSESTORAGE void vst3q_lane_s32_ptr(__transfersize(3) int32_t * ptr, int32x4x3_t const * val, __constrange(0,3) int lane);
 #define vst3q_lane_s32(ptr, val, lane) vst3q_lane_u32((uint32_t *)ptr, val, lane)
 
 //void vst3q_lane_f16(__transfersize(3) __fp16 * ptr, float16x8x3_t val, __constrange(0,7) int lane);// VST3.16 {d0[0], d2[0], d4[0]}, [r0]
-_NEON2SSESTORAGE void vst3q_lane_f16_ptr(__transfersize(3) __fp16 * ptr, float16x8x3_t * val, __constrange(0,7) int lane);
+_NEON2SSESTORAGE void vst3q_lane_f16_ptr(__transfersize(3) __fp16 * ptr, float16x8x3_t const * val, __constrange(0,7) int lane);
 //current IA SIMD doesn't support float16
 
 //void vst3q_lane_f32(__transfersize(3) float32_t * ptr, float32x4x3_t val, __constrange(0,3) int lane)// VST3.32 {d0[0], d2[0], d4[0]}, [r0]
-_NEON2SSE_INLINE void vst3q_lane_f32_ptr(__transfersize(3) float32_t * ptr, float32x4x3_t* val, __constrange(0,3) int lane)
+_NEON2SSE_INLINE void vst3q_lane_f32_ptr(__transfersize(3) float32_t * ptr, float32x4x3_t const * val, __constrange(0,3) int lane)
 {
     vst1q_lane_f32(ptr,   val->val[0], lane);
     vst1q_lane_f32((ptr + 1),   val->val[1], lane);
@@ -11739,7 +11744,7 @@ _NEON2SSE_INLINE void vst3q_lane_f32_ptr(__transfersize(3) float32_t * ptr, floa
 #define vst3q_lane_f32(ptr,val,lane) vst3q_lane_f32_ptr(ptr,&val,lane)
 
 //void vst3q_lane_p16(__transfersize(3) poly16_t * ptr, poly16x8x3_t val, __constrange(0,7) int lane);// VST3.16 {d0[0], d2[0], d4[0]}, [r0]
-_NEON2SSESTORAGE void vst3q_lane_p16_ptr(__transfersize(3) poly16_t * ptr, poly16x8x3_t * val, __constrange(0,7) int lane);
+_NEON2SSESTORAGE void vst3q_lane_p16_ptr(__transfersize(3) poly16_t * ptr, poly16x8x3_t const * val, __constrange(0,7) int lane);
 #define vst3q_lane_p16 vst3q_lane_s16
 
 _NEON2SSESTORAGE void vst3_lane_u8(__transfersize(3) uint8_t * ptr, uint8x8x3_t val, __constrange(0,7) int lane);// VST3.8 {d0[0], d1[0], d2[0]}, [r0]
@@ -11776,7 +11781,7 @@ _NEON2SSESTORAGE void vst3_lane_s32(__transfersize(3) int32_t * ptr, int32x2x3_t
 #define vst3_lane_s32(ptr, val, lane) vst3_lane_u32((uint32_t *)ptr, val, lane)
 
 //void vst3_lane_f16(__transfersize(3) __fp16 * ptr, float16x4x3_t val, __constrange(0,3) int lane);// VST3.16 {d0[0], d1[0], d2[0]}, [r0]
-_NEON2SSESTORAGE void vst3_lane_f16_ptr(__transfersize(3) __fp16 * ptr, float16x4x3_t * val, __constrange(0,3) int lane);
+_NEON2SSESTORAGE void vst3_lane_f16_ptr(__transfersize(3) __fp16 * ptr, float16x4x3_t const * val, __constrange(0,3) int lane);
 //current IA SIMD doesn't support float16
 
 _NEON2SSESTORAGE void vst3_lane_f32(__transfersize(3) float32_t * ptr, float32x2x3_t val, __constrange(0,1) int lane);// VST3.32 {d0[0], d1[0], d2[0]}, [r0]
@@ -11796,7 +11801,7 @@ _NEON2SSESTORAGE void vst3_lane_p16(__transfersize(3) poly16_t * ptr, poly16x4x3
 //******************************** Quadruple lanes stores ***********************************************
 //*******************************************************************************************************
 //void vst4q_lane_u16(__transfersize(4) uint16_t * ptr, uint16x8x4_t val, __constrange(0,7) int lane)// VST4.16 {d0[0], d2[0], d4[0], d6[0]}, [r0]
-_NEON2SSE_INLINE void vst4q_lane_u16_ptr(__transfersize(4) uint16_t * ptr, uint16x8x4_t* val4, __constrange(0,7) int lane)
+_NEON2SSE_INLINE void vst4q_lane_u16_ptr(__transfersize(4) uint16_t * ptr, uint16x8x4_t const * val4, __constrange(0,7) int lane)
 {
     vst2q_lane_u16_ptr(ptr,    (uint16x8x2_t*)val4->val, lane);
     vst2q_lane_u16_ptr((ptr + 2),((uint16x8x2_t*)val4->val + 1), lane);
@@ -11804,7 +11809,7 @@ _NEON2SSE_INLINE void vst4q_lane_u16_ptr(__transfersize(4) uint16_t * ptr, uint1
 #define vst4q_lane_u16(ptr, val, lane) vst4q_lane_u16_ptr(ptr, &val, lane)
 
 //void vst4q_lane_u32(__transfersize(4) uint32_t * ptr, uint32x4x4_t val, __constrange(0,3) int lane)// VST4.32 {d0[0], d2[0], d4[0], d6[0]}, [r0]
-_NEON2SSE_INLINE void vst4q_lane_u32_ptr(__transfersize(4) uint32_t * ptr, uint32x4x4_t* val4, __constrange(0,3) int lane)
+_NEON2SSE_INLINE void vst4q_lane_u32_ptr(__transfersize(4) uint32_t * ptr, uint32x4x4_t const * val4, __constrange(0,3) int lane)
 {
     vst2q_lane_u32_ptr(ptr,     (uint32x4x2_t*)val4->val, lane);
     vst2q_lane_u32_ptr((ptr + 2), ((uint32x4x2_t*)val4->val + 1), lane);
@@ -11812,19 +11817,19 @@ _NEON2SSE_INLINE void vst4q_lane_u32_ptr(__transfersize(4) uint32_t * ptr, uint3
 #define vst4q_lane_u32(ptr, val, lane) vst4q_lane_u32_ptr(ptr, &val, lane)
 
 //void vst4q_lane_s16(__transfersize(4) int16_t * ptr, int16x8x4_t val, __constrange(0,7) int lane);// VST4.16 {d0[0], d2[0], d4[0], d6[0]}, [r0]
-_NEON2SSESTORAGE void vst4q_lane_s16_ptr(__transfersize(4) int16_t * ptr, int16x8x4_t * val, __constrange(0,7) int lane);
+_NEON2SSESTORAGE void vst4q_lane_s16_ptr(__transfersize(4) int16_t * ptr, int16x8x4_t const * val, __constrange(0,7) int lane);
 #define vst4q_lane_s16(ptr,val,lane) vst4q_lane_u16((uint16_t *)ptr,val,lane)
 
 //void vst4q_lane_s32(__transfersize(4) int32_t * ptr, int32x4x4_t val, __constrange(0,3) int lane);// VST4.32 {d0[0], d2[0], d4[0], d6[0]}, [r0]
-_NEON2SSESTORAGE void vst4q_lane_s32_ptr(__transfersize(4) int32_t * ptr, int32x4x4_t * val, __constrange(0,3) int lane);
+_NEON2SSESTORAGE void vst4q_lane_s32_ptr(__transfersize(4) int32_t * ptr, int32x4x4_t const * val, __constrange(0,3) int lane);
 #define vst4q_lane_s32(ptr,val,lane) vst4q_lane_u32((uint32_t *)ptr,val,lane)
 
 //void vst4q_lane_f16(__transfersize(4) __fp16 * ptr, float16x8x4_t val, __constrange(0,7) int lane);// VST4.16 {d0[0], d2[0], d4[0], d6[0]}, [r0]
-_NEON2SSESTORAGE void vst4q_lane_f16_ptr(__transfersize(4) __fp16 * ptr, float16x8x4_t * val, __constrange(0,7) int lane);
+_NEON2SSESTORAGE void vst4q_lane_f16_ptr(__transfersize(4) __fp16 * ptr, float16x8x4_t const * val, __constrange(0,7) int lane);
 //current IA SIMD doesn't support float16
 
 //void vst4q_lane_f32(__transfersize(4) float32_t * ptr, float32x4x4_t val, __constrange(0,3) int lane)// VST4.32 {d0[0], d2[0], d4[0], d6[0]}, [r0]
-_NEON2SSE_INLINE void vst4q_lane_f32_ptr(__transfersize(4) float32_t * ptr, float32x4x4_t* val, __constrange(0,3) int lane)
+_NEON2SSE_INLINE void vst4q_lane_f32_ptr(__transfersize(4) float32_t * ptr, float32x4x4_t const * val, __constrange(0,3) int lane)
 {
     vst1q_lane_f32(ptr,   val->val[0], lane);
     vst1q_lane_f32((ptr + 1), val->val[1], lane);
@@ -11834,7 +11839,7 @@ _NEON2SSE_INLINE void vst4q_lane_f32_ptr(__transfersize(4) float32_t * ptr, floa
 #define vst4q_lane_f32(ptr,val,lane) vst4q_lane_f32_ptr(ptr,&val,lane)
 
 //void vst4q_lane_p16(__transfersize(4) poly16_t * ptr, poly16x8x4_t val, __constrange(0,7) int lane);// VST4.16 {d0[0], d2[0], d4[0], d6[0]}, [r0]
-_NEON2SSESTORAGE void vst4q_lane_p16_ptr(__transfersize(4) poly16_t * ptr, poly16x8x4_t * val, __constrange(0,7) int lane);
+_NEON2SSESTORAGE void vst4q_lane_p16_ptr(__transfersize(4) poly16_t * ptr, poly16x8x4_t const * val, __constrange(0,7) int lane);
 #define vst4q_lane_p16 vst4q_lane_u16
 
 _NEON2SSESTORAGE void vst4_lane_u8(__transfersize(4) uint8_t * ptr, uint8x8x4_t val, __constrange(0,7) int lane);// VST4.8 {d0[0], d1[0], d2[0], d3[0]}, [r0]
@@ -11874,7 +11879,7 @@ _NEON2SSESTORAGE void vst4_lane_s32(__transfersize(4) int32_t * ptr, int32x2x4_t
 #define vst4_lane_s32(ptr, val, lane) vst4_lane_u32((uint32_t*)ptr, val, lane)
 
 //void vst4_lane_f16(__transfersize(4) __fp16 * ptr, float16x4x4_t val, __constrange(0,3) int lane);// VST4.16 {d0[0], d1[0], d2[0], d3[0]}, [r0]
-_NEON2SSESTORAGE void vst4_lane_f16_ptr(__transfersize(4) __fp16 * ptr, float16x4x4_t * val, __constrange(0,3) int lane);
+_NEON2SSESTORAGE void vst4_lane_f16_ptr(__transfersize(4) __fp16 * ptr, float16x4x4_t const * val, __constrange(0,3) int lane);
 //current IA SIMD doesn't support float16
 
 _NEON2SSESTORAGE void vst4_lane_f32(__transfersize(4) float32_t * ptr, float32x2x4_t  val, __constrange(0,1) int lane); // VST4.32 {d0[0], d1[0], d2[0], d3[0]}, [r0]
@@ -13093,7 +13098,9 @@ _NEON2SSE_INLINE uint32x2_t vqmovun_s64(int64x2_t a)
 // ********************************************************
 //VTBL (Vector Table Lookup) uses byte indexes in a control vector to look up byte values
 //in a table and generate a new vector. Indexes out of range return 0.
+
 //for Intel SIMD we need to set the MSB to 1 for zero return
+//if b is unsigned ( > max signed)  or negative it has MSB 1 set and doesn't need any special processing
 _NEON2SSESTORAGE uint8x8_t vtbl1_u8(uint8x8_t a, uint8x8_t b); // VTBL.8 d0, {d0}, d0
 _NEON2SSE_INLINE uint8x8_t vtbl1_u8(uint8x8_t a, uint8x8_t b)
 {
@@ -13193,14 +13200,16 @@ _NEON2SSESTORAGE uint8x8_t vtbx1_u8(uint8x8_t a, uint8x8_t b, uint8x8_t c); // V
 _NEON2SSE_INLINE uint8x8_t vtbx1_u8(uint8x8_t a, uint8x8_t b, uint8x8_t c)
 {
     uint8x8_t res64;
-    __m128i c7, maskgt, sh, c128;
-    c7 = _mm_set1_epi8 (7);
+    __m128i c8, maskgt, sh, c128;
+    c8 = _mm_set1_epi8(8);
     c128 = _pM128i(c);
-    maskgt = _mm_cmpgt_epi8(c128,c7);
-    c7 = _mm_and_si128(maskgt,_pM128i(a));
+    //need to pre-clamp c values to avoid unsigned comparison
+    c128 = _mm_min_epu8(c128, c8);
+    maskgt = _mm_cmpgt_epi8(c8,c128);
     sh = _mm_shuffle_epi8(_pM128i(b),c128);
-    sh = _mm_andnot_si128(maskgt,sh);
-    sh =  _mm_or_si128(sh,c7);
+    sh = _mm_and_si128(maskgt,sh);
+    c8 = _mm_andnot_si128(maskgt,_pM128i(a));
+    sh =  _mm_or_si128(sh,c8);
     return64(sh);
 }
 
@@ -13214,15 +13223,17 @@ _NEON2SSESTORAGE uint8x8_t vtbx2_u8(uint8x8_t a, uint8x8x2_t b, uint8x8_t c); //
 _NEON2SSE_INLINE uint8x8_t vtbx2_u8(uint8x8_t a, uint8x8x2_t b, uint8x8_t c)
 {
     uint8x8_t res64;
-    __m128i c15, b01, maskgt15, sh, c128;
-    c15 = _mm_set1_epi8 (15);
+    __m128i c16, b01, maskgt15, sh, c128;
+    c16 = _mm_set1_epi8(16);
     c128 = _pM128i(c);
-    maskgt15 = _mm_cmpgt_epi8(c128, c15);
-    c15 = _mm_and_si128(maskgt15, _pM128i(a));
+    //need to pre-clamp c values to avoid unsigned comparison
+    c128 = _mm_min_epu8(c128, c16);
+    maskgt15 = _mm_cmpgt_epi8(c16,c128);
     b01 = _mm_unpacklo_epi64(_pM128i(b.val[0]), _pM128i(b.val[1]));
     sh =  _mm_shuffle_epi8(b01, c128);
-    sh = _mm_andnot_si128(maskgt15, sh);
-    sh =  _mm_or_si128(sh,c15);
+    sh = _mm_and_si128(maskgt15, sh);
+    c16 = _mm_andnot_si128(maskgt15, _pM128i(a));
+    sh =  _mm_or_si128(sh,c16);
     return64(sh);
 }
 
@@ -13237,19 +13248,21 @@ _NEON2SSE_INLINE uint8x8_t vtbx3_u8(uint8x8_t a, uint8x8x3_t b, uint8x8_t c)
 {
     //solution may be not optimal
     uint8x8_t res64;
-    __m128i c15, c23, maskgt15, maskgt23, sh0, sh1, b01, c128;
+    __m128i c15, c24, maskgt15, maskgt23, sh0, sh1, b01, c128;
     c15 = _mm_set1_epi8 (15);
-    c23 = _mm_set1_epi8 (23);
+    c24 = _mm_set1_epi8 (24);
     c128 = _pM128i(c);
+    //need to pre-clamp c values to avoid unsigned comparison
+    c128 = _mm_min_epu8(c128, c24);
+    maskgt23 = _mm_cmpgt_epi8(c24,c128);
     maskgt15 = _mm_cmpgt_epi8(c128,c15);
-    maskgt23 = _mm_cmpgt_epi8(c128,c23);
-    c23 = _mm_and_si128(maskgt23, _pM128i(a));
+    c24 = _mm_andnot_si128(maskgt23, _pM128i(a));
     b01 = _mm_unpacklo_epi64(_pM128i(b.val[0]),_pM128i(b.val[1]));
     sh0 =  _mm_shuffle_epi8(b01, c128);
     sh1 =  _mm_shuffle_epi8(_pM128i(b.val[2]), c128); //for bi>15 bi is wrapped (bi-=15)
     sh0 = _MM_BLENDV_EPI8(sh0, sh1, maskgt15);
-    sh0 = _mm_andnot_si128(maskgt23,sh0);
-    sh0 = _mm_or_si128(sh0,c23);
+    sh0 = _mm_and_si128(maskgt23,sh0);
+    sh0 = _mm_or_si128(sh0,c24);
     return64(sh0);
 }
 
@@ -13264,21 +13277,23 @@ _NEON2SSE_INLINE uint8x8_t vtbx4_u8(uint8x8_t a, uint8x8x4_t b, uint8x8_t c)
 {
     //solution may be not optimal
     uint8x8_t res64;
-    __m128i c15, c31, maskgt15, maskgt31, sh0, sh1, b01, b23, c128;
+    __m128i c15, c32, maskgt15, maskgt31, sh0, sh1, b01, b23, c128;
     c15 = _mm_set1_epi8 (15);
-    c31 = _mm_set1_epi8 (31);
+    c32 = _mm_set1_epi8 (32);
     c128 = _pM128i(c);
+    //need to pre-clamp c values to avoid unsigned comparison
+    c128 = _mm_min_epu8(c128, c32);
     maskgt15 = _mm_cmpgt_epi8(c128,c15);
-    maskgt31 = _mm_cmpgt_epi8(c128,c31);
-    c31 = _mm_and_si128(maskgt31, _pM128i(a));
+    maskgt31 = _mm_cmpgt_epi8(c32,c128);
+    c32 = _mm_andnot_si128(maskgt31, _pM128i(a));
 
     b01 = _mm_unpacklo_epi64(_pM128i(b.val[0]),_pM128i(b.val[1]));
     b23 = _mm_unpacklo_epi64(_pM128i(b.val[2]),_pM128i(b.val[3]));
     sh0 =  _mm_shuffle_epi8(b01, c128);
     sh1 =  _mm_shuffle_epi8(b23, c128); //for bi>15 bi is wrapped (bi-=15)
     sh0 = _MM_BLENDV_EPI8(sh0, sh1, maskgt15);
-    sh0 = _mm_andnot_si128(maskgt31,sh0);
-    sh0 =  _mm_or_si128(sh0,c31);
+    sh0 = _mm_and_si128(maskgt31,sh0);
+    sh0 =  _mm_or_si128(sh0,c32);
     return64(sh0);
 }
 
@@ -13774,7 +13789,7 @@ _NEON2SSE_INLINE uint32x4_t vmull_n_u16(uint16x4_t vec1, uint16_t val2) // VMULL
 {
     uint16x4_t b16x4;
     b16x4 = vdup_n_s16(val2);
-    return vmull_s16(vec1, b16x4);
+    return vmull_u16(vec1, b16x4);
 }
 
 _NEON2SSESTORAGE uint64x2_t vmull_n_u32(uint32x2_t vec1, uint32_t val2); // VMULL.U32 q0,d0,d0[0]
@@ -13813,7 +13828,7 @@ _NEON2SSE_INLINE uint32x4_t vmull_lane_u16(uint16x4_t vec1, uint16x4_t val2, __c
     uint16x4_t b;
     vlane = vget_lane_s16(val2, val3);
     b = vdup_n_s16(vlane);
-    return vmull_s16(vec1, b);
+    return vmull_u16(vec1, b);
 }
 
 _NEON2SSESTORAGE uint64x2_t vmull_lane_u32(uint32x2_t vec1, uint32x2_t val2, __constrange(0, 1) int val3); // VMULL.U32 q0,d0,d0[0]
