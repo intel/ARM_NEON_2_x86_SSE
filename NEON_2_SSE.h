@@ -6798,11 +6798,11 @@ _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(uint32x2_t vrecpe_u32(uint32x2_t 
             res.m64_u32[i] = 0xffffffff;
         }else{
             resf =  (float) (a.m64_u32[i] * (0.5f / (uint32_t)(1 << 31)));
-            q = (int)(resf * 512.0); /* a in units of 1/512 rounded down */
-            r = (float)(1.0 / (((float)q + 0.5) / 512.0)); /* reciprocal r */
-            s = (int)(256.0 * r + 0.5); /* r in units of 1/256 rounded to nearest */
-            r =  (float)s / 256.0;
-            res.m64_u32[i] = r * (uint32_t)(1 << 31);
+            q = (int)(resf * 512.0f); /* a in units of 1/512 rounded down */
+            r = (float)(1.0f / (((float)q + 0.5f) / 512.0f)); /* reciprocal r */
+            s = (int)(256.0f * r + 0.5f); /* r in units of 1/256 rounded to nearest */
+            r =  (float)s / 256.0f;
+            res.m64_u32[i] = (uint32_t)(r * (uint32_t)(1 << 31));
         }
     }
     return res;
@@ -6827,10 +6827,10 @@ _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(uint32x4_t vrecpeq_u32(uint32x4_t
     zero = _mm_setzero_si128();
     for (i =0; i<4; i++){
         resf = (atmp[i] * (0.5f / (uint32_t) (1 << 31)));  //  2.3283064365386963E-10 ~(0.5f / (uint32_t) (1 << 31))
-        q = (int)(resf * 512.0); /* a in units of 1/512 rounded down */
-        r = 1.0 / (((float)q + 0.5) / 512.0); /* reciprocal r */
-        s = (int)(256.0 * r + 0.5); /* r in units of 1/256 rounded to nearest */
-        r =  (float)s / 256.0;
+        q = (int)(resf * 512.0f); /* a in units of 1/512 rounded down */
+        r = 1.0f / (((float)q + 0.5f) / 512.0f); /* reciprocal r */
+        s = (int)(256.0f * r + 0.5f); /* r in units of 1/256 rounded to nearest */
+        r =  (float)s / 256.0f;
         res[i] = (uint32_t) (r * (((uint32_t)1) << 31) );
     }
     res128 = _mm_load_si128((__m128i*)res);
@@ -6868,14 +6868,14 @@ _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(uint32x2_t vrsqrte_u32(uint32x2_t
             res.m64_u32[i] = 0xffffffff;
         }else{
             resf =  (float) (a.m64_u32[i] * (0.5f / (uint32_t)(1 << 31)));
-            coeff = (resf < 0.5)? 512.0 : 256.0 ; /* range 0.25 <= resf < 0.5  or range 0.5 <= resf < 1.0*/
+            coeff = (resf < 0.5f)? 512.0f : 256.0f ; /* range 0.25 <= resf < 0.5  or range 0.5 <= resf < 1.0*/
             q0 = (int)(resf * coeff); /* a in units of 1/512 rounded down */
-            r = ((float)q0 + 0.5) / coeff;
+            r = ((float)q0 + 0.5f) / coeff;
             tmp = _mm_rsqrt_ss(_mm_load_ss( &r));/* reciprocal root r */
             _mm_store_ss(&r, tmp);
-            s = (int)(256.0 * r + 0.5); /* r in units of 1/256 rounded to nearest */
-            r = (float)(s / 256.0);
-            res.m64_u32[i] = r * (((uint32_t)1) << 31);
+            s = (int)(256.0f * r + 0.5f); /* r in units of 1/256 rounded to nearest */
+            r = (float)(s / 256.0f);
+            res.m64_u32[i] = (uint32_t)(r * (((uint32_t)1) << 31));
         }
     }
     return res;
@@ -6899,13 +6899,13 @@ _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(uint32x4_t vrsqrteq_u32(uint32x4_
     zero = _mm_setzero_si128();
     for (i =0; i<4; i++){
         resf =  (float) (atmp[i] * (0.5f / (uint32_t)(1 << 31)));
-        coeff = (float)((resf < 0.5)? 512.0 : 256.0); /* range 0.25 <= resf < 0.5  or range 0.5 <= resf < 1.0*/
+        coeff = (float)((resf < 0.5f)? 512.0f : 256.0f); /* range 0.25 <= resf < 0.5  or range 0.5 <= resf < 1.0*/
         q0 = (int)(resf * coeff); /* a in units of 1/512 rounded down */
-        r = ((float)q0 + 0.5) / coeff;
+        r = ((float)q0 + 0.5f) / coeff;
         tmp = _mm_rsqrt_ss(_mm_load_ss( &r));/* reciprocal root r */
         _mm_store_ss(&r, tmp);
-        s = (int)(256.0 * r + 0.5); /* r in units of 1/256 rounded to nearest */
-        r = (float)s / 256.0;
+        s = (int)(256.0f * r + 0.5f); /* r in units of 1/256 rounded to nearest */
+        r = (float)s / 256.0f;
         res[i] = (uint32_t) (r * (((uint32_t)1) << 31) );
     }
     res128 = _mm_load_si128((__m128i*)res);
@@ -6955,8 +6955,8 @@ _NEON2SSESTORAGE float32x4_t vrsqrtsq_f32(float32x4_t a, float32x4_t b); // VRSQ
 _NEON2SSE_INLINE float32x4_t vrsqrtsq_f32(float32x4_t a, float32x4_t b) // VRSQRTS.F32 q0, q0, q0
 {
     __m128 f3, f05, mul;
-    f3 =  _mm_set1_ps(3.);
-    f05 =  _mm_set1_ps(0.5);
+    f3 =  _mm_set1_ps(3.f);
+    f05 =  _mm_set1_ps(0.5f);
     mul = _mm_mul_ps(a,b);
     f3 = _mm_sub_ps(f3,mul);
     return _mm_mul_ps (f3, f05);
@@ -16711,8 +16711,8 @@ _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(float64x2_t vrndnq_f64(float64x2_
 {
      _NEON2SSE_ALIGN_16 float64_t res[2];
      _mm_store_pd(res, a);
-     res[0] = nearbyintf(res[0]);
-     res[1] = nearbyintf(res[1]);
+     res[0] = nearbyint(res[0]);
+     res[1] = nearbyint(res[1]);
      return _mm_load_pd(res);
 }
 #endif
