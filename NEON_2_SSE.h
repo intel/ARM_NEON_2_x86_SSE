@@ -6854,6 +6854,7 @@ _NEON2SSE_INLINE float32x2_t vrsqrte_f32(float32x2_t a) //use low 64 bits
     return res64;
 }
 
+
 _NEON2SSESTORAGE uint32x2_t vrsqrte_u32(uint32x2_t a); // VRSQRTE.U32 d0,d0
 _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(uint32x2_t vrsqrte_u32(uint32x2_t a), _NEON2SSE_REASON_SLOW_SERIAL)
 {
@@ -6863,7 +6864,8 @@ _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(uint32x2_t vrsqrte_u32(uint32x2_t
   // from ARM implementation due to _mm_rsqrt_ps precision
   uint32x2_t res;
   int i;
-  _NEON2SSE_ALIGN_16 float rr[2], coeff[2];
+  float32x2_t rr;
+  _NEON2SSE_ALIGN_16 float coeff[2];
   union {
     double d[2];
     uint64_t u64[2];
@@ -6899,13 +6901,13 @@ _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(uint32x2_t vrsqrte_u32(uint32x2_t
   s_f = _mm_cvtepi32_ps(_mm_cvttps_epi32(s_f));
 #endif
   s_f = _mm_div_ps(s_f, c256_f);
-  _M64f(rr[0], s_f);
+  _M64f(rr, s_f);
 
   for (i = 0; i < 2; i++) {
     if ((a.m64_u32[i] & 0xc0000000) == 0) { // a <=0x3fffffff
       res.m64_u32[i] = 0xffffffff;
     } else {
-      res.m64_u32[i] = rr[i] * (((uint32_t)1) << 31);
+      res.m64_u32[i] = rr.m64_f32[i] * (((uint32_t)1) << 31);
     }
   }
   return res;
