@@ -128,16 +128,25 @@
 #   include <limits.h>
 #endif
 
+
+typedef   float float32_t;
+#if !defined(__clang__)
+typedef   float __fp16;
+#endif
+
+typedef   double float64_t;
+
 typedef union   __m64_128 {
     uint64_t m64_u64[1];
-    float m64_f32[2];
-    int8_t m64_i8[8];
-    int16_t m64_i16[4];
-    int32_t m64_i32[2];
     int64_t m64_i64[1];
-    uint8_t m64_u8[8];
-    uint16_t m64_u16[4];
+	float64_t m64_d64[1];
     uint32_t m64_u32[2];
+    int32_t m64_i32[2];
+    float32_t m64_f32[2];
+    int16_t m64_i16[4];
+    uint16_t m64_u16[4];
+    int8_t m64_i8[8];
+    uint8_t m64_u8[8];
 } __m64_128;
 
 typedef __m64_128 int8x8_t;
@@ -178,14 +187,6 @@ typedef __m128i poly16x8_t;
 #   define SINT_MIN     INT_MIN /* min signed int value */
 #   define SINT_MAX     INT_MAX /* max signed int value */
 #endif
-
-typedef   float float32_t;
-#if !defined(__clang__)
-typedef   float __fp16;
-#endif
-
-typedef   double float64_t;
-
 
 typedef  uint8_t poly8_t;
 typedef  uint16_t poly16_t;
@@ -6862,12 +6863,9 @@ _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(uint32x2_t vrsqrte_u32(uint32x2_t
   // reference manual (VRSQRTE instruction) But results may be slightly different
   // from ARM implementation due to _mm_rsqrt_ps precision
   uint32x2_t res;
+  __m64_128 res64[2];
   int i;
-  _NEON2SSE_ALIGN_16 float rr[2], coeff[2];
-  union {
-    double d[2];
-    uint64_t u64[2];
-  } u;
+  _NEON2SSE_ALIGN_16 float coeff[2];
   for (i = 0; i < 2; i++) {
     // Generate double-precision value = operand * 2^(-32). This has zero sign
     // bit, with:
@@ -6882,11 +6880,11 @@ _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(uint32x2_t vrsqrte_u32(uint32x2_t
       dp_operand =
           (0x3fdLL << 52) | (((uint64_t)a.m64_u32[i] & 0x3FFFFFFF) << 22);
     }
-    u.u64[i] = dp_operand;
-	coeff[i] = (u.d[i] < 0.5) ? 512.0 : 256.0; /* range 0.25 <= resf < 0.5  or range 0.5 <= resf < 1.0*/
+	res64[i].m64_u64[0] = dp_operand;
+	coeff[i] = (res64[i].m64_d64[0] < 0.5) ? 512.0 : 256.0; /* range 0.25 <= resf < 0.5  or range 0.5 <= resf < 1.0*/
   }
   __m128 coeff_f = _mm_load_ps(coeff);
-  __m128d q0_d = _mm_mul_pd(_mm_loadu_pd(u.d), _mm_cvtps_pd(coeff_f));
+  __m128d q0_d = _mm_mul_pd(_mm_loadu_pd(&res64[0].m64_d64[0]), _mm_cvtps_pd(coeff_f));
   __m128i q0_i = _mm_cvttpd_epi32(q0_d);
   __m128 c05_f = _mm_set1_ps(0.5);
   __m128 r_f = _mm_div_ps(_mm_add_ps(_mm_cvtepi32_ps(q0_i), c05_f), coeff_f);
@@ -6899,13 +6897,13 @@ _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(uint32x2_t vrsqrte_u32(uint32x2_t
   s_f = _mm_cvtepi32_ps(_mm_cvttps_epi32(s_f));
 #endif
   s_f = _mm_div_ps(s_f, c256_f);
-  _M64f(rr[0], s_f);
+  _M64f(res64[0], s_f);
 
   for (i = 0; i < 2; i++) {
     if ((a.m64_u32[i] & 0xc0000000) == 0) { // a <=0x3fffffff
       res.m64_u32[i] = 0xffffffff;
     } else {
-      res.m64_u32[i] = rr[i] * (((uint32_t)1) << 31);
+      res.m64_u32[i] = res64[0].m64_f32[i] * (((uint32_t)1) << 31);
     }
   }
   return res;
@@ -6922,12 +6920,9 @@ _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(uint32x4_t vrsqrteq_u32(uint32x4_
   // reference manual (VRSQRTE instruction) But results may be slightly different
   // from ARM implementation due to _mm_rsqrt_ps precision
   int i;
-  union {
-    double d[4];
-    uint64_t u64[4];
-  } u;
   _NEON2SSE_ALIGN_16 uint32_t atmp[4], res[4];
   _NEON2SSE_ALIGN_16 float coeff[4], rr[4];
+  __m64_128 res64[4];
   _mm_store_si128((__m128i *)atmp, a);
   for (i = 0; i < 4; i++) {
     // Generate double-precision value = operand * 2^(-32). This has zero sign
@@ -6941,16 +6936,16 @@ _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(uint32x4_t vrsqrteq_u32(uint32x4_
     } else {
       dp_operand = (0x3fdLL << 52) | (((uint64_t)atmp[i] & 0x3FFFFFFF) << 22);
     }
-    u.u64[i] = dp_operand;
-    coeff[i] = (u.d[i] < 0.5) ? 512.0 : 256.0; /* range 0.25 <= resf < 0.5  or range 0.5 <= resf < 1.0*/
+	res64[i].m64_u64[0] = dp_operand;
+	coeff[i] = (res64[i].m64_d64[0] < 0.5) ? 512.0 : 256.0; /* range 0.25 <= resf < 0.5  or range 0.5 <= resf < 1.0*/
   }
   __m128 c05_f = _mm_set1_ps(0.5);
   __m128 coeff_f = _mm_load_ps(coeff);
-  __m128d q0_d = _mm_mul_pd(_mm_loadu_pd(u.d), _mm_cvtps_pd(coeff_f));
+  __m128d q0_d = _mm_mul_pd(_mm_loadu_pd(&res64[0].m64_d64[0]), _mm_cvtps_pd(coeff_f));
   __m128i q0_i = _mm_cvttpd_epi32(q0_d);
 
   __m128 coeff_f2 = _M128(_pM128i(coeff[2]));
-  q0_d = _mm_mul_pd(_mm_loadu_pd(u.d + 2), _mm_cvtps_pd(coeff_f2));
+  q0_d = _mm_mul_pd(_mm_loadu_pd(&res64[2].m64_d64[0]), _mm_cvtps_pd(coeff_f2));
   __m128i q0_i2 = _mm_cvttpd_epi32(q0_d);
   coeff_f = _M128(_mm_unpacklo_epi64(_M128i(coeff_f), _M128i(coeff_f2)));
   q0_i = _mm_unpacklo_epi64(q0_i, q0_i2);
