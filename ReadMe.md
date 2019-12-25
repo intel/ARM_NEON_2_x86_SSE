@@ -1,6 +1,6 @@
 *****************************************************************************************
  The NEON_2_SSE.h file is intended to simplify ARM->IA32 porting.
- It makes the correspondence (or a real port) between ARM NEON intrinsics (as defined in "arm_neon.h") header
+ It makes the correspondence (or a real porting) of ARM NEON intrinsics as defined in "arm_neon.h" header
  and x86 SSE (up to SSE4.2) intrinsic functions as defined in corresponding x86 compilers headers files.
  ****************************************************************************************
 
