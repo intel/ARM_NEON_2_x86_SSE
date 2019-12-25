@@ -13629,14 +13629,14 @@ _NEON2SSE_INLINE int64x2_t vmlsl_lane_s32(int64x2_t a, int32x2_t b, int32x2_t v,
     return vmlsl_s32(a, b, c);
 }
 
-_NEON2SSESTORAGE uint32x4_t vmlsl_lane_u16(uint32x4_t a, uint16x4_t b, uint16x4_t v, __constrange(0,3) int l); // VMLAL.s16 q0, d0, d0[0]
-_NEON2SSE_INLINE uint32x4_t vmlsl_lane_u16(uint32x4_t a, uint16x4_t b, uint16x4_t v, __constrange(0,3) int l) // VMLAL.s16 q0, d0, d0[0]
+_NEON2SSESTORAGE uint32x4_t vmlsl_lane_u16(uint32x4_t a, uint16x4_t b, uint16x4_t v, __constrange(0,3) int l); // VMLAL.U16 q0, d0, d0[0]
+_NEON2SSE_INLINE uint32x4_t vmlsl_lane_u16(uint32x4_t a, uint16x4_t b, uint16x4_t v, __constrange(0,3) int l) // VMLAL.U16 q0, d0, d0[0]
 {
     uint16_t vlane;
     uint16x4_t c;
-    vlane = vget_lane_s16(v, l);
-    c = vdup_n_s16(vlane);
-    return vmlsl_s16(a, b, c);
+    vlane = vget_lane_u16(v, l);
+    c = vdup_n_u16(vlane);
+    return vmlsl_u16(a, b, c);
 }
 
 _NEON2SSESTORAGE uint64x2_t vmlsl_lane_u32(uint64x2_t a, uint32x2_t b, uint32x2_t v, __constrange(0,1) int l); // VMLAL.U32 q0, d0, d0[0]
