@@ -70,7 +70,11 @@
 #   define _GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
 #   define _NEON2SSESTORAGE static
 #   define _NEON2SSE_ALIGN_16  __attribute__((aligned(16)))
-#   define _NEON2SSE_INLINE _NEON2SSESTORAGE inline __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+#   ifdef __clang__
+#       define _NEON2SSE_INLINE _NEON2SSESTORAGE inline __attribute__((__gnu_inline__, __always_inline__))
+#   else
+#       define _NEON2SSE_INLINE _NEON2SSESTORAGE inline __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+#   endif
 #   ifndef NEON2SSE_DISABLE_PERFORMANCE_WARNING
 #       if _GCC_VERSION <  40500
 #           define _NEON2SSE_PERFORMANCE_WARNING(function, explanation)   __attribute__((deprecated)) function
