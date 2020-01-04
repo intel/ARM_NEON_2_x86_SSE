@@ -1819,6 +1819,18 @@ _NEON2SSESTORAGE uint32x2_t vqmovun_s64(int64x2_t a); // VQMOVUN.S64 d0,q0
 _NEON2SSESTORAGE uint8x8_t vtbl1_u8(uint8x8_t a, uint8x8_t b); // VTBL.8 d0, {d0}, d0
 _NEON2SSESTORAGE int8x8_t vtbl1_s8(int8x8_t a, int8x8_t b); // VTBL.8 d0, {d0}, d0
 _NEON2SSESTORAGE poly8x8_t vtbl1_p8(poly8x8_t a, uint8x8_t b); // VTBL.8 d0, {d0}, d0
+_NEON2SSESTORAGE uint8x16_t vqtbl1q_u8(uint8x16_t a, uint8x16_t b); // VQTBL.16 q0, {q0}, q0
+_NEON2SSESTORAGE int8x16_t vqtbl1q_s8(int8x16_t a, uint8x16_t b); // VQTBL.16 q0, {q0}, q0
+_NEON2SSESTORAGE poly8x16_t vqtbl1q_p8(poly8x16_t a, uint8x16_t b); // VQTBL.16 q0, {q0}, q0
+_NEON2SSESTORAGE uint8x16_t vqtbl2q_u8(uint8x16x2_t a, uint8x16_t b); // VQTBL.16 q0, {q0, q1}, q0
+_NEON2SSESTORAGE int8x16_t vqtbl2q_s8(int8x16x2_t a, uint8x16_t b); // VQTBL.16 q0, {q0, q1}, q0
+_NEON2SSESTORAGE poly8x16_t vqtbl2q_p8(poly8x16x2_t a, uint8x16_t b); // VQTBL.16 q0, {q0, q1}, q0
+_NEON2SSESTORAGE uint8x16_t vqtbl3q_u8(uint8x16x3_t a, uint8x16_t b); // VQTBL.16 q0, {q0, q1, q2}, q0
+_NEON2SSESTORAGE int8x16_t vqtbl3q_s8(int8x16x3_t a, uint8x16_t b); // VQTBL.16 q0, {q0, q1 q2}, q0
+_NEON2SSESTORAGE poly8x16_t vqtbl3q_p8(poly8x16x3_t a, uint8x16_t b); // VQTBL.16 q0, {q0, q1 q2}, q0
+_NEON2SSESTORAGE uint8x16_t vqtbl4q_u8(uint8x16x4_t a, uint8x16_t b); // VQTBL.16 q0, {q0, q1, q2, q3}, q0
+_NEON2SSESTORAGE int8x16_t vqtbl4q_s8(int8x16x4_t a, uint8x16_t b); // VQTBL.16 q0, {q0, q1 q2, q3}, q0
+_NEON2SSESTORAGE poly8x16_t vqtbl4q_p8(poly8x16x4_t a, uint8x16_t b); // VQTBL.16 q0, {q0, q1 q2, q3}, q0
 //Extended table look up intrinsics
 _NEON2SSESTORAGE uint8x8_t vtbx1_u8(uint8x8_t a, uint8x8_t b, uint8x8_t c); // VTBX.8 d0, {d0}, d0
 _NEON2SSESTORAGE int8x8_t vtbx1_s8(int8x8_t a, int8x8_t b, int8x8_t c); // VTBX.8 d0, {d0}, d0
@@ -13249,6 +13261,121 @@ _NEON2SSESTORAGE int8x8_t vtbl4_s8(int8x8x4_t a, int8x8_t b); // VTBL.8 d0, {d0,
 
 _NEON2SSESTORAGE poly8x8_t vtbl4_p8(poly8x8x4_t a, uint8x8_t b); // VTBL.8 d0, {d0, d1, d2, d3}, d0
 #define vtbl4_p8 vtbl4_u8
+
+_NEON2SSESTORAGE uint8x16_t vqtbl1q_u8(uint8x16_t a, uint8x16_t b); // VQTBL.16 q0, {q0}, q0
+_NEON2SSE_INLINE uint8x16_t vqtbl1q_u8(uint8x16_t a, uint8x16_t b)
+{
+    __m128i c15, maskgt, bmask;
+    c15 = _mm_set1_epi8(15);
+    maskgt = _mm_cmpgt_epi8(b, c15);
+    bmask = _mm_or_si128(b, maskgt);
+    return _mm_shuffle_epi8(a, bmask);
+}
+
+_NEON2SSESTORAGE int8x16_t vqtbl1q_s8(int8x16_t a, uint8x16_t b); // VQTBL.16 q0, {q0}, q0
+#define vqtbl1q_s8 vqtbl1q_u8
+
+_NEON2SSESTORAGE poly8x16_t vqtbl1q_p8(poly8x16_t a, uint8x16_t b); // VQTBL.16 q0, {q0}, q0
+#define vqtbl1q_p8 vqtbl1q_u8
+
+_NEON2SSESTORAGE uint8x16_t vqtbl2q_u8(uint8x16x2_t a, uint8x16_t b); // VQTBL.16 q0, {q0, q1}, q0
+_NEON2SSE_INLINE uint8x16_t vqtbl2q_u8(uint8x16x2_t a, uint8x16_t b)
+{
+    __m128i c15, c16, maskgt, bmask, res, tmp;
+    
+    c15 = _mm_set1_epi8(15);
+    c16 = _mm_set1_epi8(16);
+    
+    maskgt = _mm_cmpgt_epi8(b, c15);
+    bmask = _mm_or_si128(b, maskgt);
+    res = _mm_shuffle_epi8(a.val[0], bmask);
+    
+    b = _mm_sub_epi8(b, c16);
+    maskgt = _mm_cmpgt_epi8(b, c15);
+    bmask = _mm_or_si128(b, maskgt);
+    tmp = _mm_shuffle_epi8(a.val[1], bmask);
+    res = _mm_or_si128(res, tmp);
+
+    return res;
+}
+
+_NEON2SSESTORAGE int8x16_t vqtbl2q_s8(int8x16x2_t a, uint8x16_t b); // VQTBL.16 q0, {q0, q1}, q0
+#define vqtbl2q_s8 vqtbl2q_u8
+
+_NEON2SSESTORAGE poly8x16_t vqtbl2q_p8(poly8x16x2_t a, uint8x16_t b); // VQTBL.16 q0, {q0, q1}, q0
+#define vqtbl2q_p8 vqtbl2q_u8
+
+_NEON2SSESTORAGE uint8x16_t vqtbl3q_u8(uint8x16x3_t a, uint8x16_t b); // VQTBL.16 q0, {q0, q1, q2}, q0
+_NEON2SSE_INLINE uint8x16_t vqtbl3q_u8(uint8x16x3_t a, uint8x16_t b)
+{
+    __m128i c15, c16, maskgt, bmask, res, tmp;
+    
+    c15 = _mm_set1_epi8(15);
+    c16 = _mm_set1_epi8(16);
+    
+    maskgt = _mm_cmpgt_epi8(b, c15);
+    bmask = _mm_or_si128(b, maskgt);
+    res = _mm_shuffle_epi8(a.val[0], bmask);
+    
+    b = _mm_sub_epi8(b, c16);
+    maskgt = _mm_cmpgt_epi8(b, c15);
+    bmask = _mm_or_si128(b, maskgt);
+    tmp = _mm_shuffle_epi8(a.val[1], bmask);
+    res = _mm_or_si128(res, tmp);
+    
+    b = _mm_sub_epi8(b, c16);
+    maskgt = _mm_cmpgt_epi8(b, c15);
+    bmask = _mm_or_si128(b, maskgt);
+    tmp = _mm_shuffle_epi8(a.val[2], bmask);
+    res = _mm_or_si128(res, tmp);
+
+    return res;
+}
+
+_NEON2SSESTORAGE int8x16_t vqtbl3q_s8(int8x16x3_t a, uint8x16_t b); // VQTBL.16 q0, {q0, q1 q2}, q0
+#define vqtbl3q_s8 vqtbl3q_u8
+
+_NEON2SSESTORAGE poly8x16_t vqtbl3q_p8(poly8x16x3_t a, uint8x16_t b); // VQTBL.16 q0, {q0, q1 q2}, q0
+#define vqtbl3q_p8 vqtbl3q_u8
+
+_NEON2SSESTORAGE uint8x16_t vqtbl4q_u8(uint8x16x4_t a, uint8x16_t b); // VQTBL.16 q0, {q0, q1, q2, q3}, q0
+_NEON2SSE_INLINE uint8x16_t vqtbl4q_u8(uint8x16x4_t a, uint8x16_t b)
+{
+    __m128i c15, c16, maskgt, bmask, res, tmp;
+    
+    c15 = _mm_set1_epi8(15);
+    c16 = _mm_set1_epi8(16);
+    
+    maskgt = _mm_cmpgt_epi8(b, c15);
+    bmask = _mm_or_si128(b, maskgt);
+    res = _mm_shuffle_epi8(a.val[0], bmask);
+    
+    b = _mm_sub_epi8(b, c16);
+    maskgt = _mm_cmpgt_epi8(b, c15);
+    bmask = _mm_or_si128(b, maskgt);
+    tmp = _mm_shuffle_epi8(a.val[1], bmask);
+    res = _mm_or_si128(res, tmp);
+    
+    b = _mm_sub_epi8(b, c16);
+    maskgt = _mm_cmpgt_epi8(b, c15);
+    bmask = _mm_or_si128(b, maskgt);
+    tmp = _mm_shuffle_epi8(a.val[2], bmask);
+    res = _mm_or_si128(res, tmp);
+    
+    b = _mm_sub_epi8(b, c16);
+    maskgt = _mm_cmpgt_epi8(b, c15);
+    bmask = _mm_or_si128(b, maskgt);
+    tmp = _mm_shuffle_epi8(a.val[3], bmask);
+    res = _mm_or_si128(res, tmp);
+
+    return res;
+}
+
+_NEON2SSESTORAGE int8x16_t vqtbl4q_s8(int8x16x4_t a, uint8x16_t b); // VQTBL.16 q0, {q0, q1 q2, q3}, q0
+#define vqtbl4q_s8 vqtbl4q_u8
+
+_NEON2SSESTORAGE poly8x16_t vqtbl4q_p8(poly8x16x4_t a, uint8x16_t b); // VQTBL.16 q0, {q0, q1 q2, q3}, q0
+#define vqtbl4q_p8 vqtbl4q_u8
 
 //****************** Extended table look up intrinsics ***************************
 //**********************************************************************************
