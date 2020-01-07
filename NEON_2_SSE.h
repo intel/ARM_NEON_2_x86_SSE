@@ -13265,11 +13265,14 @@ _NEON2SSESTORAGE poly8x8_t vtbl4_p8(poly8x8x4_t a, uint8x8_t b); // VTBL.8 d0, {
 _NEON2SSESTORAGE uint8x16_t vqtbl1q_u8(uint8x16_t a, uint8x16_t b); // VQTBL.16 q0, {q0}, q0
 _NEON2SSE_INLINE uint8x16_t vqtbl1q_u8(uint8x16_t a, uint8x16_t b)
 {
-    __m128i c15, maskgt, bmask;
-    c15 = _mm_set1_epi8(15);
-    maskgt = _mm_cmpgt_epi8(b, c15);
-    bmask = _mm_or_si128(b, maskgt);
-    return _mm_shuffle_epi8(a, bmask);
+    __m128i c16, mask, newa;
+  
+    c16 = _mm_set1_epi8(16);
+    
+    mask = _mm_cmplt_epi8(b, c16);
+    newa = _mm_and_si128(a, mask);
+
+    return _mm_shuffle_epi8(newa, b);
 }
 
 _NEON2SSESTORAGE int8x16_t vqtbl1q_s8(int8x16_t a, uint8x16_t b); // VQTBL.16 q0, {q0}, q0
@@ -13281,22 +13284,18 @@ _NEON2SSESTORAGE poly8x16_t vqtbl1q_p8(poly8x16_t a, uint8x16_t b); // VQTBL.16 
 _NEON2SSESTORAGE uint8x16_t vqtbl2q_u8(uint8x16x2_t a, uint8x16_t b); // VQTBL.16 q0, {q0, q1}, q0
 _NEON2SSE_INLINE uint8x16_t vqtbl2q_u8(uint8x16x2_t a, uint8x16_t b)
 {
-    __m128i c15, c16, maskgt, bmask, res, tmp;
+    __m128i c15, c32, mask, newa;
     
     c15 = _mm_set1_epi8(15);
-    c16 = _mm_set1_epi8(16);
+    c32 = _mm_set1_epi8(32);
     
-    maskgt = _mm_cmpgt_epi8(b, c15);
-    bmask = _mm_or_si128(b, maskgt);
-    res = _mm_shuffle_epi8(a.val[0], bmask);
+    mask = _mm_cmpgt_epi8(b, c15);
+    newa = _MM_BLENDV_EPI8(a.val[0], a.val[1], mask);
     
-    b = _mm_sub_epi8(b, c16);
-    maskgt = _mm_cmpgt_epi8(b, c15);
-    bmask = _mm_or_si128(b, maskgt);
-    tmp = _mm_shuffle_epi8(a.val[1], bmask);
-    res = _mm_or_si128(res, tmp);
+    mask = _mm_cmplt_epi8(b, c32);
+    newa = _mm_and_si128(newa, mask);
 
-    return res;
+    return _mm_shuffle_epi8(newa, b);
 }
 
 _NEON2SSESTORAGE int8x16_t vqtbl2q_s8(int8x16x2_t a, uint8x16_t b); // VQTBL.16 q0, {q0, q1}, q0
@@ -13308,28 +13307,22 @@ _NEON2SSESTORAGE poly8x16_t vqtbl2q_p8(poly8x16x2_t a, uint8x16_t b); // VQTBL.1
 _NEON2SSESTORAGE uint8x16_t vqtbl3q_u8(uint8x16x3_t a, uint8x16_t b); // VQTBL.16 q0, {q0, q1, q2}, q0
 _NEON2SSE_INLINE uint8x16_t vqtbl3q_u8(uint8x16x3_t a, uint8x16_t b)
 {
-    __m128i c15, c16, maskgt, bmask, res, tmp;
+    __m128i c15, c31, c48, mask, newa;
     
     c15 = _mm_set1_epi8(15);
-    c16 = _mm_set1_epi8(16);
+    c31 = _mm_set1_epi8(31);
+    c48 = _mm_set1_epi8(48);
     
-    maskgt = _mm_cmpgt_epi8(b, c15);
-    bmask = _mm_or_si128(b, maskgt);
-    res = _mm_shuffle_epi8(a.val[0], bmask);
+    mask = _mm_cmpgt_epi8(b, c15);
+    newa = _MM_BLENDV_EPI8(a.val[0], a.val[1], mask);
     
-    b = _mm_sub_epi8(b, c16);
-    maskgt = _mm_cmpgt_epi8(b, c15);
-    bmask = _mm_or_si128(b, maskgt);
-    tmp = _mm_shuffle_epi8(a.val[1], bmask);
-    res = _mm_or_si128(res, tmp);
-    
-    b = _mm_sub_epi8(b, c16);
-    maskgt = _mm_cmpgt_epi8(b, c15);
-    bmask = _mm_or_si128(b, maskgt);
-    tmp = _mm_shuffle_epi8(a.val[2], bmask);
-    res = _mm_or_si128(res, tmp);
+    mask = _mm_cmpgt_epi8(b, c31);
+    newa = _MM_BLENDV_EPI8(newa, a.val[2], mask);
 
-    return res;
+    mask = _mm_cmplt_epi8(b, c48);
+    newa = _mm_and_si128(newa, mask);
+
+    return _mm_shuffle_epi8(newa, b);
 }
 
 _NEON2SSESTORAGE int8x16_t vqtbl3q_s8(int8x16x3_t a, uint8x16_t b); // VQTBL.16 q0, {q0, q1 q2}, q0
@@ -13341,34 +13334,26 @@ _NEON2SSESTORAGE poly8x16_t vqtbl3q_p8(poly8x16x3_t a, uint8x16_t b); // VQTBL.1
 _NEON2SSESTORAGE uint8x16_t vqtbl4q_u8(uint8x16x4_t a, uint8x16_t b); // VQTBL.16 q0, {q0, q1, q2, q3}, q0
 _NEON2SSE_INLINE uint8x16_t vqtbl4q_u8(uint8x16x4_t a, uint8x16_t b)
 {
-    __m128i c15, c16, maskgt, bmask, res, tmp;
+    __m128i c15, c31, c47, c64, mask, newa;
     
     c15 = _mm_set1_epi8(15);
-    c16 = _mm_set1_epi8(16);
+    c31 = _mm_set1_epi8(31);
+    c47 = _mm_set1_epi8(47);
+    c64 = _mm_set1_epi8(64);
     
-    maskgt = _mm_cmpgt_epi8(b, c15);
-    bmask = _mm_or_si128(b, maskgt);
-    res = _mm_shuffle_epi8(a.val[0], bmask);
+    mask = _mm_cmpgt_epi8(b, c15);
+    newa = _MM_BLENDV_EPI8(a.val[0], a.val[1], mask);
     
-    b = _mm_sub_epi8(b, c16);
-    maskgt = _mm_cmpgt_epi8(b, c15);
-    bmask = _mm_or_si128(b, maskgt);
-    tmp = _mm_shuffle_epi8(a.val[1], bmask);
-    res = _mm_or_si128(res, tmp);
-    
-    b = _mm_sub_epi8(b, c16);
-    maskgt = _mm_cmpgt_epi8(b, c15);
-    bmask = _mm_or_si128(b, maskgt);
-    tmp = _mm_shuffle_epi8(a.val[2], bmask);
-    res = _mm_or_si128(res, tmp);
-    
-    b = _mm_sub_epi8(b, c16);
-    maskgt = _mm_cmpgt_epi8(b, c15);
-    bmask = _mm_or_si128(b, maskgt);
-    tmp = _mm_shuffle_epi8(a.val[3], bmask);
-    res = _mm_or_si128(res, tmp);
+    mask = _mm_cmpgt_epi8(b, c31);
+    newa = _MM_BLENDV_EPI8(newa, a.val[2], mask);
 
-    return res;
+    mask = _mm_cmpgt_epi8(b, c47);
+    newa = _MM_BLENDV_EPI8(newa, a.val[3], mask);
+
+    mask = _mm_cmplt_epi8(b, c64);
+    newa = _mm_and_si128(newa, mask);
+
+    return _mm_shuffle_epi8(newa, b);
 }
 
 _NEON2SSESTORAGE int8x16_t vqtbl4q_s8(int8x16x4_t a, uint8x16_t b); // VQTBL.16 q0, {q0, q1 q2, q3}, q0
