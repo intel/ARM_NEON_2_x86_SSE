@@ -68,7 +68,7 @@
 //***********************************************************************************
 #ifdef __GNUC__
 #   define _GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
-#   define _NEON2SSESTORAGE static
+#   define _NEON2SSESTORAGE
 #   define _NEON2SSE_ALIGN_16  __attribute__((aligned(16)))
 #   define _NEON2SSE_INLINE _NEON2SSESTORAGE inline __attribute__((__gnu_inline__, __always_inline__, __artificial__))
 #   ifndef NEON2SSE_DISABLE_PERFORMANCE_WARNING
@@ -84,7 +84,7 @@
 #       define _NEON2SSE_64BIT  __x86_64__
 #   endif
 #else
-#   define _NEON2SSESTORAGE static
+#   define _NEON2SSESTORAGE
 #   define _NEON2SSE_ALIGN_16  __declspec(align(16))
 #   define _NEON2SSE_INLINE _NEON2SSESTORAGE __inline
 #   if (defined(_MSC_VER) || defined (__INTEL_COMPILER)) && !defined(NEON2SSE_DISABLE_PERFORMANCE_WARNING)
@@ -5223,7 +5223,7 @@ _NEON2SSE_INLINE uint16x8_t vcgeq_u16(uint16x8_t a, uint16x8_t b) // VCGE.s16 q0
 #else
    __m128i zero = _mm_setzero_si128();
    __m128i  as = _mm_subs_epu16(b, a);
-   return _mm_cmpeq_epi16(as, zero);  
+   return _mm_cmpeq_epi16(as, zero);
 #endif
 }
 
@@ -5462,7 +5462,7 @@ _NEON2SSE_INLINE uint8x16_t vcgtq_u8(uint8x16_t a, uint8x16_t b) // VCGT.U8 q0, 
 
 _NEON2SSESTORAGE uint16x8_t vcgtq_u16(uint16x8_t a, uint16x8_t b); // VCGT.s16 q0, q0, q0
 _NEON2SSE_INLINE uint16x8_t vcgtq_u16(uint16x8_t a, uint16x8_t b) // VCGT.s16 q0, q0, q0
-{   
+{
     //no unsigned short comparison, only signed available,so need the trick
     __m128i c8000, as, bs;
     c8000 = _mm_set1_epi16(0x8000);
