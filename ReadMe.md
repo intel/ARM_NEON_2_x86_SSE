@@ -11,3 +11,5 @@ For significant performance improvement in some cases you might need to define U
 If NEON2SSE_DISABLE_PERFORMANCE_WARNING macro is defined, then the performance warnings are disabled.
 
 For more information and license please read the NEON_2_SSE.h content.
+
+The unit tests set used for ARM NEON - x86 SSE conformance verification is  https://github.com/christophe-lyon/arm-neon-tests
