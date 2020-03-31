@@ -1,6 +1,6 @@
 //created by Victoria Zhislina, the Senior Application Engineer, Intel Corporation,  victoria.zhislina@intel.com
 
-//*** Copyright (C) 2012-2018 Intel Corporation.  All rights reserved.
+//*** Copyright (C) 2012-2019 Intel Corporation.  All rights reserved.
 
 //IMPORTANT: READ BEFORE DOWNLOADING, COPYING, INSTALLING OR USING.
 
@@ -70,7 +70,11 @@
 #   define _GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
 #   define _NEON2SSESTORAGE static
 #   define _NEON2SSE_ALIGN_16  __attribute__((aligned(16)))
-#   define _NEON2SSE_INLINE _NEON2SSESTORAGE inline __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+#   ifdef __clang__
+#       define _NEON2SSE_INLINE _NEON2SSESTORAGE inline __attribute__((__gnu_inline__, __always_inline__))
+#   else
+#       define _NEON2SSE_INLINE _NEON2SSESTORAGE inline __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+#   endif
 #   ifndef NEON2SSE_DISABLE_PERFORMANCE_WARNING
 #       if _GCC_VERSION <  40500
 #           define _NEON2SSE_PERFORMANCE_WARNING(function, explanation)   __attribute__((deprecated)) function
@@ -128,16 +132,25 @@
 #   include <limits.h>
 #endif
 
+
+typedef   float float32_t;
+#if !defined(__clang__)
+typedef   float __fp16;
+#endif
+
+typedef   double float64_t;
+
 typedef union   __m64_128 {
     uint64_t m64_u64[1];
-    float m64_f32[2];
-    int8_t m64_i8[8];
-    int16_t m64_i16[4];
-    int32_t m64_i32[2];
     int64_t m64_i64[1];
-    uint8_t m64_u8[8];
-    uint16_t m64_u16[4];
+	float64_t m64_d64[1];
     uint32_t m64_u32[2];
+    int32_t m64_i32[2];
+    float32_t m64_f32[2];
+    int16_t m64_i16[4];
+    uint16_t m64_u16[4];
+    int8_t m64_i8[8];
+    uint8_t m64_u8[8];
 } __m64_128;
 
 typedef __m64_128 int8x8_t;
@@ -178,14 +191,6 @@ typedef __m128i poly16x8_t;
 #   define SINT_MIN     INT_MIN /* min signed int value */
 #   define SINT_MAX     INT_MAX /* max signed int value */
 #endif
-
-typedef   float float32_t;
-#if !defined(__clang__)
-typedef   float __fp16;
-#endif
-
-typedef   double float64_t;
-
 
 typedef  uint8_t poly8_t;
 typedef  uint16_t poly16_t;
@@ -5453,7 +5458,7 @@ _NEON2SSE_INLINE uint8x16_t vcgtq_u8(uint8x16_t a, uint8x16_t b) // VCGT.U8 q0, 
 {
       //no unsigned chars comparison, only signed available,so need the trick
         __m128i c128, as, bs;
-        c128 = _mm_set1_epi8(128);
+        c128 = _mm_set1_epi8(0x80);
         as = _mm_sub_epi8(a, c128);
         bs = _mm_sub_epi8(b, c128);
         return _mm_cmpgt_epi8(as, bs);
@@ -6857,28 +6862,55 @@ _NEON2SSE_INLINE float32x2_t vrsqrte_f32(float32x2_t a) //use low 64 bits
 _NEON2SSESTORAGE uint32x2_t vrsqrte_u32(uint32x2_t a); // VRSQRTE.U32 d0,d0
 _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(uint32x2_t vrsqrte_u32(uint32x2_t a), _NEON2SSE_REASON_SLOW_SERIAL)
 {
-    //Input is  fixed point number!!!
-    //We implement the recip_sqrt_estimate function as described in ARMv7 reference manual (VRSQRTE instruction) but use float instead of double
-   uint32x2_t res;
-   __m128 tmp;
-    float r, resf, coeff;
-    int i,q0, s;
-    for (i =0; i<2; i++){
-        if((a.m64_u32[i] & 0xc0000000) == 0) { //a <=0x3fffffff
-            res.m64_u32[i] = 0xffffffff;
-        }else{
-            resf =  (float) (a.m64_u32[i] * (0.5f / (uint32_t)(1 << 31)));
-            coeff = (resf < 0.5f)? 512.0f : 256.0f ; /* range 0.25 <= resf < 0.5  or range 0.5 <= resf < 1.0*/
-            q0 = (int)(resf * coeff); /* a in units of 1/512 rounded down */
-            r = ((float)q0 + 0.5f) / coeff;
-            tmp = _mm_rsqrt_ss(_mm_load_ss( &r));/* reciprocal root r */
-            _mm_store_ss(&r, tmp);
-            s = (int)(256.0f * r + 0.5f); /* r in units of 1/256 rounded to nearest */
-            r = (float)(s / 256.0f);
-            res.m64_u32[i] = (uint32_t)(r * (((uint32_t)1) << 31));
-        }
+  // Input is  fixed point number!!!
+  // We implement the recip_sqrt_estimate function as described in ARMv7
+  // reference manual (VRSQRTE instruction) But results may be slightly different
+  // from ARM implementation due to _mm_rsqrt_ps precision
+  uint32x2_t res;
+  __m64_128 res64[2];
+  int i;
+  _NEON2SSE_ALIGN_16 float coeff[2];
+  for (i = 0; i < 2; i++) {
+    // Generate double-precision value = operand * 2^(-32). This has zero sign
+    // bit, with:
+    //     exponent = 1022 or 1021 = double-precision representation of 2^(-1)
+    //     or 2^(-2) fraction taken from operand, excluding its most significant
+    //     one or two bits.
+    uint64_t dp_operand;
+    if (a.m64_u32[i] & 0x80000000) {
+      dp_operand =
+          (0x3feLL << 52) | (((uint64_t)a.m64_u32[i] & 0x7FFFFFFF) << 21);
+    } else {
+      dp_operand =
+          (0x3fdLL << 52) | (((uint64_t)a.m64_u32[i] & 0x3FFFFFFF) << 22);
     }
-    return res;
+	res64[i].m64_u64[0] = dp_operand;
+	coeff[i] = (res64[i].m64_d64[0] < 0.5) ? 512.0 : 256.0; /* range 0.25 <= resf < 0.5  or range 0.5 <= resf < 1.0*/
+  }
+  __m128 coeff_f = _mm_load_ps(coeff);
+  __m128d q0_d = _mm_mul_pd(_mm_loadu_pd(&res64[0].m64_d64[0]), _mm_cvtps_pd(coeff_f));
+  __m128i q0_i = _mm_cvttpd_epi32(q0_d);
+  __m128 c05_f = _mm_set1_ps(0.5);
+  __m128 r_f = _mm_div_ps(_mm_add_ps(_mm_cvtepi32_ps(q0_i), c05_f), coeff_f);
+  __m128 rsqrt_f = _mm_rsqrt_ps(r_f);
+  __m128 c256_f = _mm_set1_ps(256.0);
+  __m128 s_f = _mm_add_ps(_mm_mul_ps(rsqrt_f, c256_f), c05_f);
+#ifdef USE_SSE4
+  s_f = _mm_floor_ps(s_f);
+#else
+  s_f = _mm_cvtepi32_ps(_mm_cvttps_epi32(s_f));
+#endif
+  s_f = _mm_div_ps(s_f, c256_f);
+  _M64f(res64[0], s_f);
+
+  for (i = 0; i < 2; i++) {
+    if ((a.m64_u32[i] & 0xc0000000) == 0) { // a <=0x3fffffff
+      res.m64_u32[i] = 0xffffffff;
+    } else {
+      res.m64_u32[i] = res64[0].m64_f32[i] * (((uint32_t)1) << 31);
+    }
+  }
+  return res;
 }
 
 _NEON2SSESTORAGE float32x4_t vrsqrteq_f32(float32x4_t a); // VRSQRTE.F32 q0,q0
@@ -6887,32 +6919,63 @@ _NEON2SSESTORAGE float32x4_t vrsqrteq_f32(float32x4_t a); // VRSQRTE.F32 q0,q0
 _NEON2SSESTORAGE uint32x4_t vrsqrteq_u32(uint32x4_t a); // VRSQRTE.U32 q0,q0
 _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(uint32x4_t vrsqrteq_u32(uint32x4_t a), _NEON2SSE_REASON_SLOW_SERIAL)
 {
-    //Input is  fixed point number!!!
-    //We implement the recip_sqrt_estimate function as described in ARMv7 reference manual (VRSQRTE instruction) but use float instead of double
-   _NEON2SSE_ALIGN_16 uint32_t  atmp[4], res[4];
-   _NEON2SSE_ALIGN_16 static const uint32_t c_c0000000[4] = {0xc0000000,0xc0000000, 0xc0000000,0xc0000000};
-   __m128 tmp;
-   __m128i res128, mask, zero;
-    float r, resf, coeff;
-    int i,q0, s;
-    _mm_store_si128((__m128i*)atmp, a);
-    zero = _mm_setzero_si128();
-    for (i =0; i<4; i++){
-        resf =  (float) (atmp[i] * (0.5f / (uint32_t)(1 << 31)));
-        coeff = (float)((resf < 0.5f)? 512.0f : 256.0f); /* range 0.25 <= resf < 0.5  or range 0.5 <= resf < 1.0*/
-        q0 = (int)(resf * coeff); /* a in units of 1/512 rounded down */
-        r = ((float)q0 + 0.5f) / coeff;
-        tmp = _mm_rsqrt_ss(_mm_load_ss( &r));/* reciprocal root r */
-        _mm_store_ss(&r, tmp);
-        s = (int)(256.0f * r + 0.5f); /* r in units of 1/256 rounded to nearest */
-        r = (float)s / 256.0f;
-        res[i] = (uint32_t) (r * (((uint32_t)1) << 31) );
+  // Input is  fixed point number!!!
+  // We implement the recip_sqrt_estimate function as described in ARMv7
+  // reference manual (VRSQRTE instruction) But results may be slightly different
+  // from ARM implementation due to _mm_rsqrt_ps precision
+  int i;
+  _NEON2SSE_ALIGN_16 uint32_t atmp[4], res[4];
+  _NEON2SSE_ALIGN_16 float coeff[4], rr[4];
+  __m64_128 res64[4];
+  _mm_store_si128((__m128i *)atmp, a);
+  for (i = 0; i < 4; i++) {
+    // Generate double-precision value = operand * 2^(-32). This has zero sign
+    // bit, with:
+    //     exponent = 1022 or 1021 = double-precision representation of 2^(-1)
+    //     or 2^(-2) fraction taken from operand, excluding its most significant
+    //     one or two bits.
+    uint64_t dp_operand;
+    if (atmp[i] & 0x80000000) {
+      dp_operand = (0x3feLL << 52) | (((uint64_t)atmp[i] & 0x7FFFFFFF) << 21);
+    } else {
+      dp_operand = (0x3fdLL << 52) | (((uint64_t)atmp[i] & 0x3FFFFFFF) << 22);
     }
-    res128 = _mm_load_si128((__m128i*)res);
-    mask = _mm_and_si128(a, *(__m128i*)c_c0000000);
-    mask = _mm_cmpeq_epi32(zero, mask);  //0xffffffff if atmp[i] <= 0x3fffffff
-    return _mm_or_si128(res128, mask);
+	res64[i].m64_u64[0] = dp_operand;
+	coeff[i] = (res64[i].m64_d64[0] < 0.5) ? 512.0 : 256.0; /* range 0.25 <= resf < 0.5  or range 0.5 <= resf < 1.0*/
+  }
+  __m128 c05_f = _mm_set1_ps(0.5);
+  __m128 coeff_f = _mm_load_ps(coeff);
+  __m128d q0_d = _mm_mul_pd(_mm_loadu_pd(&res64[0].m64_d64[0]), _mm_cvtps_pd(coeff_f));
+  __m128i q0_i = _mm_cvttpd_epi32(q0_d);
+
+  __m128 coeff_f2 = _M128(_pM128i(coeff[2]));
+  q0_d = _mm_mul_pd(_mm_loadu_pd(&res64[2].m64_d64[0]), _mm_cvtps_pd(coeff_f2));
+  __m128i q0_i2 = _mm_cvttpd_epi32(q0_d);
+  coeff_f = _M128(_mm_unpacklo_epi64(_M128i(coeff_f), _M128i(coeff_f2)));
+  q0_i = _mm_unpacklo_epi64(q0_i, q0_i2);
+
+  __m128 r_f = _mm_div_ps(_mm_add_ps(_mm_cvtepi32_ps(q0_i), c05_f), coeff_f);
+  __m128 rsqrt_f = _mm_rsqrt_ps(r_f);
+  __m128 c256_f = _mm_set1_ps(256.0);
+  __m128 s_f = _mm_add_ps(_mm_mul_ps(rsqrt_f, c256_f), c05_f);
+#ifdef USE_SSE4
+  s_f = _mm_floor_ps(s_f);
+#else
+  s_f = _mm_cvtepi32_ps(_mm_cvttps_epi32(s_f));
+#endif
+  s_f = _mm_div_ps(s_f, c256_f);
+  _mm_store_ps(rr, s_f);
+
+  for (i = 0; i < 4; i++) {
+    if ((atmp[i] & 0xc0000000) == 0) { // a <=0x3fffffff
+      res[i] = 0xffffffff;
+    } else {
+      res[i] = rr[i] * (((uint32_t)1) << 31);
+    }
+  }
+  return _mm_load_si128((__m128i *)res);
 }
+
 //************ Reciprocal estimate/step and 1/sqrt estimate/step ***************************
 //******************************************************************************************
 //******VRECPS (Vector Reciprocal Step) ***************************************************
@@ -13570,14 +13633,14 @@ _NEON2SSE_INLINE int64x2_t vmlsl_lane_s32(int64x2_t a, int32x2_t b, int32x2_t v,
     return vmlsl_s32(a, b, c);
 }
 
-_NEON2SSESTORAGE uint32x4_t vmlsl_lane_u16(uint32x4_t a, uint16x4_t b, uint16x4_t v, __constrange(0,3) int l); // VMLAL.s16 q0, d0, d0[0]
-_NEON2SSE_INLINE uint32x4_t vmlsl_lane_u16(uint32x4_t a, uint16x4_t b, uint16x4_t v, __constrange(0,3) int l) // VMLAL.s16 q0, d0, d0[0]
+_NEON2SSESTORAGE uint32x4_t vmlsl_lane_u16(uint32x4_t a, uint16x4_t b, uint16x4_t v, __constrange(0,3) int l); // VMLAL.U16 q0, d0, d0[0]
+_NEON2SSE_INLINE uint32x4_t vmlsl_lane_u16(uint32x4_t a, uint16x4_t b, uint16x4_t v, __constrange(0,3) int l) // VMLAL.U16 q0, d0, d0[0]
 {
     uint16_t vlane;
     uint16x4_t c;
-    vlane = vget_lane_s16(v, l);
-    c = vdup_n_s16(vlane);
-    return vmlsl_s16(a, b, c);
+    vlane = vget_lane_u16(v, l);
+    c = vdup_n_u16(vlane);
+    return vmlsl_u16(a, b, c);
 }
 
 _NEON2SSESTORAGE uint64x2_t vmlsl_lane_u32(uint64x2_t a, uint32x2_t b, uint32x2_t v, __constrange(0,1) int l); // VMLAL.U32 q0, d0, d0[0]
