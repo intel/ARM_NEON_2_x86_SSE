@@ -5464,7 +5464,7 @@ _NEON2SSE_INLINE uint8x16_t vcgtq_u8(uint8x16_t a, uint8x16_t b) // VCGT.U8 q0, 
 {
       //no unsigned chars comparison, only signed available,so need the trick
         __m128i c128, as, bs;
-        c128 = _mm_set1_epi8((int8_t)0x80);
+        c128 = _mm_set1_epi8(-128); //(int8_t)0x80
         as = _mm_sub_epi8(a, c128);
         bs = _mm_sub_epi8(b, c128);
         return _mm_cmpgt_epi8(as, bs);
