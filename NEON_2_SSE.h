@@ -766,9 +766,9 @@ _NEON2SSESTORAGE uint8x16_t vcleq_s8(int8x16_t a, int8x16_t b); // VCGE.S8 q0, q
 _NEON2SSESTORAGE uint16x8_t vcleq_s16(int16x8_t a, int16x8_t b); // VCGE.S16 q0, q0, q0
 _NEON2SSESTORAGE uint32x4_t vcleq_s32(int32x4_t a, int32x4_t b); // VCGE.S32 q0, q0, q0
 _NEON2SSESTORAGE uint32x4_t vcleq_f32(float32x4_t a, float32x4_t b); // VCGE.F32 q0, q0, q0
-_NEON2SSE_GLOBAL uint8x16_t vcleq_u8(uint8x16_t a, uint8x16_t b); // VCGE.U8 q0, q0, q0
-_NEON2SSE_GLOBAL uint16x8_t vcleq_u16(uint16x8_t a, uint16x8_t b); // VCGE.U16 q0, q0, q0
-_NEON2SSE_GLOBAL uint32x4_t vcleq_u32(uint32x4_t a, uint32x4_t b); // VCGE.U32 q0, q0, q0
+_NEON2SSESTORAGE uint8x16_t vcleq_u8(uint8x16_t a, uint8x16_t b); // VCGE.U8 q0, q0, q0
+_NEON2SSESTORAGE uint16x8_t vcleq_u16(uint16x8_t a, uint16x8_t b); // VCGE.U16 q0, q0, q0
+_NEON2SSESTORAGE uint32x4_t vcleq_u32(uint32x4_t a, uint32x4_t b); // VCGE.U32 q0, q0, q0
 //Vector compare greater-than
 _NEON2SSESTORAGE uint8x8_t vcgt_s8(int8x8_t a, int8x8_t b); // VCGT.S8 d0, d0, d0
 _NEON2SSESTORAGE uint16x4_t vcgt_s16(int16x4_t a, int16x4_t b); // VCGT.S16 d0, d0, d0
@@ -2038,8 +2038,10 @@ _NEON2SSE_GLOBAL int16x8_t vabsq_s16(int16x8_t a); // VABS.S16 q0,q0
 _NEON2SSE_GLOBAL int32x4_t vabsq_s32(int32x4_t a); // VABS.S32 q0,q0
 _NEON2SSESTORAGE float32x4_t vabsq_f32(float32x4_t a); // VABS.F32 q0,q0
 
+#ifdef _NEON2SSE_64BIT
 _NEON2SSESTORAGE int64x2_t vabsq_s64(int64x2_t a); // VABS.S64 q0,q0
 _NEON2SSESTORAGE float64x2_t vabsq_f64(float64x2_t a); // VABS.F64 q0,q0
+#endif
 
 //Saturating absolute: Vd[i] = sat(|Va[i]|)
 _NEON2SSESTORAGE int8x8_t vqabs_s8(int8x8_t a); // VQABS.S8 d0,d0
@@ -5338,8 +5340,8 @@ _NEON2SSE_INLINE uint32x4_t vcleq_f32(float32x4_t a, float32x4_t b)
     return *(__m128i*)&res;
 }
 
+_NEON2SSESTORAGE uint8x16_t vcleq_u8(uint8x16_t a, uint8x16_t b); // VCGE.U8 q0, q0, q0
 #ifdef USE_SSE4
-    _NEON2SSESTORAGE uint8x16_t vcleq_u8(uint8x16_t a, uint8x16_t b); // VCGE.U8 q0, q0, q0
     _NEON2SSE_INLINE uint8x16_t vcleq_u8(uint8x16_t a, uint8x16_t b) // VCGE.U8 q0, q0, q0
     {
         //no unsigned chars comparison in SSE, only signed available,so need the trick
@@ -5348,13 +5350,14 @@ _NEON2SSE_INLINE uint32x4_t vcleq_f32(float32x4_t a, float32x4_t b)
         return _mm_cmpeq_epi8(cmp, a); //a<=b
     }
 #else
-_NEON2SSE_GLOBAL uint8x16_t vcleq_u8(uint8x16_t a, uint8x16_t b); // VCGE.U8 q0, q0, q0
-#   define vcleq_u8(a,b) vcgeq_u8(b,a)
+    _NEON2SSE_INLINE uint8x16_t vcleq_u8(uint8x16_t a, uint8x16_t b) // VCGE.U8 q0, q0, q0
+    {
+        return vcgeq_u8(b, a);
+    }
 #endif
 
-
+_NEON2SSESTORAGE uint16x8_t vcleq_u16(uint16x8_t a, uint16x8_t b); // VCGE.s16 q0, q0, q0
 #ifdef USE_SSE4
-    _NEON2SSESTORAGE uint16x8_t vcleq_u16(uint16x8_t a, uint16x8_t b); // VCGE.s16 q0, q0, q0
     _NEON2SSE_INLINE uint16x8_t vcleq_u16(uint16x8_t a, uint16x8_t b) // VCGE.s16 q0, q0, q0
     {
         //no unsigned shorts comparison in SSE, only signed available,so need the trick
@@ -5363,13 +5366,14 @@ _NEON2SSE_GLOBAL uint8x16_t vcleq_u8(uint8x16_t a, uint8x16_t b); // VCGE.U8 q0,
         return _mm_cmpeq_epi16(cmp, a); //a<=b
     }
 #else
-_NEON2SSE_GLOBAL uint16x8_t vcleq_u16(uint16x8_t a, uint16x8_t b); // VCGE.s16 q0, q0, q0
-#   define vcleq_u16(a,b) vcgeq_u16(b,a)
+    _NEON2SSE_INLINE uint16x8_t vcleq_u16(uint16x8_t a, uint16x8_t b) // VCGE.s16 q0, q0, q0
+    {
+        return vcgeq_u16(b, a);
+    }
 #endif
 
-
+_NEON2SSESTORAGE uint32x4_t vcleq_u32(uint32x4_t a, uint32x4_t b); // VCGE.U32 q0, q0, q0
 #ifdef USE_SSE4
-    _NEON2SSESTORAGE uint32x4_t vcleq_u32(uint32x4_t a, uint32x4_t b); // VCGE.U32 q0, q0, q0
     _NEON2SSE_INLINE uint32x4_t vcleq_u32(uint32x4_t a, uint32x4_t b) // VCGE.U32 q0, q0, q0
     {
         //no unsigned chars comparison in SSE, only signed available,so need the trick
@@ -5378,9 +5382,10 @@ _NEON2SSE_GLOBAL uint16x8_t vcleq_u16(uint16x8_t a, uint16x8_t b); // VCGE.s16 q
         return _mm_cmpeq_epi32(cmp, a); //a<=b
     }
 #else
-//solution may be not optimal compared with the serial one
-_NEON2SSE_GLOBAL uint32x4_t vcleq_u32(uint32x4_t a, uint32x4_t b); // VCGE.U32 q0, q0, q0
-#   define vcleq_u32(a,b) vcgeq_u32(b,a)
+    _NEON2SSE_INLINE uint32x4_t vcleq_u32(uint32x4_t a, uint32x4_t b) // VCGE.U32 q0, q0, q0
+    {
+        return vcgeq_u32(b, a);
+    }
 #endif
 
 
