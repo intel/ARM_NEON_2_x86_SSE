@@ -3452,7 +3452,7 @@ _NEON2SSE_INLINE int8x8_t   vraddhn_s16(int16x8_t a, int16x8_t b) // VRADDHN.I16
     int8x8_t res64;
     __m128i sum, mask1;
     sum = _mm_add_epi16 (a, b);
-    mask1 = _mm_slli_epi16(sum, 9); //shift left then back right to
+    mask1 = _mm_slli_epi16(sum, 8); //shift left then back right to
     mask1 = _mm_srli_epi16(mask1, 15); //get  7-th bit 1 or zero
     sum = _mm_srai_epi16 (sum, 8); //get high half
     sum = _mm_add_epi16 (sum, mask1); //actual rounding
@@ -3467,7 +3467,7 @@ _NEON2SSE_INLINE int16x4_t  vraddhn_s32(int32x4_t a, int32x4_t b) // VRADDHN.I32
     int16x4_t res64;
     __m128i sum, mask1;
     sum = _mm_add_epi32 (a, b);
-    mask1 = _mm_slli_epi32(sum, 17); //shift left then back right to
+    mask1 = _mm_slli_epi32(sum, 16); //shift left then back right to
     mask1 = _mm_srli_epi32(mask1,31); //get  15-th bit 1 or zero
     sum = _mm_srai_epi32 (sum, 16); //get high half
     sum = _mm_add_epi32 (sum, mask1); //actual rounding
@@ -3482,8 +3482,8 @@ _NEON2SSE_INLINE int32x2_t vraddhn_s64(int64x2_t a, int64x2_t b)
     int32x2_t res64;
     __m128i sum, mask1;
     sum = _mm_add_epi64 (a, b);
-    mask1 = _mm_slli_epi64(sum, 33); //shift left then back right to
-    mask1 = _mm_srli_epi64(mask1,32); //get  31-th bit 1 or zero
+    mask1 = _mm_slli_epi64(sum, 32); //shift left then back right to
+    mask1 = _mm_srli_epi64(mask1,31); //get  31-th bit 1 or zero
     sum = _mm_add_epi64 (sum, mask1); //actual high half rounding
     sum = _mm_shuffle_epi32(sum,  1 | (3 << 2) | (1 << 4) | (3 << 6));
     return64(sum);
@@ -3495,7 +3495,7 @@ _NEON2SSE_INLINE uint8x8_t  vraddhn_u16(uint16x8_t a, uint16x8_t b) // VRADDHN.I
     uint8x8_t res64;
     __m128i sum, mask1;
     sum = _mm_add_epi16 (a, b);
-    mask1 = _mm_slli_epi16(sum, 9); //shift left then back right to
+    mask1 = _mm_slli_epi16(sum, 8); //shift left then back right to
     mask1 = _mm_srli_epi16(mask1, 15); //get  7-th bit 1 or zero
     sum = _mm_srai_epi16 (sum, 8); //get high half
     sum = _mm_add_epi16 (sum, mask1); //actual rounding
@@ -3510,7 +3510,7 @@ _NEON2SSE_INLINE uint16x4_t vraddhn_u32(uint32x4_t a, uint32x4_t b)
     uint16x4_t res64;
     __m128i sum, mask1;
     sum = _mm_add_epi32 (a, b);
-    mask1 = _mm_slli_epi32(sum, 17); //shift left then back right to
+    mask1 = _mm_slli_epi32(sum, 16); //shift left then back right to
     mask1 = _mm_srli_epi32(mask1,31); //get  15-th bit 1 or zero
     sum = _mm_srai_epi32 (sum, 16); //get high half
     sum = _mm_add_epi32 (sum, mask1); //actual rounding
@@ -4919,7 +4919,7 @@ _NEON2SSE_INLINE int8x8_t vrsubhn_s16(int16x8_t a, int16x8_t b) // VRSUBHN.I16 d
     int8x8_t res64;
     __m128i sub, mask1;
     sub = _mm_sub_epi16 (a, b);
-    mask1 = _mm_slli_epi16(sub, 9); //shift left then back right to
+    mask1 = _mm_slli_epi16(sub, 8); //shift left then back right to
     mask1 = _mm_srli_epi16(mask1, 15); //get  7-th bit 1 or zero
     sub = _mm_srai_epi16 (sub, 8); //get high half
     sub = _mm_add_epi16 (sub, mask1); //actual rounding
@@ -4934,7 +4934,7 @@ _NEON2SSE_INLINE int16x4_t vrsubhn_s32(int32x4_t a, int32x4_t b) // VRSUBHN.I32 
     int16x4_t res64;
     __m128i sub, mask1;
     sub = _mm_sub_epi32 (a, b);
-    mask1 = _mm_slli_epi32(sub, 17); //shift left then back right to
+    mask1 = _mm_slli_epi32(sub, 16); //shift left then back right to
     mask1 = _mm_srli_epi32(mask1,31); //get  15-th bit 1 or zero
     sub = _mm_srai_epi32 (sub, 16); //get high half
     sub = _mm_add_epi32 (sub, mask1); //actual rounding
@@ -4949,8 +4949,8 @@ _NEON2SSE_INLINE int32x2_t vrsubhn_s64(int64x2_t a, int64x2_t b)
     int32x2_t res64;
     __m128i sub, mask1;
     sub = _mm_sub_epi64 (a, b);
-    mask1 = _mm_slli_epi64(sub, 33); //shift left then back right to
-    mask1 = _mm_srli_epi64(mask1,32); //get  31-th bit 1 or zero
+    mask1 = _mm_slli_epi64(sub, 32); //shift left then back right to
+    mask1 = _mm_srli_epi64(mask1,31); //get  31-th bit 1 or zero
     sub = _mm_add_epi64 (sub, mask1); //actual high half rounding
     sub = _mm_shuffle_epi32(sub,  1 | (3 << 2) | (0 << 4) | (2 << 6));
     return64(sub);
@@ -4962,7 +4962,7 @@ _NEON2SSE_INLINE uint8x8_t vrsubhn_u16(uint16x8_t a, uint16x8_t b) // VRSUBHN.I1
     uint8x8_t res64;
     __m128i sub, mask1;
     sub = _mm_sub_epi16 (a, b);
-    mask1 = _mm_slli_epi16(sub, 9); //shift left then back right to
+    mask1 = _mm_slli_epi16(sub, 8); //shift left then back right to
     mask1 = _mm_srli_epi16(mask1, 15); //get  7-th bit 1 or zero
     sub = _mm_srai_epi16 (sub, 8); //get high half
     sub = _mm_add_epi16 (sub, mask1); //actual rounding
@@ -4977,7 +4977,7 @@ _NEON2SSE_INLINE uint16x4_t vrsubhn_u32(uint32x4_t a, uint32x4_t b) // VRSUBHN.I
     uint16x4_t res64;
     __m128i sub, mask1;
     sub = _mm_sub_epi32 (a, b);
-    mask1 = _mm_slli_epi32(sub, 17); //shift left then back right to
+    mask1 = _mm_slli_epi32(sub, 16); //shift left then back right to
     mask1 = _mm_srli_epi32(mask1,31); //get  15-th bit 1 or zero
     sub = _mm_srai_epi32 (sub, 16); //get high half
     sub = _mm_add_epi32 (sub, mask1); //actual rounding
