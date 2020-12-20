@@ -12897,7 +12897,7 @@ _NEON2SSE_INLINE int32x4_t vcvtq_n_s32_f32(float32x4_t a, __constrange(1,32) int
     _NEON2SSE_ALIGN_16 static const uint32_t cmask[] = {0x80000000, 0x80000000, 0x80000000, 0x80000000};
     __m128 cconst128;
     __m128i mask, res;
-    convconst = (float)(1 << b);
+	convconst = (float)((uint32_t)1 << b);
     cconst128 = vdupq_n_f32(convconst);
     res =  _mm_cvttps_epi32(_mm_mul_ps(a,cconst128));
     mask = _mm_cmpeq_epi32 (res, *(__m128i*)cmask);
@@ -12909,7 +12909,7 @@ _NEON2SSE_INLINE uint32x4_t vcvtq_n_u32_f32(float32x4_t a, __constrange(1,32) in
 {
     float convconst;
     __m128 cconst128;
-    convconst = (float)(1 << b);
+	convconst = (float)((uint32_t)1 << b);
     cconst128 = vdupq_n_f32(convconst);
     return vcvtq_u32_f32(_mm_mul_ps(a,cconst128));
 }
@@ -13000,7 +13000,7 @@ _NEON2SSE_INLINE float32x4_t vcvtq_n_f32_u32(uint32x4_t a, __constrange(1,32) in
 {
     float convconst;
     __m128 cconst128, af;
-    convconst = (float)(1. / (1 << b));
+	convconst = (float)(1. / ((uint32_t)1 << b));
     af = vcvtq_f32_u32(a);
     cconst128 = vdupq_n_f32(convconst);
     return _mm_mul_ps(af,cconst128);
