@@ -12872,6 +12872,12 @@ _NEON2SSE_INLINE uint32x4_t vcvtq_u32_f32(float32x4_t a) // VCVT.U32.F32 q0, q0
 
 // ***** Convert to the fixed point  with   the number of fraction bits specified by b ***********
 //*************************************************************************************************
+_NEON2SSESTORAGE uint32_t clamp_u32_f32(float v);
+_NEON2SSE_INLINE uint32_t clamp_u32_f32(float v)
+{
+    return (v <= 0 ? 0 : (v >= (float)~0U ? ~0U : (uint32_t)(v)));
+}
+
 _NEON2SSESTORAGE int32x2_t vcvt_n_s32_f32(float32x2_t a, __constrange(1,32) int b); // VCVT.S32.F32 d0, d0, #32
 _NEON2SSE_INLINE int32x2_t vcvt_n_s32_f32(float32x2_t a, __constrange(1,32) int b)
 {
@@ -12884,9 +12890,9 @@ _NEON2SSE_INLINE uint32x2_t vcvt_n_u32_f32(float32x2_t a, __constrange(1,32) int
 {
     uint32x2_t res;
     float convconst;
-    convconst = (float)((uint32_t)1 << b);
-    res.m64_u32[0] = (uint32_t) (a.m64_f32[0] * convconst);
-    res.m64_u32[1] = (uint32_t) (a.m64_f32[1] * convconst);
+    convconst = (float)((uint64_t)1 << b);
+    res.m64_u32[0] = clamp_u32_f32(a.m64_f32[0] * convconst);
+    res.m64_u32[1] = clamp_u32_f32(a.m64_f32[1] * convconst);
     return res;
 }
 
@@ -12897,10 +12903,14 @@ _NEON2SSE_INLINE int32x4_t vcvtq_n_s32_f32(float32x4_t a, __constrange(1,32) int
     _NEON2SSE_ALIGN_16 static const uint32_t cmask[] = {0x80000000, 0x80000000, 0x80000000, 0x80000000};
     __m128 cconst128;
     __m128i mask, res;
-	convconst = (float)((uint32_t)1 << b);
+    convconst = (float)((uint64_t)1 << b);
     cconst128 = vdupq_n_f32(convconst);
     res =  _mm_cvttps_epi32(_mm_mul_ps(a,cconst128));
     mask = _mm_cmpeq_epi32 (res, *(__m128i*)cmask);
+
+    /* ...for negative values we do not want to negate the bits of saturated value */
+    mask = _mm_and_si128(_mm_castps_si128(_mm_cmpgt_ps(a,_mm_setzero_ps())), mask);
+
     return _mm_xor_si128 (res,  mask); //res saturated for 0x80000000
 }
 
@@ -12909,7 +12919,7 @@ _NEON2SSE_INLINE uint32x4_t vcvtq_n_u32_f32(float32x4_t a, __constrange(1,32) in
 {
     float convconst;
     __m128 cconst128;
-	convconst = (float)((uint32_t)1 << b);
+    convconst = (float)((uint64_t)1 << b);
     cconst128 = vdupq_n_f32(convconst);
     return vcvtq_u32_f32(_mm_mul_ps(a,cconst128));
 }
@@ -12967,7 +12977,7 @@ _NEON2SSE_INLINE float32x2_t vcvt_n_f32_s32(int32x2_t a, __constrange(1,32) int 
 {
     float32x2_t res;
     float convconst;
-    convconst = (float)(1. / ((uint32_t)1 << b));
+    convconst = (float)(1. / ((uint64_t)1 << b));
     res.m64_f32[0] =  a.m64_i32[0] * convconst;
     res.m64_f32[1] = a.m64_i32[1] * convconst;
     return res;
@@ -12978,7 +12988,7 @@ _NEON2SSE_INLINE float32x2_t vcvt_n_f32_u32(uint32x2_t a, __constrange(1,32) int
 {
     float32x2_t res;
     float convconst;
-    convconst = (float)(1. / ((uint32_t)1 << b));
+    convconst = (float)(1. / ((uint64_t)1 << b));
     res.m64_f32[0] =  a.m64_u32[0] * convconst;
     res.m64_f32[1] = a.m64_u32[1] * convconst;
     return res;
@@ -12989,7 +12999,7 @@ _NEON2SSE_INLINE float32x4_t vcvtq_n_f32_s32(int32x4_t a, __constrange(1,32) int
 {
     float convconst;
     __m128 cconst128, af;
-    convconst = (float)(1. / ((uint32_t)1 << b));
+    convconst = (float)(1. / ((uint64_t)1 << b));
     af = _mm_cvtepi32_ps(a);
     cconst128 = vdupq_n_f32(convconst);
     return _mm_mul_ps(af,cconst128);
@@ -13000,7 +13010,7 @@ _NEON2SSE_INLINE float32x4_t vcvtq_n_f32_u32(uint32x4_t a, __constrange(1,32) in
 {
     float convconst;
     __m128 cconst128, af;
-	convconst = (float)(1. / ((uint32_t)1 << b));
+    convconst = (float)(1. / ((uint64_t)1 << b));
     af = vcvtq_f32_u32(a);
     cconst128 = vdupq_n_f32(convconst);
     return _mm_mul_ps(af,cconst128);
