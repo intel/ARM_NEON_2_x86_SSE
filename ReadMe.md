@@ -4,7 +4,7 @@
  and x86 SSE (up to SSE4.2) intrinsic functions as defined in corresponding x86 compilers headers files.
  ****************************************************************************************
 
-To take advantage of this file just include it in your project that uses ARM NEON intinsics instead of "arm_neon.h", compile it as usual and enjoy the result.
+To take advantage of this file just include it in your project that uses ARM NEON intrinsics instead of "arm_neon.h", compile it as usual and enjoy the result.
 
 For significant performance improvement in some cases you might need to define USE_SSE4 in your project settings. Otherwise SIMD up to SSSE3 to be used.
 
