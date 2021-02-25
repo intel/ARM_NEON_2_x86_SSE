@@ -36,7 +36,7 @@
 //performance overhead and the necessity to use the EMMS instruction (_mm_empty())for mmx-x87 floating point  switching
 //*****************************************************************************************
 
-//!!!!!!!!!!!!!!  To use this file just include it in your project that uses ARM NEON intinsics instead of "arm_neon.h" and compile it as usual
+//!!!!!!!!!!!!!!  To use this file just include it in your project that uses ARM NEON intrinsics instead of "arm_neon.h" and compile it as usual
 //!!!!!!!!!!!!!!  but please pay attention at #define USE_SSE4 below - you might need to define it manualy for newest Intel Atom or any Intel Core platforms for greater performance.
 
 #ifndef NEON2SSE_H
