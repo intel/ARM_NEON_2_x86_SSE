@@ -1,6 +1,6 @@
 //created by Victoria Zhislina, the Senior Application Engineer, Intel Corporation,  victoria.zhislina@intel.com
 
-//*** Copyright (C) 2012-2020 Intel Corporation.  All rights reserved.
+//*** Copyright (C) 2012-2022 Intel Corporation.  All rights reserved.
 
 //IMPORTANT: READ BEFORE DOWNLOADING, COPYING, INSTALLING OR USING.
 
@@ -12340,13 +12340,13 @@ _NEON2SSE_INLINE float32x2_t vdup_n_f32(float32_t value)
 }
 
 _NEON2SSE_GLOBAL uint8x16_t   vdupq_n_u8(uint8_t value); // VDUP.8 q0,r0
-#define vdupq_n_u8(value) _mm_set1_epi8((uint8_t) (value))
+#define vdupq_n_u8(value) _mm_set1_epi8((int8_t) (value))
 
 _NEON2SSE_GLOBAL uint16x8_t   vdupq_n_u16(uint16_t value); // VDUP.16 q0,r0
-#define vdupq_n_u16(value) _mm_set1_epi16((uint16_t) (value))
+#define vdupq_n_u16(value) _mm_set1_epi16((int16_t) (value))
 
 _NEON2SSE_GLOBAL uint32x4_t   vdupq_n_u32(uint32_t value); // VDUP.32 q0,r0
-#define vdupq_n_u32(value) _mm_set1_epi32((uint32_t) (value))
+#define vdupq_n_u32(value) _mm_set1_epi32((int32_t) (value))
 
 _NEON2SSE_GLOBAL int8x16_t   vdupq_n_s8(int8_t value); // VDUP.8 q0,r0
 #define vdupq_n_s8 _mm_set1_epi8
