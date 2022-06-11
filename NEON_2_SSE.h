@@ -2298,7 +2298,7 @@ _NEON2SSE_GLOBAL float64x2_t vsqrtq_f64(float64x2_t a); // VSQRT.F64 q0,q0
 // the following macros solve the problem of the "immediate parameters requirement" for some x86 intrinsics.
 // we need it to compile the code unless the "Intrinsic parameter must be an immediate value" error is our goal
 //
-#if  ( defined (__INTEL_COMPILER)  || defined (__GNUC__) && !defined(__llvm__) )
+#if  ( defined (__INTEL_COMPILER)  && !defined(__llvm__) )
 #   define _MM_ALIGNR_EPI8 _mm_alignr_epi8
 #   define _MM_EXTRACT_EPI16  (int16_t) _mm_extract_epi16
 #   define _MM_INSERT_EPI16 _mm_insert_epi16
