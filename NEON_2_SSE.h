@@ -9426,7 +9426,7 @@ _NEON2SSE_GLOBAL uint32x4_t vld1q_lane_u32(__transfersize(1) uint32_t const * pt
 #define vld1q_lane_u32(ptr, vec, lane) _MM_INSERT_EPI32(vec, *(ptr), lane)
 
 _NEON2SSE_GLOBAL uint64x2_t vld1q_lane_u64(__transfersize(1) uint64_t const * ptr, uint64x2_t vec, __constrange(0,1) int lane); // VLD1.64 {d0}, [r0]
-#define vld1q_lane_u64(ptr, vec, lane) _MM_INSERT_EPI64(vec, *(ptr), lane); // _p;
+#define vld1q_lane_u64(ptr, vec, lane) _MM_INSERT_EPI64(vec, *(ptr), lane)
 
 
 _NEON2SSE_GLOBAL int8x16_t vld1q_lane_s8(__transfersize(1) int8_t const * ptr, int8x16_t vec, __constrange(0,15) int lane); // VLD1.8 {d0[0]}, [r0]
