@@ -2,7 +2,7 @@
 # Modification: Copyright (C) 2017 David Hirvonen
 
 cmake_minimum_required(VERSION 3.0)
-project(NEON_2_SSE VERSION 1.0.0)
+project(NEON_2_SSE VERSION 1.0.0 LANGUAGES C)
 
 add_library(${PROJECT_NAME} INTERFACE)
 
