@@ -37,7 +37,7 @@
 //*****************************************************************************************
 
 //!!!!!!!!!!!!!!  To use this file just include it in your project that uses ARM NEON intrinsics instead of "arm_neon.h" and compile it as usual
-//!!!!!!!!!!!!!!  but please pay attention at #define USE_SSE4 below - you might need to define it manualy for newest Intel Atom or any Intel Core platforms for greater performance.
+//!!!!!!!!!!!!!!  but please pay attention at #define USE_SSE4 below - you might need to define it manually for newest Intel Atom or any Intel Core platforms for greater performance.
 
 #ifndef NEON2SSE_H
 #define NEON2SSE_H
@@ -45,7 +45,7 @@
 /*********************************************************************************************************************/
 //!!!!!!!!!!!!!!
 //if USE_SSE4 is defined, some functions use SSE4 instructions instead of earlier SSE versions, when undefined - SIMD up to SSSE3 are used
-//For older devices without SSE4 support it should be undefined,  for newer devices - defined, probably manualy if your compiler doesn't set __SSE4_2__ predefine
+//For older devices without SSE4 support it should be undefined,  for newer devices - defined, probably manually if your compiler doesn't set __SSE4_2__ predefine
 #ifndef USE_SSE4
 #   if defined(__SSE4_2__)
 #       define USE_SSE4
@@ -6621,7 +6621,7 @@ _NEON2SSE_INLINE int8x8_t vpmax_s8(int8x8_t a, int8x8_t b) // VPMAX.S8 d0,d0,d0
     _NEON2SSE_ALIGN_16 static const uint8_t mask8_sab[16] = { 1, 0, 3, 2, 5,  4,  7,  6,    9,    8,   11,   10,   13,   12,   15,   14};
     _NEON2SSE_ALIGN_16 static const uint8_t mask8_odd[16] = { 1, 3, 5, 7, 9, 11, 13, 15, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
     ab = _mm_unpacklo_epi64 ( _pM128i(a), _pM128i(b)); //ab
-    ab1 = _mm_shuffle_epi8 (ab, *(__m128i*) mask8_sab); //horisontal pairs swap for vertical max finding
+    ab1 = _mm_shuffle_epi8 (ab, *(__m128i*) mask8_sab); //horizontal pairs swap for vertical max finding
     max = _MM_MAX_EPI8 (ab, ab1); // SSE4.1
     max = _mm_shuffle_epi8 (max, *(__m128i*) mask8_odd); //remove repetitive data
     return64(max); //we need 64 bits only
@@ -6633,9 +6633,9 @@ _NEON2SSE_INLINE int16x4_t vpmax_s16(int16x4_t a, int16x4_t b) // VPMAX.S16 d0,d
     //solution may be not optimal compared with the serial one
     int16x4_t res64;
     __m128i ab, ab1, max;
-    _NEON2SSE_ALIGN_16 static const int8_t mask16_sab[16] = { 2, 3, 0, 1, 6, 7, 4, 5, 10, 11, 8, 9, 14, 15, 12, 13}; //each chars pair is considerd to be 16 bit number
+    _NEON2SSE_ALIGN_16 static const int8_t mask16_sab[16] = { 2, 3, 0, 1, 6, 7, 4, 5, 10, 11, 8, 9, 14, 15, 12, 13}; //each chars pair is considered to be 16 bit number
     ab = _mm_unpacklo_epi64 ( _pM128i(a),  _pM128i(b)); //ab
-    ab1 = _mm_shuffle_epi8 (ab, *(__m128i*) mask16_sab); //horisontal pairs swap for vertical max finding, use 8bit fn and the corresponding mask
+    ab1 = _mm_shuffle_epi8 (ab, *(__m128i*) mask16_sab); //horizontal pairs swap for vertical max finding, use 8bit fn and the corresponding mask
     max = _mm_max_epi16 (ab, ab1);
     max =  _mm_shuffle_epi8 (max, *(__m128i*)  mask8_32_even_odd); //remove repetitive data, only the low part of mask is used
     return64(max);
@@ -6659,7 +6659,7 @@ _NEON2SSE_INLINE uint8x8_t vpmax_u8(uint8x8_t a, uint8x8_t b) // VPMAX.U8 d0,d0,
     _NEON2SSE_ALIGN_16 static const int8_t mask8_sab[16] = { 1, 0, 3, 2, 5, 4, 7, 6, 9, 8, 11, 10, 13, 12, 15, 14};
     _NEON2SSE_ALIGN_16 static const uint8_t mask8_odd[16] = { 1, 3,  5,  7, 9, 11, 13, 15, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
     ab = _mm_unpacklo_epi64 (_pM128i(a), _pM128i(b)); //ab
-    ab1 = _mm_shuffle_epi8 (ab, *(__m128i*) mask8_sab); //horisontal pairs swap for vertical max finding
+    ab1 = _mm_shuffle_epi8 (ab, *(__m128i*) mask8_sab); //horizontal pairs swap for vertical max finding
     max = _mm_max_epu8 (ab, ab1); // SSE4.1
     max = _mm_shuffle_epi8 (max, *(__m128i*) mask8_odd); //remove repetitive data
     return64(max);
@@ -6671,9 +6671,9 @@ _NEON2SSE_INLINE uint16x4_t vpmax_u16(uint16x4_t a, uint16x4_t b) // VPMAX.s16 d
     //solution may be not optimal compared with the serial one
     uint16x4_t res64;
     __m128i ab, ab1, max;
-    _NEON2SSE_ALIGN_16 static const uint8_t mask16_sab[16] = { 2, 3, 0, 1, 6, 7, 4, 5, 10, 11, 8, 9, 14, 15, 12, 13}; //each chars pair is considerd to be 16 bit number
+    _NEON2SSE_ALIGN_16 static const uint8_t mask16_sab[16] = { 2, 3, 0, 1, 6, 7, 4, 5, 10, 11, 8, 9, 14, 15, 12, 13}; //each chars pair is considered to be 16 bit number
     ab = _mm_unpacklo_epi64 ( _pM128i(a), _pM128i(b)); //ab
-    ab1 = _mm_shuffle_epi8 (ab, *(__m128i*) mask16_sab); //horisontal pairs swap for vertical max finding, use 8bit fn and the corresponding mask
+    ab1 = _mm_shuffle_epi8 (ab, *(__m128i*) mask16_sab); //horizontal pairs swap for vertical max finding, use 8bit fn and the corresponding mask
     max = _MM_MAX_EPU16 (ab, ab1);
     max = _mm_shuffle_epi8 (max, *(__m128i*) mask8_32_even_odd); //remove repetitive data, only the low part of mask is used
     return64(max);
@@ -6710,7 +6710,7 @@ _NEON2SSE_INLINE int8x8_t vpmin_s8(int8x8_t a, int8x8_t b) // VPMIN.S8 d0,d0,d0
     _NEON2SSE_ALIGN_16 static const uint8_t mask8_sab[16] = { 1, 0, 3, 2, 5,  4,  7,  6,    9,    8,   11,   10,   13,   12,   15,   14};
     _NEON2SSE_ALIGN_16 static const uint8_t mask8_odd[16] = { 1, 3, 5, 7, 9, 11, 13, 15, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
     ab = _mm_unpacklo_epi64 ( _pM128i(a), _pM128i(b)); //ab
-    ab1 = _mm_shuffle_epi8 (ab, *(__m128i*) mask8_sab); //horisontal pairs swap for vertical min finding
+    ab1 = _mm_shuffle_epi8 (ab, *(__m128i*) mask8_sab); //horizontal pairs swap for vertical min finding
     min =  _MM_MIN_EPI8 (ab, ab1); // SSE4.1
     min =  _mm_shuffle_epi8 (min, *(__m128i*) mask8_odd); //remove repetitive data
     return64(min);
@@ -6722,9 +6722,9 @@ _NEON2SSE_INLINE int16x4_t vpmin_s16(int16x4_t a, int16x4_t b) // VPMIN.S16 d0,d
     //solution may be not optimal compared with the serial one
     int16x4_t res64;
     __m128i ab, ab1, min;
-    _NEON2SSE_ALIGN_16 static const int8_t mask16_sab[16] = { 2, 3, 0, 1, 6, 7, 4, 5, 10, 11, 8, 9, 14, 15, 12, 13}; //each chars pair is considerd to be 16 bit number
+    _NEON2SSE_ALIGN_16 static const int8_t mask16_sab[16] = { 2, 3, 0, 1, 6, 7, 4, 5, 10, 11, 8, 9, 14, 15, 12, 13}; //each chars pair is considered to be 16 bit number
     ab = _mm_unpacklo_epi64 (  _pM128i(a),  _pM128i(b)); //ab
-    ab1 = _mm_shuffle_epi8 (ab, *(__m128i*) mask16_sab); //horisontal pairs swap for vertical max finding, use 8bit fn and the corresponding mask
+    ab1 = _mm_shuffle_epi8 (ab, *(__m128i*) mask16_sab); //horizontal pairs swap for vertical max finding, use 8bit fn and the corresponding mask
     min = _mm_min_epi16 (ab, ab1);
     min = _mm_shuffle_epi8 (min, *(__m128i*) mask8_32_even_odd); //remove repetitive data, only the low part of mask is used
     return64(min);
@@ -6748,7 +6748,7 @@ _NEON2SSE_INLINE uint8x8_t vpmin_u8(uint8x8_t a, uint8x8_t b) // VPMIN.U8 d0,d0,
     _NEON2SSE_ALIGN_16 static const uint8_t mask8_sab[16] = { 1, 0, 3, 2, 5,  4,  7,  6,    9,    8,   11,   10,   13,   12,   15,   14};
     _NEON2SSE_ALIGN_16 static const uint8_t mask8_odd[16] = { 1, 3, 5, 7, 9, 11, 13, 15, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
     ab = _mm_unpacklo_epi64 (  _pM128i(a),  _pM128i(b)); //ab
-    ab1 = _mm_shuffle_epi8 (ab, *(__m128i*) mask8_sab); //horisontal pairs swap for vertical max finding
+    ab1 = _mm_shuffle_epi8 (ab, *(__m128i*) mask8_sab); //horizontal pairs swap for vertical max finding
     min = _mm_min_epu8 (ab, ab1); // SSE4.1
     min = _mm_shuffle_epi8 (min, *(__m128i*) mask8_odd); //remove repetitive data
     return64(min);
@@ -6760,9 +6760,9 @@ _NEON2SSE_INLINE uint16x4_t vpmin_u16(uint16x4_t a, uint16x4_t b) // VPMIN.s16 d
     //solution may be not optimal compared with the serial one
     uint16x4_t res64;
     __m128i ab, ab1, min;
-    _NEON2SSE_ALIGN_16 static const uint8_t mask16_sab[16] = { 2, 3, 0, 1, 6, 7, 4, 5, 10, 11, 8, 9, 14, 15, 12, 13}; //each chars pair is considerd to be 16 bit number
+    _NEON2SSE_ALIGN_16 static const uint8_t mask16_sab[16] = { 2, 3, 0, 1, 6, 7, 4, 5, 10, 11, 8, 9, 14, 15, 12, 13}; //each chars pair is considered to be 16 bit number
     ab = _mm_unpacklo_epi64 ( _pM128i(a),  _pM128i(b)); //ab
-    ab1 = _mm_shuffle_epi8 (ab, *(__m128i*) mask16_sab); //horisontal pairs swap for vertical min finding, use 8bit fn and the corresponding mask
+    ab1 = _mm_shuffle_epi8 (ab, *(__m128i*) mask16_sab); //horizontal pairs swap for vertical min finding, use 8bit fn and the corresponding mask
     min = _MM_MIN_EPU16 (ab, ab1);
     min =    _mm_shuffle_epi8 (min, *(__m128i*) mask8_32_even_odd); //remove repetitive data, only the low part of mask is used
     return64(min);
@@ -7714,7 +7714,7 @@ _NEON2SSE_GLOBAL int32x4_t vshrq_n_s32(int32x4_t a, __constrange(1,32) int b); /
 _NEON2SSESTORAGE int64x2_t vshrq_n_s64(int64x2_t a, __constrange(1,64) int b); // VSHR.S64 q0,q0,#64
 _NEON2SSE_INLINE int64x2_t vshrq_n_s64(int64x2_t a, __constrange(1,64) int b)
 {
-    //SIMD implementation may be not optimal due to 64 bit arithmetic shift absense in x86 SIMD
+    //SIMD implementation may be not optimal due to 64 bit arithmetic shift absence in x86 SIMD
     __m128i c1, signmask,a0,  res64;
     _NEON2SSE_ALIGN_16 static const uint64_t mask[] = {0x8000000000000000, 0x8000000000000000};
     c1 =  _mm_cmpeq_epi32(a,a); //0xffffffffffffffff
@@ -9180,7 +9180,7 @@ _NEON2SSE_GLOBAL poly16x8_t vsriq_n_p16(poly16x8_t a, poly16x8_t b, __constrange
 //***** Vector shift left and insert *********************************************
 //*********************************************************************************
 //Actually the "c" right bits from "a" are the only bits remained from "a"  after the shift.
-//All other bits are taken from b shifted. Ending zeros are inserted in b in the shift proces. We need to combine "a" and "b shifted".
+//All other bits are taken from b shifted. Ending zeros are inserted in b in the shift process. We need to combine "a" and "b shifted".
 _NEON2SSESTORAGE int8x8_t vsli_n_s8(int8x8_t a,  int8x8_t b, __constrange(0,7) int c); // VSLI.8 d0,d0,#0
 _NEON2SSE_INLINE int8x8_t vsli_n_s8(int8x8_t a,  int8x8_t b, __constrange(0,7) int c)
 {
@@ -10781,7 +10781,7 @@ _NEON2SSE_GLOBAL poly16x4x4_t vld4_dup_p16(__transfersize(4) poly16_t const * pt
 //*******************Lane loads for  an N-element structures ***********************
 //**********************************************************************************
 //********************** Lane pairs  ************************************************
-//does vld1_lane_xx ptr[0] to src->val[0] at lane positon and ptr[1] to src->val[1] at lane positon
+//does vld1_lane_xx ptr[0] to src->val[0] at lane position and ptr[1] to src->val[1] at lane position
 //we assume  src is 16 bit aligned
 
 //!!!!!! Microsoft compiler does not allow xxxxxx_2t function arguments resulting in "formal parameter with __declspec(align('16')) won't be aligned" error
@@ -10901,7 +10901,7 @@ _NEON2SSE_GLOBAL poly16x4x2_t vld2_lane_p16_ptr(__transfersize(2) poly16_t const
 
 //*********** Lane triplets **********************
 //*************************************************
-//does vld1_lane_xx ptr[0] to src->val[0], ptr[1] to src->val[1] and ptr[2] to src->val[2] at lane positon
+//does vld1_lane_xx ptr[0] to src->val[0], ptr[1] to src->val[1] and ptr[2] to src->val[2] at lane position
 //we assume src is 16 bit aligned
 
 //uint16x8x3_t vld3q_lane_u16(__transfersize(3) uint16_t const * ptr, uint16x8x3_t src,__constrange(0,7) int lane);// VLD3.16 {d0[0], d2[0], d4[0]}, [r0]
@@ -11028,7 +11028,7 @@ _NEON2SSE_GLOBAL poly16x4x3_t vld3_lane_p16(__transfersize(3) poly16_t const * p
 
 //******************* Lane Quadruples  load ***************************
 //*********************************************************************
-//does vld1_lane_xx ptr[0] to src->val[0], ptr[1] to src->val[1], ptr[2] to src->val[2] and ptr[3] to src->val[3] at lane positon
+//does vld1_lane_xx ptr[0] to src->val[0], ptr[1] to src->val[1], ptr[2] to src->val[2] and ptr[3] to src->val[3] at lane position
 //we assume src is 16 bit aligned
 
 //uint16x8x4_t vld4q_lane_u16(__transfersize(4) uint16_t const * ptr, uint16x8x4_t src,__constrange(0,7) int lane)// VLD4.16 {d0[0], d2[0], d4[0], d6[0]}, [r0]
@@ -13019,10 +13019,10 @@ _NEON2SSE_INLINE float32x4_t vcvtq_n_f32_u32(uint32x4_t a, __constrange(1,32) in
 //**************Convert between floats ***********************
 //************************************************************
 _NEON2SSE_GLOBAL float16x4_t vcvt_f16_f32(float32x4_t a); // VCVT.F16.F32 d0, q0
-//Intel SIMD doesn't support 16bits floats curently
+//Intel SIMD doesn't support 16bits floats currently
 
 _NEON2SSE_GLOBAL float32x4_t vcvt_f32_f16(float16x4_t a); // VCVT.F32.F16 q0, d0
-//Intel SIMD doesn't support 16bits floats curently, the only solution is to store 16bit floats and load as 32 bits
+//Intel SIMD doesn't support 16bits floats currently, the only solution is to store 16bit floats and load as 32 bits
 
 //************Vector narrow integer conversion (truncation) ******************
 //****************************************************************************
@@ -14962,7 +14962,7 @@ _NEON2SSE_INLINE int8x16_t vqnegq_s8(int8x16_t a) // VQNE//q0,q0
 {
     __m128i zero;
     zero = _mm_setzero_si128 ();
-    return _mm_subs_epi8 (zero, a); //saturating substraction
+    return _mm_subs_epi8 (zero, a); //saturating subtraction
 }
 
 _NEON2SSESTORAGE int16x8_t vqnegq_s16(int16x8_t a); // VQNE//q0,q0
@@ -14970,7 +14970,7 @@ _NEON2SSE_INLINE int16x8_t vqnegq_s16(int16x8_t a) // VQNE//q0,q0
 {
     __m128i zero;
     zero = _mm_setzero_si128 ();
-    return _mm_subs_epi16 (zero, a); //saturating substraction
+    return _mm_subs_epi16 (zero, a); //saturating subtraction
 }
 
 _NEON2SSESTORAGE int32x4_t vqnegq_s32(int32x4_t a); // VQNE//q0,q0
@@ -14980,7 +14980,7 @@ _NEON2SSE_INLINE int32x4_t vqnegq_s32(int32x4_t a) // VQNE//q0,q0
     __m128i c80000000, zero, sub, cmp;
     c80000000 = _mm_set1_epi32 (0x80000000); //most negative value
     zero = _mm_setzero_si128 ();
-    sub =  _mm_sub_epi32 (zero, a); //substraction
+    sub =  _mm_sub_epi32 (zero, a); //subtraction
     cmp = _mm_cmpeq_epi32 (a, c80000000);
     return _mm_xor_si128 (sub,  cmp);
 }
@@ -15052,7 +15052,7 @@ _NEON2SSE_INLINE int16x8_t vclzq_s16(int16x8_t a)
     _NEON2SSE_ALIGN_16 static const uint16_t mask8bit[8] = {0x00ff, 0x00ff, 0x00ff, 0x00ff,0x00ff, 0x00ff, 0x00ff, 0x00ff};
     c7 = _mm_srli_epi16(*(__m128i*)mask8bit, 5); //7
     res8x16 = vclzq_s8(a);
-    res8x16_swap = _mm_shuffle_epi8 (res8x16, *(__m128i*) mask8_sab); //horisontal pairs swap
+    res8x16_swap = _mm_shuffle_epi8 (res8x16, *(__m128i*) mask8_sab); //horizontal pairs swap
     res8x16 = _mm_and_si128(res8x16, *(__m128i*)mask8bit); //lowclz
     res8x16_swap = _mm_and_si128(res8x16_swap, *(__m128i*)mask8bit); //hiclz
     c7 = _mm_cmpgt_epi16(res8x16_swap, c7); // shows the need to add lowclz zeros
@@ -16135,8 +16135,8 @@ _NEON2SSESTORAGE float32x4x2_t vuzpq_f32(float32x4_t a, float32x4_t b); // VUZP.
 _NEON2SSE_INLINE float32x4x2_t vuzpq_f32(float32x4_t a, float32x4_t b) // VUZP.32 q0,q0
 {
     float32x4x2_t v32x4;
-    v32x4.val[0] = _mm_shuffle_ps(a, b, _MM_SHUFFLE(2,0, 2, 0)); //a0, a2, b0, b2 , need to check endianess however
-    v32x4.val[1] = _mm_shuffle_ps(a, b, _MM_SHUFFLE(3,1, 3, 1)); //a1, a3, b1, b3, need to check endianess however
+    v32x4.val[0] = _mm_shuffle_ps(a, b, _MM_SHUFFLE(2,0, 2, 0)); //a0, a2, b0, b2 , need to check endianness however
+    v32x4.val[1] = _mm_shuffle_ps(a, b, _MM_SHUFFLE(3,1, 3, 1)); //a1, a3, b1, b3, need to check endianness however
     return v32x4;
 }
 
@@ -16149,7 +16149,7 @@ _NEON2SSE_GLOBAL poly16x8x2_t vuzpq_p16(poly16x8_t a, poly16x8_t b); // VUZP.16 
 //##############################################################################################
 //*********************** Reinterpret cast intrinsics.******************************************
 //##############################################################################################
-// Not a part of oficial NEON instruction set but available in gcc compiler *********************
+// Not a part of official NEON instruction set but available in gcc compiler *********************
 _NEON2SSE_GLOBAL poly8x8_t vreinterpret_p8_u32 (uint32x2_t t);
 #define vreinterpret_p8_u32
 
