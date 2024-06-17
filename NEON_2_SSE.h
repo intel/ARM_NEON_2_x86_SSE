@@ -37,7 +37,7 @@
 //*****************************************************************************************
 
 //!!!!!!!!!!!!!!  To use this file just include it in your project that uses ARM NEON intrinsics instead of "arm_neon.h" and compile it as usual
-//!!!!!!!!!!!!!!  but please pay attention at #define USE_SSE4 below - you might need to define it manually for newest Intel Atom or any Intel Core platforms for greater performance.
+//!!!!!!!!!!!!!!  but please pay attention at #define USE_SSE4 below - for greater performance you might need to define it manually for Intel CPUs supporting SSE4.
 
 #ifndef NEON2SSE_H
 #define NEON2SSE_H
@@ -4735,10 +4735,11 @@ _NEON2SSE_INLINE int8x8_t vhsub_s8(int8x8_t a, int8x8_t b) // VHSUB.S8 d0,d0,d0
 {
     //no 8 bit shift available, internal overflow is possible, so let's go to 16 bit,
     int8x8_t res64;
-    __m128i r16;
+    __m128i a16, b16, r16;
     int8x8_t r;
-    r = vsub_s8 (a, b);
-    r16 = _MM_CVTEPI8_EPI16 (_pM128i(r)); //SSE 4.1
+    a16 = _MM_CVTEPI8_EPI16(_pM128i(a)); //SSE 4.1
+    b16 = _MM_CVTEPI8_EPI16(_pM128i(b)); //SSE 4.1
+    r16 = _mm_sub_epi16(a16, b16);
     r16 = _mm_srai_epi16 (r16, 1); //SSE2
     r16 =  _mm_packs_epi16 (r16,r16); //use low 64 bits
     return64(r16);
