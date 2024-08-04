@@ -3891,11 +3891,15 @@ _NEON2SSE_INLINE int32x2_t vmla_s32(int32x2_t a, int32x2_t b, int32x2_t c) // VM
 _NEON2SSESTORAGE float32x2_t vmla_f32(float32x2_t a, float32x2_t b, float32x2_t c); // VMLA.F32 d0,d0,d0
 _NEON2SSE_INLINE float32x2_t vmla_f32(float32x2_t a, float32x2_t b, float32x2_t c)
 {
-    //fma is coming soon, but right now:
     __m128 res;
     __m64_128 res64;
+#ifdef USE_AVX2    
+    //fma
+    res = _mm_fmadd_ps(_pM128(c), _pM128(b), _pM128(a));
+#else
     res = _mm_mul_ps (_pM128(c), _pM128(b));
     res = _mm_add_ps (_pM128(a), res);
+#endif
     _M64f(res64, res);
     return res64;
 }
@@ -3947,13 +3951,17 @@ _NEON2SSE_INLINE int32x4_t vmlaq_s32(int32x4_t a, int32x4_t b, int32x4_t c) // V
 }
 
 _NEON2SSESTORAGE float32x4_t vmlaq_f32(float32x4_t a, float32x4_t b, float32x4_t c); // VMLA.F32 q0,q0,q0
+#ifdef USE_AVX2    
+//fma
+#define vmlaq_f32(a, b, c) _mm_fmadd_ps(c, b, a); //swap arguments
+#else
 _NEON2SSE_INLINE float32x4_t vmlaq_f32(float32x4_t a, float32x4_t b, float32x4_t c) // VMLA.F32 q0,q0,q0
 {
-    //fma is coming soon, but right now:
     __m128 res;
     res = _mm_mul_ps (c, b);
     return _mm_add_ps (a, res);
 }
+#endif
 
 _NEON2SSESTORAGE uint8x16_t vmlaq_u8(uint8x16_t a, uint8x16_t b, uint8x16_t c); // VMLA.I8 q0,q0,q0
 _NEON2SSE_INLINE uint8x16_t vmlaq_u8(uint8x16_t a, uint8x16_t b, uint8x16_t c) // VMLA.I8 q0,q0,q0
@@ -4060,8 +4068,13 @@ _NEON2SSE_INLINE float32x2_t vmls_f32(float32x2_t a, float32x2_t b, float32x2_t 
 {
     __m128 res;
     __m64_128 res64;
+#ifdef USE_AVX2    
+    //fma
+    res = _mm_fmsub_ps(_pM128(c), _pM128(b), _pM128(a));
+#else
     res = _mm_mul_ps (_pM128(c), _pM128(b));
     res = _mm_sub_ps (_pM128(a), res);
+#endif
     _M64f(res64, res);
     return res64;
 }
@@ -4117,12 +4130,17 @@ _NEON2SSE_INLINE float32x4_t vmlsq_f32(float32x4_t a, float32x4_t b, float32x4_t
 }
 
 _NEON2SSESTORAGE uint8x16_t vmlsq_u8(uint8x16_t a, uint8x16_t b, uint8x16_t c); // VMLS.I8 q0,q0,q0
+#ifdef USE_AVX2    
+//fma
+#define vmlsq_f32(a, b, c) _mm_fmsub_ps(c, b, a); //swap arguments
+#else
 _NEON2SSE_INLINE uint8x16_t vmlsq_u8(uint8x16_t a, uint8x16_t b, uint8x16_t c) // VMLS.I8 q0,q0,q0
 {
     //solution may be not optimal
     int8x16_t res = vmulq_u8(b, c);
     return _mm_sub_epi8(a, res);
 }
+#endif
 
 _NEON2SSE_GLOBAL uint16x8_t vmlsq_u16(uint16x8_t a, uint16x8_t b, uint16x8_t c); // VMLS.I16 q0,q0,q0
 #define vmlsq_u16 vmlsq_s16
@@ -4418,10 +4436,8 @@ _NEON2SSE_INLINE int64x1_t vsub_s64(int64x1_t a,  int64x1_t b)
 _NEON2SSESTORAGE float32x2_t vsub_f32(float32x2_t a, float32x2_t b); // VSUB.F32 d0,d0,d0
 _NEON2SSE_INLINE float32x2_t vsub_f32(float32x2_t a, float32x2_t b)
 {
-    float32x2_t res;
-    res.m64_f32[0] = a.m64_f32[0] - b.m64_f32[0];
-    res.m64_f32[1] = a.m64_f32[1] - b.m64_f32[1];
-    return res;
+    float32x2_t res64;
+    return64f(_mm_sub_ps(_pM128(a), _pM128(b)));
 }
 
 _NEON2SSE_GLOBAL uint8x8_t vsub_u8(uint8x8_t a, uint8x8_t b); // VSUB.I8 d0,d0,d0
@@ -15152,46 +15168,19 @@ _NEON2SSE_INLINE int16x8_t vclzq_s16(int16x8_t a)
 
 _NEON2SSESTORAGE int32x4_t vclzq_s32(int32x4_t a); // VCLZ.I32 q0,q0
 _NEON2SSE_INLINE int32x4_t vclzq_s32(int32x4_t a)
-{
-    __m128i c55555555, c33333333, c0f0f0f0f, c3f, c32, tmp, tmp1, res;
-    c55555555 = _mm_set1_epi32(0x55555555);
-    c33333333 = _mm_set1_epi32(0x33333333);
-    c0f0f0f0f = _mm_set1_epi32(0x0f0f0f0f);
-    c3f = _mm_set1_epi32(0x3f);
-    c32 = _mm_set1_epi32(32);
-    tmp = _mm_srli_epi32(a, 1);
-    res = _mm_or_si128(tmp, a); //atmp[i] |= (atmp[i] >> 1);
-    tmp = _mm_srli_epi32(res, 2);
-    res = _mm_or_si128(tmp, res); //atmp[i] |= (atmp[i] >> 2);
-    tmp = _mm_srli_epi32(res, 4);
-    res = _mm_or_si128(tmp, res); //atmp[i] |= (atmp[i] >> 4);
-    tmp = _mm_srli_epi32(res, 8);
-    res = _mm_or_si128(tmp, res); //atmp[i] |= (atmp[i] >> 8);
-    tmp = _mm_srli_epi32(res, 16);
-    res = _mm_or_si128(tmp, res); //atmp[i] |= (atmp[i] >> 16);
-
-    tmp = _mm_srli_epi32(res, 1);
-    tmp = _mm_and_si128(tmp, c55555555);
-    res = _mm_sub_epi32(res, tmp); //atmp[i] -= ((atmp[i] >> 1) & 0x55555555);
-
-    tmp = _mm_srli_epi32(res, 2);
-    tmp = _mm_and_si128(tmp, c33333333);
-    tmp1 = _mm_and_si128(res, c33333333);
-    res = _mm_add_epi32(tmp, tmp1); //atmp[i] = (((atmp[i] >> 2) & 0x33333333) + (atmp[i] & 0x33333333));
-
-    tmp = _mm_srli_epi32(res, 4);
-    tmp = _mm_add_epi32(tmp, res);
-    res = _mm_and_si128(tmp, c0f0f0f0f); //atmp[i] = (((atmp[i] >> 4) + atmp[i]) & 0x0f0f0f0f);
-
-    tmp = _mm_srli_epi32(res, 8);
-    res = _mm_add_epi32(tmp, res); //atmp[i] += (atmp[i] >> 8);
-
-    tmp = _mm_srli_epi32(res, 16);
-    res = _mm_add_epi32(tmp, res); //atmp[i] += (atmp[i] >> 16);
-
-    res = _mm_and_si128(res, c3f); //atmp[i] = atmp[i] & 0x0000003f;
-
-    return _mm_sub_epi32(c32, res); //res[i] = 32 - atmp[i];
+{ // compute count of leading zero bits using floating-point conversion trick
+    // input integer a,  result r,  f = (float)(a & -(a>>8)); 
+    //r = 158 - (*(int32_t *)&f >> 23);
+    __m128i zero = _mm_setzero_si128();
+    __m128i c158 = _mm_set1_epi32(158);
+    __m128i c32 = _mm_set_epi16(0, 32, 0, 32, 0, 32, 0, 32);
+    __m128i lsr = _mm_srai_epi32(a, 8);
+    __m128i atrunc = _mm_andnot_si128(lsr, a); //truncation
+    __m128 atruncf = _mm_cvtepi32_ps(atrunc);
+    __m128i res = _mm_castps_si128(atruncf);
+     res = _mm_srli_epi32(res, 23);
+     res = _mm_sub_epi32(c158, res);
+     return _mm_min_epi16(res, c32);
 }
 
 _NEON2SSE_GLOBAL uint8x16_t vclzq_u8(uint8x16_t a); // VCLZ.I8 q0,q0
@@ -15201,7 +15190,26 @@ _NEON2SSE_GLOBAL uint16x8_t vclzq_u16(uint16x8_t a); // VCLZ.I16 q0,q0
 #define vclzq_u16 vclzq_s16
 
 _NEON2SSE_GLOBAL uint32x4_t vclzq_u32(uint32x4_t a); // VCLZ.I32 q0,q0
-#define vclzq_u32 vclzq_s32
+_NEON2SSE_INLINE uint32x4_t vclzq_u32(uint32x4_t a)
+{ // compute count of leading zero bits using floating-point conversion trick
+    //same as for signed ints but to emulate unsigned conversion we divide a/2  before the conversion, then double and increment after the conversion
+    // input integer a,  result r,  float f = (float)(int)((a >> 1) & ~(a >> 2)); f = 2*f + 1.0
+    //r = (*(uint32_t *)&f >> 23) - 0x7f;
+    __m128i zero = _mm_setzero_si128();
+    __m128 fp1 = _mm_set_ps1(1.0f);
+    __m128i c158 = _mm_set1_epi32(158);
+    __m128i mask = _mm_cmpeq_epi32(a, zero);
+    __m128i lsr1 = _mm_srli_epi32(a, 1);
+    __m128i lsr2 = _mm_srli_epi32(a, 2);
+    __m128i atrunc = _mm_andnot_si128(lsr2, lsr1);
+    __m128 atruncf = _mm_cvtepi32_ps(atrunc);
+    __m128 atruncf2 = _mm_add_ps(atruncf, atruncf);
+    __m128 conv = _mm_add_ps(atruncf2, fp1);
+    __m128i res = _mm_castps_si128(conv);
+    res = _mm_srli_epi32(res, 23);
+    res = _mm_sub_epi32(c158, res);
+    return _mm_sub_epi32(res, mask);
+}
 
 //************** Count leading sign bits **************************
 //********************************************************************
