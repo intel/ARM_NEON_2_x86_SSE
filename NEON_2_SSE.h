@@ -2105,7 +2105,7 @@ _NEON2SSESTORAGE int16x8_t vclzq_s16(int16x8_t a); // VCLZ.I16 q0,q0
 _NEON2SSESTORAGE int32x4_t vclzq_s32(int32x4_t a); // VCLZ.I32 q0,q0
 _NEON2SSE_GLOBAL uint8x16_t vclzq_u8(uint8x16_t a); // VCLZ.I8 q0,q0
 _NEON2SSE_GLOBAL uint16x8_t vclzq_u16(uint16x8_t a); // VCLZ.I16 q0,q0
-_NEON2SSE_GLOBAL uint32x4_t vclzq_u32(uint32x4_t a); // VCLZ.I32 q0,q0
+_NEON2SSESTORAGE uint32x4_t vclzq_u32(uint32x4_t a); // VCLZ.I32 q0,q0
 //Count number of set bits
 _NEON2SSESTORAGE uint8x8_t vcnt_u8(uint8x8_t a); // VCNT.8 d0,d0
 _NEON2SSE_GLOBAL int8x8_t vcnt_s8(int8x8_t a); // VCNT.8 d0,d0
@@ -3893,7 +3893,7 @@ _NEON2SSE_INLINE float32x2_t vmla_f32(float32x2_t a, float32x2_t b, float32x2_t 
 {
     __m128 res;
     __m64_128 res64;
-#ifdef USE_AVX2    
+#ifdef USE_AVX2
     //fma
     res = _mm_fmadd_ps(_pM128(c), _pM128(b), _pM128(a));
 #else
@@ -3951,7 +3951,7 @@ _NEON2SSE_INLINE int32x4_t vmlaq_s32(int32x4_t a, int32x4_t b, int32x4_t c) // V
 }
 
 _NEON2SSESTORAGE float32x4_t vmlaq_f32(float32x4_t a, float32x4_t b, float32x4_t c); // VMLA.F32 q0,q0,q0
-#ifdef USE_AVX2    
+#ifdef USE_AVX2
 //fma
 #define vmlaq_f32(a, b, c) _mm_fmadd_ps(c, b, a); //swap arguments
 #else
@@ -4068,7 +4068,7 @@ _NEON2SSE_INLINE float32x2_t vmls_f32(float32x2_t a, float32x2_t b, float32x2_t 
 {
     __m128 res;
     __m64_128 res64;
-#ifdef USE_AVX2    
+#ifdef USE_AVX2
     //fma
     res = _mm_fmsub_ps(_pM128(c), _pM128(b), _pM128(a));
 #else
@@ -4130,7 +4130,7 @@ _NEON2SSE_INLINE float32x4_t vmlsq_f32(float32x4_t a, float32x4_t b, float32x4_t
 }
 
 _NEON2SSESTORAGE uint8x16_t vmlsq_u8(uint8x16_t a, uint8x16_t b, uint8x16_t c); // VMLS.I8 q0,q0,q0
-#ifdef USE_AVX2    
+#ifdef USE_AVX2
 //fma
 #define vmlsq_f32(a, b, c) _mm_fmsub_ps(c, b, a); //swap arguments
 #else
@@ -4766,7 +4766,6 @@ _NEON2SSE_INLINE int8x8_t vhsub_s8(int8x8_t a, int8x8_t b) // VHSUB.S8 d0,d0,d0
     //no 8 bit shift available, internal overflow is possible, so let's go to 16 bit,
     int8x8_t res64;
     __m128i a16, b16, r16;
-    int8x8_t r;
     a16 = _MM_CVTEPI8_EPI16(_pM128i(a)); //SSE 4.1
     b16 = _MM_CVTEPI8_EPI16(_pM128i(b)); //SSE 4.1
     r16 = _mm_sub_epi16(a16, b16);
@@ -15169,9 +15168,8 @@ _NEON2SSE_INLINE int16x8_t vclzq_s16(int16x8_t a)
 _NEON2SSESTORAGE int32x4_t vclzq_s32(int32x4_t a); // VCLZ.I32 q0,q0
 _NEON2SSE_INLINE int32x4_t vclzq_s32(int32x4_t a)
 { // compute count of leading zero bits using floating-point conversion trick
-    // input integer a,  result r,  f = (float)(a & -(a>>8)); 
+    // input integer a,  result r,  f = (float)(a & -(a>>8));
     //r = 158 - (*(int32_t *)&f >> 23);
-    __m128i zero = _mm_setzero_si128();
     __m128i c158 = _mm_set1_epi32(158);
     __m128i c32 = _mm_set_epi16(0, 32, 0, 32, 0, 32, 0, 32);
     __m128i lsr = _mm_srai_epi32(a, 8);
