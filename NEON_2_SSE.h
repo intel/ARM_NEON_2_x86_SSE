@@ -2105,7 +2105,7 @@ _NEON2SSESTORAGE int16x8_t vclzq_s16(int16x8_t a); // VCLZ.I16 q0,q0
 _NEON2SSESTORAGE int32x4_t vclzq_s32(int32x4_t a); // VCLZ.I32 q0,q0
 _NEON2SSE_GLOBAL uint8x16_t vclzq_u8(uint8x16_t a); // VCLZ.I8 q0,q0
 _NEON2SSE_GLOBAL uint16x8_t vclzq_u16(uint16x8_t a); // VCLZ.I16 q0,q0
-_NEON2SSE_GLOBAL uint32x4_t vclzq_u32(uint32x4_t a); // VCLZ.I32 q0,q0
+_NEON2SSESTORAGE uint32x4_t vclzq_u32(uint32x4_t a); // VCLZ.I32 q0,q0
 //Count number of set bits
 _NEON2SSESTORAGE uint8x8_t vcnt_u8(uint8x8_t a); // VCNT.8 d0,d0
 _NEON2SSE_GLOBAL int8x8_t vcnt_s8(int8x8_t a); // VCNT.8 d0,d0
@@ -4766,7 +4766,6 @@ _NEON2SSE_INLINE int8x8_t vhsub_s8(int8x8_t a, int8x8_t b) // VHSUB.S8 d0,d0,d0
     //no 8 bit shift available, internal overflow is possible, so let's go to 16 bit,
     int8x8_t res64;
     __m128i a16, b16, r16;
-    int8x8_t r;
     a16 = _MM_CVTEPI8_EPI16(_pM128i(a)); //SSE 4.1
     b16 = _MM_CVTEPI8_EPI16(_pM128i(b)); //SSE 4.1
     r16 = _mm_sub_epi16(a16, b16);
@@ -10626,7 +10625,7 @@ _NEON2SSE_INLINE uint8x8x2_t vld2_dup_u8(__transfersize(2) uint8_t const * ptr) 
 {
     uint8x8x2_t v;
     __m128i val0, val1;
-    val0 = _mm_loadu_si16(ptr); //0,1,x,x, x,x,x,x,x,x,x,x, x,x,x,x
+    val0 = _mm_cvtsi32_si128(*(uint16_t*)ptr); //0,1,x,x, x,x,x,x,x,x,x,x, x,x,x,x
     val1 = _mm_unpacklo_epi8(val0,val0); //0,0,1,1,x,x,x,x, x,x,x,x,x,x,x,x,
     val1 = _mm_unpacklo_epi16(val1,val1); //0,0,0,0, 1,1,1,1,x,x,x,x, x,x,x,x
     val0 = _mm_unpacklo_epi32(val1,val1); //0,0,0,0, 0,0,0,0,1,1,1,1,1,1,1,1,
@@ -10639,7 +10638,7 @@ _NEON2SSE_INLINE uint16x4x2_t vld2_dup_u16(__transfersize(2) uint16_t const * pt
 {
     uint16x4x2_t v;
     __m128i val0, val1;
-    val1 = _mm_loadu_si32(ptr); //0,1,x,x, x,x,x,x
+    val1 = _mm_cvtsi32_si128(*(uint32_t*)ptr); //0,1,x,x, x,x,x,x
     val0 = _mm_shufflelo_epi16(val1, 0); //00 00 00 00 (all 0)
     _M64(v.val[0], val0);
     val1 = _mm_shufflelo_epi16(val1, 85); //01 01 01 01 (all 1)
@@ -10652,7 +10651,7 @@ _NEON2SSE_INLINE uint32x2x2_t vld2_dup_u32(__transfersize(2) uint32_t const * pt
 {
     uint32x2x2_t v;
     __m128i val0;
-    val0 = _mm_loadu_si64(ptr); //0,1,x,x
+    val0 = _mm_loadl_epi64((__m128i*)ptr); //0,1,x,x
     val0 = _mm_shuffle_epi32(val0,   0 | (0 << 2) | (1 << 4) | (1 << 6)); //0,0,1,1
     vst1q_u32(v.val, val0);
     return v;
@@ -10701,7 +10700,7 @@ _NEON2SSE_INLINE uint8x8x3_t vld3_dup_u8(__transfersize(3) uint8_t const * ptr) 
 {
     uint8x8x3_t v;
     __m128i val0, val1, val2;
-    val0 = _mm_loadu_si32(ptr); //0,1,2,x, x,x,x,x,x,x,x,x, x,x,x,x
+    val0 = _mm_cvtsi32_si128(*(uint32_t*)ptr); //0,1,2,x, x,x,x,x,x,x,x,x, x,x,x,x
     val1 = _mm_unpacklo_epi8(val0,val0); //0,0,1,1,2,2,x,x, x,x,x,x,x,x,x,x,
     val1 = _mm_unpacklo_epi16(val1,val1); //0,0,0,0, 1,1,1,1,2,2,2,2,x,x,x,x,
     val0 = _mm_unpacklo_epi32(val1,val1); //0,0,0,0, 0,0,0,0,1,1,1,1,1,1,1,1,
@@ -10716,7 +10715,7 @@ _NEON2SSE_INLINE uint16x4x3_t vld3_dup_u16(__transfersize(3) uint16_t const * pt
 {
     uint16x4x3_t v;
     __m128i val0, val1, val2;
-    val2 = _mm_loadu_si64(ptr); //0,1,2,x, x,x,x,x
+    val2 = _mm_loadl_epi64((__m128i*) ptr); //0,1,2,x, x,x,x,x
     val0 = _mm_shufflelo_epi16(val2, 0); //00 00 00 00 (all 0)
     val1 = _mm_shufflelo_epi16(val2, 85); //01 01 01 01 (all 1)
     val2 = _mm_shufflelo_epi16(val2, 170); //10 10 10 10 (all 2)
@@ -10794,7 +10793,7 @@ _NEON2SSE_INLINE uint8x8x4_t vld4_dup_u8(__transfersize(4) uint8_t const * ptr) 
 {
     uint8x8x4_t v;
     __m128i val0, val1, val2;
-    val0 = _mm_loadu_si32(ptr); //0,1,2,3, x,x,x,x,x,x,x,x, x,x,x,x
+    val0 = _mm_cvtsi32_si128(*(uint32_t*)ptr); //0,1,2,3, x,x,x,x,x,x,x,x, x,x,x,x
     val1 = _mm_unpacklo_epi8(val0,val0); //0,0,1,1,2,2,3,3, x,x,x,x,x,x,x,x,
     val1 = _mm_unpacklo_epi16(val1,val1); //0,0,0,0, 1,1,1,1,2,2,2,2,3,3,3,3
     val0 = _mm_unpacklo_epi32(val1,val1); //0,0,0,0, 0,0,0,0,1,1,1,1,1,1,1,1,
@@ -10809,7 +10808,7 @@ _NEON2SSE_INLINE uint16x4x4_t vld4_dup_u16(__transfersize(4) uint16_t const * pt
 {
     uint16x4x4_t v;
     __m128i val0, val1, val2, val3;
-    val3 = _mm_loadu_si64(ptr); //0,1,2,3, x,x,x,x
+    val3 = _mm_loadl_epi64((__m128i*)ptr); //0,1,2,3, x,x,x,x
     val0 = _mm_shufflelo_epi16(val3, 0); //00 00 00 00 (all 0)
     val1 = _mm_shufflelo_epi16(val3, 85); //01 01 01 01 (all 1)
     val2 = _mm_shufflelo_epi16(val3, 170); //10 10 10 10 (all 2)
@@ -15169,9 +15168,8 @@ _NEON2SSE_INLINE int16x8_t vclzq_s16(int16x8_t a)
 _NEON2SSESTORAGE int32x4_t vclzq_s32(int32x4_t a); // VCLZ.I32 q0,q0
 _NEON2SSE_INLINE int32x4_t vclzq_s32(int32x4_t a)
 { // compute count of leading zero bits using floating-point conversion trick
-    // input integer a,  result r,  f = (float)(a & -(a>>8)); 
+    // input integer a,  result r,  f = (float)(a & -(a>>8));
     //r = 158 - (*(int32_t *)&f >> 23);
-    __m128i zero = _mm_setzero_si128();
     __m128i c158 = _mm_set1_epi32(158);
     __m128i c32 = _mm_set_epi16(0, 32, 0, 32, 0, 32, 0, 32);
     __m128i lsr = _mm_srai_epi32(a, 8);
@@ -15189,7 +15187,7 @@ _NEON2SSE_GLOBAL uint8x16_t vclzq_u8(uint8x16_t a); // VCLZ.I8 q0,q0
 _NEON2SSE_GLOBAL uint16x8_t vclzq_u16(uint16x8_t a); // VCLZ.I16 q0,q0
 #define vclzq_u16 vclzq_s16
 
-_NEON2SSE_GLOBAL uint32x4_t vclzq_u32(uint32x4_t a); // VCLZ.I32 q0,q0
+_NEON2SSESTORAGE uint32x4_t vclzq_u32(uint32x4_t a); // VCLZ.I32 q0,q0
 _NEON2SSE_INLINE uint32x4_t vclzq_u32(uint32x4_t a)
 { // compute count of leading zero bits using floating-point conversion trick
     //same as for signed ints but to emulate unsigned conversion we divide a/2  before the conversion, then double and increment after the conversion
