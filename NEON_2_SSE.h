@@ -125,8 +125,8 @@
 #   define _NEON2SSE_64BIT_SSE4
 #endif
 
-#ifndef UNREFERENCED_PARAMETER
-#   define UNREFERENCED_PARAMETER(P) ((void)(P))
+#ifndef UNREFERENCED_PARAM
+#   define UNREFERENCED_PARAM(P) ((void)(P))
 #endif
 
 /*********************************************************************************************************************/
@@ -9595,8 +9595,8 @@ _NEON2SSESTORAGE uint64x1_t vld1_lane_u64(__transfersize(1) uint64_t const * ptr
 _NEON2SSE_INLINE uint64x1_t vld1_lane_u64(__transfersize(1) uint64_t const * ptr, uint64x1_t vec, __constrange(0,0) int lane)
 {
     uint64x1_t res;
-    UNREFERENCED_PARAMETER(vec);
-    UNREFERENCED_PARAMETER(lane);
+    UNREFERENCED_PARAM(vec);
+    UNREFERENCED_PARAM(lane);
     res.m64_u64[0] = *(ptr);
     return res;
 }
@@ -9934,7 +9934,7 @@ _NEON2SSE_INLINE void vst1_lane_u32(__transfersize(1) uint32_t * ptr, uint32x2_t
 _NEON2SSESTORAGE void vst1_lane_u64(__transfersize(1) uint64_t * ptr, uint64x1_t val, __constrange(0,0) int lane); // VST1.64 {d0}, [r0]
 _NEON2SSE_INLINE void vst1_lane_u64(__transfersize(1) uint64_t * ptr, uint64x1_t val, __constrange(0,0) int lane)
 {
-    UNREFERENCED_PARAMETER(lane);
+    UNREFERENCED_PARAM(lane);
     *(ptr) = val.m64_u64[0];
 }
 
@@ -12732,7 +12732,7 @@ _NEON2SSESTORAGE int64x2_t vdupq_lane_s64(int64x1_t vec, __constrange(0,0) int l
 _NEON2SSE_INLINE int64x2_t vdupq_lane_s64(int64x1_t vec, __constrange(0,0) int lane)
 {
     __m128i vec128;
-    UNREFERENCED_PARAMETER(lane);
+    UNREFERENCED_PARAM(lane);
     vec128 = _pM128i(vec);
     return _mm_unpacklo_epi64(vec128,vec128);
 }
