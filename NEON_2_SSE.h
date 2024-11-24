@@ -3953,7 +3953,7 @@ _NEON2SSE_INLINE int32x4_t vmlaq_s32(int32x4_t a, int32x4_t b, int32x4_t c) // V
 _NEON2SSESTORAGE float32x4_t vmlaq_f32(float32x4_t a, float32x4_t b, float32x4_t c); // VMLA.F32 q0,q0,q0
 #ifdef USE_AVX2    
 //fma
-#define vmlaq_f32(a, b, c) _mm_fmadd_ps(c, b, a); //swap arguments
+#define vmlaq_f32(a, b, c) _mm_fmadd_ps(c, b, a) //swap arguments
 #else
 _NEON2SSE_INLINE float32x4_t vmlaq_f32(float32x4_t a, float32x4_t b, float32x4_t c) // VMLA.F32 q0,q0,q0
 {
@@ -4122,25 +4122,26 @@ _NEON2SSE_INLINE int32x4_t vmlsq_s32(int32x4_t a, int32x4_t b, int32x4_t c) // V
 }
 
 _NEON2SSESTORAGE float32x4_t vmlsq_f32(float32x4_t a, float32x4_t b, float32x4_t c); // VMLS.F32 q0,q0,q0
+#ifdef USE_AVX2    
+//fma
+#define vmlsq_f32(a, b, c) _mm_fmsub_ps(c, b, a) //swap arguments
+#else
 _NEON2SSE_INLINE float32x4_t vmlsq_f32(float32x4_t a, float32x4_t b, float32x4_t c) // VMLS.F32 q0,q0,q0
 {
     __m128 res;
     res = _mm_mul_ps (c, b);
     return _mm_sub_ps (a, res);
 }
+#endif
 
 _NEON2SSESTORAGE uint8x16_t vmlsq_u8(uint8x16_t a, uint8x16_t b, uint8x16_t c); // VMLS.I8 q0,q0,q0
-#ifdef USE_AVX2    
-//fma
-#define vmlsq_f32(a, b, c) _mm_fmsub_ps(c, b, a); //swap arguments
-#else
 _NEON2SSE_INLINE uint8x16_t vmlsq_u8(uint8x16_t a, uint8x16_t b, uint8x16_t c) // VMLS.I8 q0,q0,q0
 {
     //solution may be not optimal
     int8x16_t res = vmulq_u8(b, c);
     return _mm_sub_epi8(a, res);
 }
-#endif
+
 
 _NEON2SSE_GLOBAL uint16x8_t vmlsq_u16(uint16x8_t a, uint16x8_t b, uint16x8_t c); // VMLS.I16 q0,q0,q0
 #define vmlsq_u16 vmlsq_s16
