@@ -2313,6 +2313,24 @@ _NEON2SSESTORAGE float64x2_t vrndnq_f64(float64x2_t a); // VRND.F64 q0,q0
 _NEON2SSE_GLOBAL float32x4_t vsqrtq_f32(float32x4_t a); // VSQRT.F32 q0,q0
 _NEON2SSE_GLOBAL float64x2_t vsqrtq_f64(float64x2_t a); // VSQRT.F64 q0,q0
 
+// A64 (ARM8+ instructions)
+_NEON2SSESTORAGE int8_t vaddvq_s8(int8x16_t a);
+_NEON2SSESTORAGE int16_t vaddvq_s16(int16x8_t a);
+_NEON2SSESTORAGE int32_t vaddvq_s32(int32x4_t a);
+_NEON2SSESTORAGE int64_t vaddvq_s64(int64x2_t a);
+_NEON2SSESTORAGE uint8_t vaddvq_u8(uint8x16_t a);
+_NEON2SSE_GLOBAL uint16_t vaddvq_u16(uint16x8_t a);
+_NEON2SSE_GLOBAL uint32_t vaddvq_u32(uint32x4_t a);
+_NEON2SSE_GLOBAL uint64_t vaddvq_u64(uint64x2_t a);
+_NEON2SSESTORAGE float32_t vaddvq_f32(float32x4_t a);
+_NEON2SSESTORAGE float64_t vaddvq_f64(float64x2_t a);
+_NEON2SSESTORAGE int8_t vaddv_s8(int8x8_t a);
+_NEON2SSESTORAGE int16_t vaddv_s16(int16x4_t a);
+_NEON2SSESTORAGE int32_t vaddv_s32(int32x2_t a);
+_NEON2SSESTORAGE uint8_t vaddv_u8(uint8x8_t a);
+_NEON2SSE_GLOBAL uint16_t vaddv_u16(uint16x4_t a);
+_NEON2SSE_GLOBAL uint32_t vaddv_u32(uint32x2_t a);
+_NEON2SSESTORAGE float32_t vaddv_f32(float32x2_t a);
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 // the following macros solve the problem of the "immediate parameters requirement" for some x86 intrinsics.
@@ -16956,8 +16974,6 @@ _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(float64x2_t vrndnq_f64(float64x2_
 }
 #endif
 
-
-
 //************* Sqrt ******************
 _NEON2SSE_GLOBAL float32x4_t vsqrtq_f32(float32x4_t a);
 #define vsqrtq_f32 _mm_sqrt_ps
@@ -16965,5 +16981,131 @@ _NEON2SSE_GLOBAL float32x4_t vsqrtq_f32(float32x4_t a);
 _NEON2SSE_GLOBAL float64x2_t vsqrtq_f64(float64x2_t a);
 #define vsqrtq_f64 _mm_sqrt_pd
 
+//**** A64 (ARM8+ instructions) ********
+//** VADDV
+_NEON2SSESTORAGE int8_t vaddvq_s8(int8x16_t a)
+{
+    //no signed sad in x86 SIMD, go to unsigned
+    __m128i c128 = _mm_set1_epi8(-128); //(int8_t)0x80
+    __m128i zero = _mm_setzero_si128();
+    __m128i au = _mm_add_epi8(a, c128);
+    __m128i sum = _mm_sad_epu8(au, zero);
+    // _mm_cvtsi128_si32 faster than _mm_extract_epi16 with the same result here
+    return (int8_t)(_mm_cvtsi128_si32(sum) + _mm_extract_epi16(sum, 4));
+}
+
+_NEON2SSESTORAGE int16_t vaddvq_s16(int16x8_t a)
+{
+#if 0
+    // on x86 CPUs tested this solution is slower
+    __m128i sum = _mm_hadd_epi16(a, a); // 4 16-bits results
+    __m128i sum1 = _mm_hadd_epi16(sum, sum);
+    sum = _mm_hadd_epi16(sum1, sum1);
+#else
+    __m128i shuf = _mm_srli_si128(a, 8);
+    __m128i sum = _mm_add_epi16(a, shuf);
+    shuf = _mm_srli_si128(sum, 4);
+    sum = _mm_add_epi16(sum, shuf);
+    shuf = _mm_srli_si128(sum, 2);
+    sum = _mm_add_epi16(sum, shuf);
+#endif
+    return  _mm_extract_epi16(sum, 0);
+}
+
+_NEON2SSESTORAGE  int32_t vaddvq_s32(int32x4_t a)
+{
+    __m128i shuf = _mm_shuffle_epi32(a, _MM_SHUFFLE(1, 0, 3, 2));
+    __m128i sum = _mm_add_epi32(a, shuf);
+    shuf = _mm_shufflelo_epi16(sum, _MM_SHUFFLE(1, 0, 3, 2));    // Swap two low elements
+    sum = _mm_add_epi32(shuf, sum);
+    return _mm_cvtsi128_si32(sum);       // SSE2 movd
+}
+
+_NEON2SSESTORAGE int64_t vaddvq_s64(int64x2_t a)
+{
+    __m128i shuf = _mm_shuffle_epi32(a, _MM_SHUFFLE(1, 0, 3, 2)); // swap lo and hi numbers
+    __m128i sum = _mm_add_epi64(a, shuf);
+    return _mm_cvtsi128_si64(sum);
+}
+
+_NEON2SSESTORAGE uint8_t vaddvq_u8(uint8x16_t a)
+{
+    __m128i zero = _mm_setzero_si128();
+    __m128i sum = _mm_sad_epu8(a, zero);
+    return _mm_cvtsi128_si32(sum) + _mm_extract_epi16(sum, 4);
+}
+
+_NEON2SSE_GLOBAL uint16_t vaddvq_u16(uint16x8_t a);
+#define vaddvq_u16(a) (uint16_t) vaddvq_s16(a)
+
+_NEON2SSE_GLOBAL uint32_t vaddvq_u32(uint32x4_t a);
+#define vaddvq_u32(a) (uint32_t) vaddvq_s32(a)
+
+
+_NEON2SSE_GLOBAL uint64_t vaddvq_u64(uint64x2_t a);
+#define vaddvq_u64(a) (uint64_t) vaddvq_s64(a)
+
+_NEON2SSESTORAGE float32_t vaddvq_f32(float32x4_t a)
+{
+    __m128 shuf = _mm_shuffle_ps(a, a, _MM_SHUFFLE(2, 3, 0, 1));
+    __m128 sum = _mm_add_ps(a, shuf);      // 0+2, 3+1,0+2, 1+3
+    shuf = _mm_movehl_ps(shuf, sum);      //  1+3, 0+2, .....
+    sum = _mm_add_ss(sum, shuf);
+    return   _mm_cvtss_f32(sum);
+}
+
+_NEON2SSESTORAGE float64_t vaddvq_f64(float64x2_t a)
+{
+    __m128 shuf = _mm_movehl_ps(_mm_castpd_ps(a), _mm_castpd_ps(a));  // cast has zero latency
+    __m128d shufd = _mm_castps_pd(shuf);
+    __m128d sum = _mm_add_sd(a, shufd);
+    return  _mm_cvtsd_f64(sum);
+}
+
+_NEON2SSESTORAGE int8_t vaddv_s8(int8x8_t a)
+{
+    //no signed sad in x86 SIMD, go to unsigned
+    __m128i c128 = _mm_set1_epi8(-128); //(int8_t)0x80
+    __m128i zero = _mm_setzero_si128();
+    __m128i au = _mm_add_epi8(_pM128i(a), c128);
+    __m128i sum = _mm_sad_epu8(au, zero);
+    return (int8_t) _mm_cvtsi128_si32(sum);
+}
+
+_NEON2SSESTORAGE int16_t vaddv_s16(int16x4_t a)
+{
+    __m128i shuf = _mm_srli_si128(_pM128i(a), 4);
+    __m128i sum = _mm_add_epi16(_pM128i(a), shuf);
+    shuf = _mm_srli_si128(sum, 2);
+    sum = _mm_add_epi16(sum, shuf);
+    return  _mm_extract_epi16(sum, 0);
+}
+
+_NEON2SSESTORAGE int32_t vaddv_s32(int32x2_t a)
+{
+    __m128i shuf = _mm_shuffle_epi32(_pM128i(a), _MM_SHUFFLE(3, 2, 0, 1));
+    __m128i sum = _mm_add_epi32(_pM128i(a), shuf);    // 0+1, ...
+    return _mm_cvtsi128_si32(sum);
+}
+
+_NEON2SSESTORAGE uint8_t vaddv_u8(uint8x8_t a)
+{
+    __m128i zero = _mm_setzero_si128();
+   __m128i sum = _mm_sad_epu8(_pM128i(a ), zero);
+    return (uint8_t) _mm_cvtsi128_si32(sum);
+}
+
+_NEON2SSE_GLOBAL uint16_t vaddv_u16(uint16x4_t a);
+#define vaddv_u16(a) (uint16_t) vaddv_s16(a)
+
+_NEON2SSE_GLOBAL uint32_t vaddv_u32(uint32x2_t a);
+#define vaddv_u32(a) (uint32_t) vaddv_s32(a)
+
+_NEON2SSESTORAGE float32_t vaddv_f32(float32x2_t a)
+{
+    __m128 shuf = _mm_shuffle_ps(_pM128(a), _pM128(a), _MM_SHUFFLE(3,2,0,1));
+    __m128 sum = _mm_add_ss(_pM128(a), shuf);    // 0+1, ...
+    return _mm_cvtss_f32(sum);
+}
 
 #endif /* NEON2SSE_H */
