@@ -1,7 +1,7 @@
 # Boilerplate: Copyright (C) 2014-2017 Ruslan Baratov
 # Modification: Copyright (C) 2017 David Hirvonen
 
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.5)
 project(NEON_2_SSE VERSION 1.0.0 LANGUAGES C)
 
 add_library(${PROJECT_NAME} INTERFACE)
