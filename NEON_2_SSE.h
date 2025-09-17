@@ -2332,6 +2332,7 @@ _NEON2SSE_GLOBAL uint16_t vaddv_u16(uint16x4_t a);
 _NEON2SSE_GLOBAL uint32_t vaddv_u32(uint32x2_t a);
 _NEON2SSESTORAGE float32_t vaddv_f32(float32x2_t a);
 
+_NEON2SSESTORAGE float32x4_t vmlaq_laneq_f32(float32x4_t a, float32x4_t b, float32x4_t v, const int lane);
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 // the following macros solve the problem of the "immediate parameters requirement" for some x86 intrinsics.
 // we need it to compile the code unless the "Intrinsic parameter must be an immediate value" error is our goal
@@ -17106,6 +17107,15 @@ _NEON2SSESTORAGE float32_t vaddv_f32(float32x2_t a)
     __m128 shuf = _mm_shuffle_ps(_pM128(a), _pM128(a), _MM_SHUFFLE(3,2,0,1));
     __m128 sum = _mm_add_ss(_pM128(a), shuf);    // 0+1, ...
     return _mm_cvtss_f32(sum);
+}
+
+_NEON2SSESTORAGE float32x4_t vmlaq_laneq_f32(float32x4_t a, float32x4_t b, float32x4_t v, const int lane)
+{
+    float32_t vlane;
+    float32x4_t c;
+    vlane = vgetq_lane_f32(v, lane);
+    c = vdupq_n_f32(vlane);
+    return vmlaq_f32(a, b, c);
 }
 
 #endif /* NEON2SSE_H */
