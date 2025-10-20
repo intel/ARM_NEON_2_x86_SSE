@@ -2341,13 +2341,13 @@ _NEON2SSESTORAGE float32x4_t vmlaq_laneq_f32(float32x4_t a, float32x4_t b, float
 #   define _MM_ALIGNR_EPI8 _mm_alignr_epi8
 #   define _MM_EXTRACT_EPI16  (int16_t) _mm_extract_epi16
 #   define _MM_INSERT_EPI16 _mm_insert_epi16
+#   define _MM_SHUFFLE_EPI32 _mm_shuffle_epi32
 #   ifdef USE_SSE4
 #       define _MM_EXTRACT_EPI8  _mm_extract_epi8
 #       define _MM_EXTRACT_EPI32  _mm_extract_epi32
 #       define _MM_EXTRACT_PS  _mm_extract_ps
 #       define _MM_INSERT_EPI8  _mm_insert_epi8
 #       define _MM_INSERT_EPI32 _mm_insert_epi32
-#       define _MM_INSERT_PS    _mm_insert_ps
 #       ifdef  _NEON2SSE_64BIT
 #           define _MM_INSERT_EPI64 _mm_insert_epi64
 #           define _MM_EXTRACT_EPI64 _mm_extract_epi64
@@ -2394,10 +2394,10 @@ _NEON2SSESTORAGE float32x4_t vmlaq_laneq_f32(float32x4_t a, float32x4_t b, float
 #   define _NEON2SSE_SWITCH4(NAME, case0, case1, case2, case3, vec, LANE, p) \
         switch(LANE)              \
         {                          \
-        case case0:  return NAME(vec p,case0); \
-        case case1:  return NAME(vec p,case1); \
-        case case2:  return NAME(vec p,case2); \
-        case case3:  return NAME(vec p,case3); \
+        case 0:  return NAME(vec p,case0); \
+        case 1:  return NAME(vec p,case1); \
+        case 2:  return NAME(vec p,case2); \
+        case 3:  return NAME(vec p,case3); \
         default:     return NAME(vec p,case0); \
         }
 
@@ -2414,6 +2414,12 @@ _NEON2SSESTORAGE float32x4_t vmlaq_laneq_f32(float32x4_t a, float32x4_t b, float
     _NEON2SSE_INLINE int16_t _MM_EXTRACT_EPI16(__m128i vec, const int LANE)
     {
         _NEON2SSE_SWITCH8((int16_t)_mm_extract_epi16, vec, LANE,)
+    }
+
+    _NEON2SSE_INLINE __m128i _MM_SHUFFLE_EPI32(__m128i vec, int LANE)
+    {
+        _NEON2SSE_SWITCH4(_mm_shuffle_epi32, _MM_SHUFFLE(0, 0, 0, 0), _MM_SHUFFLE(1, 1, 1, 1),
+            _MM_SHUFFLE(2, 2, 2, 2), _MM_SHUFFLE(3, 3, 3, 3), vec, LANE)
     }
 
 #ifdef USE_SSE4
@@ -2462,11 +2468,6 @@ _NEON2SSESTORAGE float32x4_t vmlaq_laneq_f32(float32x4_t a, float32x4_t b, float
                 else return _mm_extract_epi64(val, 1);
             }
 #endif
-
-        _NEON2SSE_INLINE __m128 _MM_INSERT_PS(__m128 vec, __m128 p, const int LANE)
-        {
-            _NEON2SSE_SWITCH4(_mm_insert_ps, 0, 16, 32, 48, vec, LANE, _NEON2SSE_COMMA p)
-        }
 
 #endif //USE_SSE4
 
@@ -2585,17 +2586,6 @@ _NEON2SSESTORAGE float32x4_t vmlaq_laneq_f32(float32x4_t a, float32x4_t b, float
         vec_masked = _mm_and_si128 (*(__m128i*)mask,vec); //ready for p
         p_masked = _mm_andnot_si128  (*(__m128i*)mask,*(__m128i*)pvec); //ready for vec
         return _mm_or_si128(vec_masked, p_masked);
-    }
-
-    _NEON2SSE_INLINE __m128 _MM_INSERT_PS(__m128 vec, __m128 p, const int LANE)
-    {
-        _NEON2SSE_ALIGN_16 uint32_t mask[4] = {0xffffffff,0xffffffff,0xffffffff,0xffffffff};
-        __m128 tmp, vec_masked, p_masked;
-        mask[LANE >> 4] = 0x0; //here the LANE is not actural lane, need to deal with it
-        vec_masked = _mm_and_ps (*(__m128*)mask,vec); //ready for p
-        p_masked = _mm_andnot_ps (*(__m128*)mask, p); //ready for vec
-        tmp = _mm_or_ps(vec_masked, p_masked);
-        return tmp;
     }
 
     _NEON2SSE_INLINE __m128i _MM_MAX_EPI8(__m128i a, __m128i b)
@@ -4088,8 +4078,7 @@ _NEON2SSE_INLINE float32x2_t vmls_f32(float32x2_t a, float32x2_t b, float32x2_t 
     __m128 res;
     __m64_128 res64;
 #ifdef USE_AVX2    
-    //fma
-    res = _mm_fmsub_ps(_pM128(c), _pM128(b), _pM128(a));
+    res = _mm_fnmadd_ps(_pM128(c), _pM128(b), _pM128(a)); //(a - bc)
 #else
     res = _mm_mul_ps (_pM128(c), _pM128(b));
     res = _mm_sub_ps (_pM128(a), res);
@@ -4143,7 +4132,7 @@ _NEON2SSE_INLINE int32x4_t vmlsq_s32(int32x4_t a, int32x4_t b, int32x4_t c) // V
 _NEON2SSESTORAGE float32x4_t vmlsq_f32(float32x4_t a, float32x4_t b, float32x4_t c); // VMLS.F32 q0,q0,q0
 #ifdef USE_AVX2    
 //fma
-#define vmlsq_f32(a, b, c) _mm_fmsub_ps(c, b, a) //swap arguments
+#define vmlsq_f32(a, b, c) _mm_fnmadd_ps(c, b, a) //swap arguments
 #else
 _NEON2SSE_INLINE float32x4_t vmlsq_f32(float32x4_t a, float32x4_t b, float32x4_t c) // VMLS.F32 q0,q0,q0
 {
@@ -9569,10 +9558,9 @@ _NEON2SSE_GLOBAL float16x8_t vld1q_lane_f16(__transfersize(1) __fp16 const * ptr
 _NEON2SSESTORAGE float32x4_t vld1q_lane_f32(__transfersize(1) float32_t const * ptr, float32x4_t vec, __constrange(0,3) int lane); // VLD1.32 {d0[0]}, [r0]
 _NEON2SSE_INLINE float32x4_t vld1q_lane_f32(__transfersize(1) float32_t const * ptr, float32x4_t vec, __constrange(0,3) int lane)
 {
-    //we need to deal with  ptr  16bit NOT aligned case
-    __m128 p;
-    p = _mm_set1_ps(*(ptr));
-    return _MM_INSERT_PS(vec,  p, _INSERTPS_NDX(0, lane));
+    __m128i resi;
+    resi = _MM_INSERT_EPI32(_M128i(vec), *(int*)ptr, lane);
+    return _M128(resi);
 }
 
 _NEON2SSE_GLOBAL int64x2_t vld1q_lane_s64(__transfersize(1) int64_t const * ptr, int64x2_t vec, __constrange(0,1) int lane); // VLD1.64 {d0}, [r0]
@@ -17111,11 +17099,13 @@ _NEON2SSESTORAGE float32_t vaddv_f32(float32x2_t a)
 
 _NEON2SSESTORAGE float32x4_t vmlaq_laneq_f32(float32x4_t a, float32x4_t b, float32x4_t v, const int lane)
 {
-    float32_t vlane;
-    float32x4_t c;
-    vlane = vgetq_lane_f32(v, lane);
-    c = vdupq_n_f32(vlane);
-    return vmlaq_f32(a, b, c);
+    __m128i vlane;
+    //broadcast v[lane]
+    vlane = _MM_SHUFFLE_EPI32(_M128i(v), lane);
+    return vmlaq_f32(a, b, _M128(vlane));
 }
+
+_NEON2SSE_GLOBAL float32x4_t vfmaq_laneq_f32(float32x4_t a, float32x4_t b, float32x4_t v, const int lane);
+#define vfmaq_laneq_f32 vmlaq_laneq_f32
 
 #endif /* NEON2SSE_H */
