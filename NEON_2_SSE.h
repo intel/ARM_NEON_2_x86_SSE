@@ -2341,7 +2341,7 @@ _NEON2SSESTORAGE float32x4_t vmlaq_laneq_f32(float32x4_t a, float32x4_t b, float
 #   define _MM_ALIGNR_EPI8 _mm_alignr_epi8
 #   define _MM_EXTRACT_EPI16  (int16_t) _mm_extract_epi16
 #   define _MM_INSERT_EPI16 _mm_insert_epi16
-#   define _MM_SHUFFLE_EPI32 _mm_shuffle_epi32
+#   define _MM_DUPQ_EPI32(vec, lane) _mm_shuffle_epi32(vec, MM_SHUFFLE(lane,lane,lane,lane))
 #   ifdef USE_SSE4
 #       define _MM_EXTRACT_EPI8  _mm_extract_epi8
 #       define _MM_EXTRACT_EPI32  _mm_extract_epi32
@@ -2416,10 +2416,10 @@ _NEON2SSESTORAGE float32x4_t vmlaq_laneq_f32(float32x4_t a, float32x4_t b, float
         _NEON2SSE_SWITCH8((int16_t)_mm_extract_epi16, vec, LANE,)
     }
 
-    _NEON2SSE_INLINE __m128i _MM_SHUFFLE_EPI32(__m128i vec, int LANE)
+    _NEON2SSE_INLINE __m128i _MM_DUPQ_EPI32(__m128i vec, int LANE)
     {
         _NEON2SSE_SWITCH4(_mm_shuffle_epi32, _MM_SHUFFLE(0, 0, 0, 0), _MM_SHUFFLE(1, 1, 1, 1),
-            _MM_SHUFFLE(2, 2, 2, 2), _MM_SHUFFLE(3, 3, 3, 3), vec, LANE)
+            _MM_SHUFFLE(2, 2, 2, 2), _MM_SHUFFLE(3, 3, 3, 3), vec, LANE,)
     }
 
 #ifdef USE_SSE4
@@ -17101,7 +17101,7 @@ _NEON2SSESTORAGE float32x4_t vmlaq_laneq_f32(float32x4_t a, float32x4_t b, float
 {
     __m128i vlane;
     //broadcast v[lane]
-    vlane = _MM_SHUFFLE_EPI32(_M128i(v), lane);
+    vlane = _MM_DUPQ_EPI32(_M128i(v), lane);
     return vmlaq_f32(a, b, _M128(vlane));
 }
 
