@@ -9424,7 +9424,7 @@ _NEON2SSE_GLOBAL poly16x8_t vsliq_n_p16(poly16x8_t a, poly16x8_t b, __constrange
 // it loads a 32-byte block aligned on a 16-byte boundary and extracts the 16 bytes corresponding to the unaligned access
 //If the ptr is aligned then could use __m128i _mm_load_si128 ((__m128i*) ptr) instead;
 #define LOAD_SI128(ptr) \
-        ( ((uintptr_t)(ptr) & 15) == 0 ) ? _mm_load_si128((__m128i*)(ptr)) : _mm_loadu_si128((__m128i*)(ptr))
+        ( ((uintptr_t)(ptr) & 15) == 0 ) ? _mm_load_si128((const __m128i*)(ptr)) : _mm_loadu_si128((const __m128i*)(ptr))
 
 _NEON2SSE_GLOBAL uint8x16_t vld1q_u8(__transfersize(16) uint8_t const * ptr); // VLD1.8 {d0, d1}, [r0]
 #define vld1q_u8 LOAD_SI128
