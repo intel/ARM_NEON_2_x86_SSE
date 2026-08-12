@@ -17005,7 +17005,13 @@ _NEON2SSESTORAGE int64_t vaddvq_s64(int64x2_t a)
 {
     __m128i shuf = _mm_shuffle_epi32(a, _MM_SHUFFLE(1, 0, 3, 2)); // swap lo and hi numbers
     __m128i sum = _mm_add_epi64(a, shuf);
-    return _mm_cvtsi128_si64(sum);
+#if defined(_NEON2SSE_64BIT)
+    return _mm_cvtsi128_si64(sum); // SSE2 intrinsic only available for x64 in VS2026
+#else
+    int64_t result;
+    _mm_storel_epi64((__m128i*) &result, sum); // fallback for x86
+    return result;
+#endif
 }
 
 _NEON2SSESTORAGE uint8_t vaddvq_u8(uint8x16_t a)
