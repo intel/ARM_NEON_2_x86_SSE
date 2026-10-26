@@ -17128,7 +17128,7 @@ _NEON2SSE_INLINE float32x4_t vtrn2q_f32(float32x4_t a, float32x4_t b)
 // Define (overload) bitwise operators in C++ code for 128-bit SIMD types
 #ifdef __cplusplus
     //#warning "The following code doesn't work for GCC and was tested with  Microsoft Compiler only, operators overloading may not work as expected for other compilers"
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && !defined(__clang__)
     _NEON2SSE_INLINE  __m128i operator|( __m128i a,  __m128i b)
     {
         return _mm_or_si128(a, b);
