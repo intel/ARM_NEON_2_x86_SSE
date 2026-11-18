@@ -3483,12 +3483,11 @@ _NEON2SSESTORAGE int8x8_t   vraddhn_s16(int16x8_t a, int16x8_t b); // VRADDHN.I1
 _NEON2SSE_INLINE int8x8_t   vraddhn_s16(int16x8_t a, int16x8_t b) // VRADDHN.I16 d0,q0,q0
 {
     int8x8_t res64;
-    __m128i sum, mask1;
+    __m128i sum, rnd;
     sum = _mm_add_epi16 (a, b);
-    mask1 = _mm_slli_epi16(sum, 8); //shift left then back right to
-    mask1 = _mm_srli_epi16(mask1, 15); //get  7-th bit 1 or zero
+    rnd = _mm_set1_epi16(0x80); //1 << 7
+    sum = _mm_add_epi16 (sum, rnd); //rounding, wraps around as on ARM
     sum = _mm_srai_epi16 (sum, 8); //get high half
-    sum = _mm_add_epi16 (sum, mask1); //actual rounding
     sum = _mm_packs_epi16 (sum, sum);
     return64(sum);
 }
@@ -3498,12 +3497,11 @@ _NEON2SSE_INLINE int16x4_t  vraddhn_s32(int32x4_t a, int32x4_t b) // VRADDHN.I32
 {
     //SIMD may be not optimal, serial may be faster
     int16x4_t res64;
-    __m128i sum, mask1;
+    __m128i sum, rnd;
     sum = _mm_add_epi32 (a, b);
-    mask1 = _mm_slli_epi32(sum, 16); //shift left then back right to
-    mask1 = _mm_srli_epi32(mask1,31); //get  15-th bit 1 or zero
+    rnd = _mm_set1_epi32(0x8000); //1 << 15
+    sum = _mm_add_epi32 (sum, rnd); //rounding, wraps around as on ARM
     sum = _mm_srai_epi32 (sum, 16); //get high half
-    sum = _mm_add_epi32 (sum, mask1); //actual rounding
     sum = _mm_packs_epi32 (sum, sum);
     return64(sum);
 }
@@ -3526,12 +3524,11 @@ _NEON2SSESTORAGE uint8x8_t  vraddhn_u16(uint16x8_t a, uint16x8_t b); // VRADDHN.
 _NEON2SSE_INLINE uint8x8_t  vraddhn_u16(uint16x8_t a, uint16x8_t b) // VRADDHN.I16 d0,q0,q0
 {
     uint8x8_t res64;
-    __m128i sum, mask1;
+    __m128i sum, rnd;
     sum = _mm_add_epi16 (a, b);
-    mask1 = _mm_slli_epi16(sum, 8); //shift left then back right to
-    mask1 = _mm_srli_epi16(mask1, 15); //get  7-th bit 1 or zero
-    sum = _mm_srai_epi16 (sum, 8); //get high half
-    sum = _mm_add_epi16 (sum, mask1); //actual rounding
+    rnd = _mm_set1_epi16(0x80); //1 << 7
+    sum = _mm_add_epi16 (sum, rnd); //rounding, wraps around as on ARM
+    sum = _mm_srli_epi16 (sum, 8); //get high half
     sum = _mm_packus_epi16 (sum, sum);
     return64(sum);
 }
@@ -3541,12 +3538,11 @@ _NEON2SSE_INLINE uint16x4_t vraddhn_u32(uint32x4_t a, uint32x4_t b)
 {
     //SIMD may be not optimal, serial may be faster
     uint16x4_t res64;
-    __m128i sum, mask1;
+    __m128i sum, rnd;
     sum = _mm_add_epi32 (a, b);
-    mask1 = _mm_slli_epi32(sum, 16); //shift left then back right to
-    mask1 = _mm_srli_epi32(mask1,31); //get  15-th bit 1 or zero
-    sum = _mm_srai_epi32 (sum, 16); //get high half
-    sum = _mm_add_epi32 (sum, mask1); //actual rounding
+    rnd = _mm_set1_epi32(0x8000); //1 << 15
+    sum = _mm_add_epi32 (sum, rnd); //rounding, wraps around as on ARM
+    sum = _mm_srli_epi32 (sum, 16); //get high half
     sum = _MM_PACKUS1_EPI32 (sum);
     return64(sum);
 }
@@ -4960,12 +4956,11 @@ _NEON2SSESTORAGE int8x8_t vrsubhn_s16(int16x8_t a, int16x8_t b); // VRSUBHN.I16 
 _NEON2SSE_INLINE int8x8_t vrsubhn_s16(int16x8_t a, int16x8_t b) // VRSUBHN.I16 d0,q0,q0
 {
     int8x8_t res64;
-    __m128i sub, mask1;
+    __m128i sub, rnd;
     sub = _mm_sub_epi16 (a, b);
-    mask1 = _mm_slli_epi16(sub, 8); //shift left then back right to
-    mask1 = _mm_srli_epi16(mask1, 15); //get  7-th bit 1 or zero
+    rnd = _mm_set1_epi16(0x80); //1 << 7
+    sub = _mm_add_epi16 (sub, rnd); //rounding, wraps around as on ARM
     sub = _mm_srai_epi16 (sub, 8); //get high half
-    sub = _mm_add_epi16 (sub, mask1); //actual rounding
     sub =  _mm_packs_epi16 (sub, sub);
     return64(sub);
 }
@@ -4975,12 +4970,11 @@ _NEON2SSE_INLINE int16x4_t vrsubhn_s32(int32x4_t a, int32x4_t b) // VRSUBHN.I32 
 {
     //SIMD may be not optimal, serial may be faster
     int16x4_t res64;
-    __m128i sub, mask1;
+    __m128i sub, rnd;
     sub = _mm_sub_epi32 (a, b);
-    mask1 = _mm_slli_epi32(sub, 16); //shift left then back right to
-    mask1 = _mm_srli_epi32(mask1,31); //get  15-th bit 1 or zero
+    rnd = _mm_set1_epi32(0x8000); //1 << 15
+    sub = _mm_add_epi32 (sub, rnd); //rounding, wraps around as on ARM
     sub = _mm_srai_epi32 (sub, 16); //get high half
-    sub = _mm_add_epi32 (sub, mask1); //actual rounding
     sub = _mm_packs_epi32 (sub, sub);
     return64(sub);
 }
@@ -5003,12 +4997,11 @@ _NEON2SSESTORAGE uint8x8_t vrsubhn_u16(uint16x8_t a, uint16x8_t b); // VRSUBHN.I
 _NEON2SSE_INLINE uint8x8_t vrsubhn_u16(uint16x8_t a, uint16x8_t b) // VRSUBHN.I16 d0,q0,q0
 {
     uint8x8_t res64;
-    __m128i sub, mask1;
+    __m128i sub, rnd;
     sub = _mm_sub_epi16 (a, b);
-    mask1 = _mm_slli_epi16(sub, 8); //shift left then back right to
-    mask1 = _mm_srli_epi16(mask1, 15); //get  7-th bit 1 or zero
-    sub = _mm_srai_epi16 (sub, 8); //get high half
-    sub = _mm_add_epi16 (sub, mask1); //actual rounding
+    rnd = _mm_set1_epi16(0x80); //1 << 7
+    sub = _mm_add_epi16 (sub, rnd); //rounding, wraps around as on ARM
+    sub = _mm_srli_epi16 (sub, 8); //get high half
     sub = _mm_packus_epi16 (sub, sub);
     return64(sub);
 }
@@ -5018,12 +5011,11 @@ _NEON2SSE_INLINE uint16x4_t vrsubhn_u32(uint32x4_t a, uint32x4_t b) // VRSUBHN.I
 {
     //SIMD may be not optimal, serial may be faster
     uint16x4_t res64;
-    __m128i sub, mask1;
+    __m128i sub, rnd;
     sub = _mm_sub_epi32 (a, b);
-    mask1 = _mm_slli_epi32(sub, 16); //shift left then back right to
-    mask1 = _mm_srli_epi32(mask1,31); //get  15-th bit 1 or zero
-    sub = _mm_srai_epi32 (sub, 16); //get high half
-    sub = _mm_add_epi32 (sub, mask1); //actual rounding
+    rnd = _mm_set1_epi32(0x8000); //1 << 15
+    sub = _mm_add_epi32 (sub, rnd); //rounding, wraps around as on ARM
+    sub = _mm_srli_epi32 (sub, 16); //get high half
 #ifdef USE_SSE4
     sub =  _MM_PACKUS1_EPI32 (sub);
 #else
@@ -7575,7 +7567,7 @@ _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(uint64x2_t vrshlq_u64(uint64x2_t 
         int lanesize_1 = (sizeof(TYPE) << 3) - 1; \
         _mm_store_si128((__m128i*)atmp, a); _mm_store_si128((__m128i*)btmp, b); \
         for (i = 0; i<LEN; i++) { \
-        if (atmp[i] ==0) res[i] = 0; \
+        if ((atmp[i] ==0)||(btmp[i] ==0)) res[i] = atmp[i]; \
         else{ \
             if(btmp[i] <0) res[i] = (btmp[i] < (-lanesize_1)) ? 0 : (atmp[i] >> (-btmp[i])) + ( (atmp[i] & ((TYPE)1 << (-btmp[i] - 1))) >> (-btmp[i] - 1) ); \
             else{ \
@@ -7593,9 +7585,9 @@ _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(uint64x2_t vrshlq_u64(uint64x2_t 
         int lanesize = (sizeof(TYPE) << 3); \
         _mm_store_si128((__m128i*)atmp, a); _mm_store_si128((__m128i*)btmp, b); \
         for (i = 0; i<LEN; i++) { \
-        if (atmp[i] ==0) {res[i] = 0; \
+        if ((atmp[i] ==0)||(btmp[i] ==0)) {res[i] = atmp[i]; \
         }else{ \
-            if(btmp[i] < 0) res[i] = (btmp[i] < (-lanesize)) ? 0 : (atmp[i] >> (-btmp[i])) + ( (atmp[i] & ((TYPE)1 << (-btmp[i] - 1))) >> (-btmp[i] - 1) ); \
+            if(btmp[i] < 0) res[i] = (btmp[i] < (-lanesize)) ? 0 : (btmp[i] == (-lanesize)) ? (atmp[i] >> (lanesize - 1)) : (atmp[i] >> (-btmp[i])) + ( (atmp[i] & ((TYPE)1 << (-btmp[i] - 1))) >> (-btmp[i] - 1) ); \
             else{ \
                 if (btmp[i]>lanesize) res[i] = (_UNSIGNED_T(TYPE))(~0ll); \
                 else{ \
@@ -7607,7 +7599,7 @@ _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(uint64x2_t vrshlq_u64(uint64x2_t 
         __m64_128 res; int ## TYPE ## _t limit; int i; \
         int lanesize_1 = (sizeof(int ## TYPE ## _t ) << 3) - 1; \
         for (i = 0; i<LEN; i++) { \
-        if (a.m64_i ## TYPE[i] ==0) res.m64_i ## TYPE[i] = 0; \
+        if ((a.m64_i ## TYPE[i] ==0)||(b.m64_i ## TYPE[i] ==0)) res.m64_i ## TYPE[i] = a.m64_i ## TYPE[i]; \
         else{ \
             if(b.m64_i ## TYPE[i] <0) res.m64_i ## TYPE[i] = (b.m64_i ## TYPE[i] < (-lanesize_1)) ? 0 : (a.m64_i ## TYPE[i] >> (-(b.m64_i ## TYPE[i]))) + ( (a.m64_i ## TYPE[i] & ((int ## TYPE ## _t ) 1 << (-(b.m64_i ## TYPE[i]) - 1))) >> (-(b.m64_i ## TYPE[i]) - 1) ); \
             else{ \
@@ -7624,9 +7616,9 @@ _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(uint64x2_t vrshlq_u64(uint64x2_t 
         __m64_128 res; _UNSIGNED_T(int ## TYPE ## _t) limit; int i; \
         int lanesize = (sizeof(int ## TYPE ## _t) << 3); \
         for (i = 0; i<LEN; i++) { \
-        if (a.m64_u ## TYPE[i] ==0) {res.m64_u ## TYPE[i] = 0; \
+        if ((a.m64_u ## TYPE[i] ==0)||(b.m64_i ## TYPE[i] ==0)) {res.m64_u ## TYPE[i] = a.m64_u ## TYPE[i]; \
         }else{ \
-            if(b.m64_i ## TYPE[i] < 0) res.m64_u ## TYPE[i] = (b.m64_i ## TYPE[i] < (-lanesize)) ? 0 : (a.m64_u ## TYPE[i] >> (-(b.m64_i ## TYPE[i]))) + ( (a.m64_u ## TYPE[i] & ((int ## TYPE ## _t) 1 << (-(b.m64_i ## TYPE[i]) - 1))) >> (-(b.m64_i ## TYPE[i]) - 1) ); \
+            if(b.m64_i ## TYPE[i] < 0) res.m64_u ## TYPE[i] = (b.m64_i ## TYPE[i] < (-lanesize)) ? 0 : (b.m64_i ## TYPE[i] == (-lanesize)) ? (a.m64_u ## TYPE[i] >> (lanesize - 1)) : (a.m64_u ## TYPE[i] >> (-(b.m64_i ## TYPE[i]))) + ( (a.m64_u ## TYPE[i] & ((int ## TYPE ## _t) 1 << (-(b.m64_i ## TYPE[i]) - 1))) >> (-(b.m64_i ## TYPE[i]) - 1) ); \
             else{ \
                 if (b.m64_i ## TYPE[i]>lanesize) res.m64_u ## TYPE[i] = (_UNSIGNED_T(int ## TYPE ## _t))(~0ll); \
                 else{ \
@@ -12940,7 +12932,7 @@ _NEON2SSE_INLINE int32x2_t   vcvt_s32_f32(float32x2_t a)
 {
     int32x2_t res64;
     __m128i res;
-    res =  _mm_cvtps_epi32(_pM128(a)); //use low 64 bits of result only
+    res = vcvtq_s32_f32(_pM128(a)); //use low 64 bits of result only
     return64(res);
 }
 
@@ -12983,8 +12975,9 @@ _NEON2SSE_INLINE uint32x4_t vcvtq_u32_f32(float32x4_t a) // VCVT.U32.F32 q0, q0
     dif = _mm_and_ps(_M128(mask), dif);
 
     res1 = _mm_cvttps_epi32(dif);
-    res2 = vcvtq_s32_f32(max);
-    return _mm_add_epi32(res1, res2);
+    res2 = _mm_cvttps_epi32(max); //0x80000000 = 2^31 if max >= 2^31, so res1 + res2 = max
+    mask = _M128i(_mm_cmpge_ps(max, *(__m128*)fmax_unsigned)); //a >= 2^32: saturate to 0xffffffff
+    return _mm_or_si128(_mm_add_epi32(res1, res2), mask);
 }
 
 // ***** Convert to the fixed point  with   the number of fraction bits specified by b ***********
