@@ -12940,7 +12940,7 @@ _NEON2SSE_INLINE int32x2_t   vcvt_s32_f32(float32x2_t a)
 {
     int32x2_t res64;
     __m128i res;
-    res =  _mm_cvtps_epi32(_pM128(a)); //use low 64 bits of result only
+    res = vcvtq_s32_f32(_pM128(a)); //use low 64 bits of result only
     return64(res);
 }
 
@@ -12983,8 +12983,9 @@ _NEON2SSE_INLINE uint32x4_t vcvtq_u32_f32(float32x4_t a) // VCVT.U32.F32 q0, q0
     dif = _mm_and_ps(_M128(mask), dif);
 
     res1 = _mm_cvttps_epi32(dif);
-    res2 = vcvtq_s32_f32(max);
-    return _mm_add_epi32(res1, res2);
+    res2 = _mm_cvttps_epi32(max); //0x80000000 = 2^31 if max >= 2^31, so res1 + res2 = max
+    mask = _M128i(_mm_cmpge_ps(max, *(__m128*)fmax_unsigned)); //a >= 2^32: saturate to 0xffffffff
+    return _mm_or_si128(_mm_add_epi32(res1, res2), mask);
 }
 
 // ***** Convert to the fixed point  with   the number of fraction bits specified by b ***********
