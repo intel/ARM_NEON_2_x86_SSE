@@ -7567,7 +7567,7 @@ _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(uint64x2_t vrshlq_u64(uint64x2_t 
         int lanesize_1 = (sizeof(TYPE) << 3) - 1; \
         _mm_store_si128((__m128i*)atmp, a); _mm_store_si128((__m128i*)btmp, b); \
         for (i = 0; i<LEN; i++) { \
-        if (atmp[i] ==0) res[i] = 0; \
+        if ((atmp[i] ==0)||(btmp[i] ==0)) res[i] = atmp[i]; \
         else{ \
             if(btmp[i] <0) res[i] = (btmp[i] < (-lanesize_1)) ? 0 : (atmp[i] >> (-btmp[i])) + ( (atmp[i] & ((TYPE)1 << (-btmp[i] - 1))) >> (-btmp[i] - 1) ); \
             else{ \
@@ -7585,9 +7585,9 @@ _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(uint64x2_t vrshlq_u64(uint64x2_t 
         int lanesize = (sizeof(TYPE) << 3); \
         _mm_store_si128((__m128i*)atmp, a); _mm_store_si128((__m128i*)btmp, b); \
         for (i = 0; i<LEN; i++) { \
-        if (atmp[i] ==0) {res[i] = 0; \
+        if ((atmp[i] ==0)||(btmp[i] ==0)) {res[i] = atmp[i]; \
         }else{ \
-            if(btmp[i] < 0) res[i] = (btmp[i] < (-lanesize)) ? 0 : (atmp[i] >> (-btmp[i])) + ( (atmp[i] & ((TYPE)1 << (-btmp[i] - 1))) >> (-btmp[i] - 1) ); \
+            if(btmp[i] < 0) res[i] = (btmp[i] < (-lanesize)) ? 0 : (btmp[i] == (-lanesize)) ? (atmp[i] >> (lanesize - 1)) : (atmp[i] >> (-btmp[i])) + ( (atmp[i] & ((TYPE)1 << (-btmp[i] - 1))) >> (-btmp[i] - 1) ); \
             else{ \
                 if (btmp[i]>lanesize) res[i] = (_UNSIGNED_T(TYPE))(~0ll); \
                 else{ \
@@ -7599,7 +7599,7 @@ _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(uint64x2_t vrshlq_u64(uint64x2_t 
         __m64_128 res; int ## TYPE ## _t limit; int i; \
         int lanesize_1 = (sizeof(int ## TYPE ## _t ) << 3) - 1; \
         for (i = 0; i<LEN; i++) { \
-        if (a.m64_i ## TYPE[i] ==0) res.m64_i ## TYPE[i] = 0; \
+        if ((a.m64_i ## TYPE[i] ==0)||(b.m64_i ## TYPE[i] ==0)) res.m64_i ## TYPE[i] = a.m64_i ## TYPE[i]; \
         else{ \
             if(b.m64_i ## TYPE[i] <0) res.m64_i ## TYPE[i] = (b.m64_i ## TYPE[i] < (-lanesize_1)) ? 0 : (a.m64_i ## TYPE[i] >> (-(b.m64_i ## TYPE[i]))) + ( (a.m64_i ## TYPE[i] & ((int ## TYPE ## _t ) 1 << (-(b.m64_i ## TYPE[i]) - 1))) >> (-(b.m64_i ## TYPE[i]) - 1) ); \
             else{ \
@@ -7616,9 +7616,9 @@ _NEON2SSE_INLINE _NEON2SSE_PERFORMANCE_WARNING(uint64x2_t vrshlq_u64(uint64x2_t 
         __m64_128 res; _UNSIGNED_T(int ## TYPE ## _t) limit; int i; \
         int lanesize = (sizeof(int ## TYPE ## _t) << 3); \
         for (i = 0; i<LEN; i++) { \
-        if (a.m64_u ## TYPE[i] ==0) {res.m64_u ## TYPE[i] = 0; \
+        if ((a.m64_u ## TYPE[i] ==0)||(b.m64_i ## TYPE[i] ==0)) {res.m64_u ## TYPE[i] = a.m64_u ## TYPE[i]; \
         }else{ \
-            if(b.m64_i ## TYPE[i] < 0) res.m64_u ## TYPE[i] = (b.m64_i ## TYPE[i] < (-lanesize)) ? 0 : (a.m64_u ## TYPE[i] >> (-(b.m64_i ## TYPE[i]))) + ( (a.m64_u ## TYPE[i] & ((int ## TYPE ## _t) 1 << (-(b.m64_i ## TYPE[i]) - 1))) >> (-(b.m64_i ## TYPE[i]) - 1) ); \
+            if(b.m64_i ## TYPE[i] < 0) res.m64_u ## TYPE[i] = (b.m64_i ## TYPE[i] < (-lanesize)) ? 0 : (b.m64_i ## TYPE[i] == (-lanesize)) ? (a.m64_u ## TYPE[i] >> (lanesize - 1)) : (a.m64_u ## TYPE[i] >> (-(b.m64_i ## TYPE[i]))) + ( (a.m64_u ## TYPE[i] & ((int ## TYPE ## _t) 1 << (-(b.m64_i ## TYPE[i]) - 1))) >> (-(b.m64_i ## TYPE[i]) - 1) ); \
             else{ \
                 if (b.m64_i ## TYPE[i]>lanesize) res.m64_u ## TYPE[i] = (_UNSIGNED_T(int ## TYPE ## _t))(~0ll); \
                 else{ \
